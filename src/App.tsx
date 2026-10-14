@@ -1684,9 +1684,9 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
 
       <div className="flex w-full flex-1 items-center justify-center">
         <img
-          src="/snapcleain-hand-hd.webp"
+          src="/logo_snapcleAIn_negativo_alta.jpg"
           alt="snapcleAIn"
-          className="max-h-[60%] max-w-[80%] object-contain -translate-y-4 lg:-translate-y-12 drop-shadow-2xl"
+          className="max-h-[55%] max-w-[75%] object-contain -translate-y-4 lg:-translate-y-12 drop-shadow-2xl"
         />
       </div>
 
