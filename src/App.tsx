@@ -1646,17 +1646,12 @@ type InicioPageProps = {
 function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProfile, onOpenLogin }: InicioPageProps) {
   return (
     <div
-      className="flex h-full flex-col items-center justify-between rounded-2xl bg-blue-600 p-4 lg:rounded-2xl lg:p-10"
+      className="flex h-full flex-col items-center justify-between rounded-2xl bg-[#000053] p-4 lg:rounded-2xl lg:p-10"
       style={splashContainerStyle}
     >
-      {/* Top: menu + logo (left) + login (right) */}
+      {/* Top: menu + login (right) */}
       <div className="flex w-full items-center justify-between pt-2">
         <div className="flex items-center gap-2">
-          <img
-            src="/logo_snapcleAIn_positivo.png"
-            alt="snapcleAIn"
-            className="h-8 w-auto object-contain"
-          />
           <button
             type="button"
             onClick={onOpenDrawer}
@@ -1686,7 +1681,7 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         <img
           src="/logo_snapcleAIn_negativo_alta.jpg"
           alt="snapcleAIn"
-          className="max-h-[55%] max-w-[75%] object-contain -translate-y-4 lg:-translate-y-12 drop-shadow-2xl"
+          className="max-h-[40%] max-w-[62%] object-contain -translate-y-4 lg:-translate-y-12 drop-shadow-2xl"
         />
       </div>
 
@@ -2476,11 +2471,12 @@ function DesktopSidebar({
   return (
     <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-[#e5e7eb] bg-white p-4">
       {/* Logo */}
-      <div className="flex items-center gap-2 px-2 py-3 mb-4">
-        <SnapLogo className="h-9 w-9" />
-        <span className="font-brand text-lg font-extrabold tracking-tight text-black">
-          snapcle<span className="text-[#087ff5]">AI</span>n
-        </span>
+      <div className="flex items-center px-2 py-3 mb-4">
+        <img
+          src="/logo_snapcleAIn_positivo.png"
+          alt="snapcleAIn"
+          className="h-10 w-auto object-contain"
+        />
       </div>
 
       {/* Navigation */}
