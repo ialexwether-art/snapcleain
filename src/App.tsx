@@ -1646,7 +1646,7 @@ type InicioPageProps = {
 function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProfile, onOpenLogin }: InicioPageProps) {
   return (
     <div
-      className="flex h-full flex-col items-center justify-between rounded-2xl sm:rounded-3xl bg-blue-600 p-4 sm:p-6"
+      className="flex h-full flex-col items-center justify-between rounded-2xl sm:rounded-3xl lg:rounded-2xl bg-blue-600 p-4 sm:p-6 lg:p-10"
       style={splashContainerStyle}
     >
       {/* Top: menu + brand (left) + login (right) */}
@@ -1655,7 +1655,7 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
           <button
             type="button"
             onClick={onOpenDrawer}
-            className="flex h-11 w-11 items-center justify-center rounded-xl text-white transition-colors hover:bg-white/15 active:scale-90"
+            className="flex h-11 w-11 items-center justify-center rounded-xl text-white transition-colors hover:bg-white/15 active:scale-90 lg:hidden"
             aria-label="Abrir menú"
           >
             <Menu className="h-6 w-6" />
@@ -1679,9 +1679,9 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
 
       <div className="flex w-full flex-1 items-center justify-center">
         <h1
-          className="font-brand -translate-y-8 sm:-translate-y-16 text-center leading-none"
+          className="font-brand -translate-y-8 sm:-translate-y-16 lg:-translate-y-24 text-center leading-none"
           style={{
-            fontSize: "clamp(1.75rem, 8vw, 2.75rem)",
+            fontSize: "clamp(1.75rem, 8vw, 3.5rem)",
             fontWeight: 800,
             letterSpacing: "0.01em",
             color: "#000553",
@@ -1715,7 +1715,7 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         <button
           type="button"
           onClick={onEnter}
-          className="flex h-14 w-full max-w-[280px] items-center justify-center rounded-full bg-white text-base font-bold text-[#0a47a3] shadow-[0_8px_24px_rgba(0,0,0,0.2)] transition-transform duration-200 hover:scale-105 active:scale-95"
+          className="flex h-14 w-full max-w-[280px] lg:max-w-[320px] items-center justify-center rounded-full bg-white text-base lg:text-lg font-bold text-[#0a47a3] shadow-[0_8px_24px_rgba(0,0,0,0.2)] transition-transform duration-200 hover:scale-105 active:scale-95"
         >
           ENTRAR A LA APP
         </button>
@@ -1745,14 +1745,14 @@ function BibliotecaPage({ onOpenDrawer, onOpenWallet, tokenBalance }: Biblioteca
             <button
               type="button"
               onClick={onOpenDrawer}
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90"
+              className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 lg:hidden"
               aria-label="Abrir menú"
             >
               <Menu className="h-5 w-5" />
             </button>
 
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-[-0.5px] text-black">Biblioteca</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-[-0.5px] text-black">Biblioteca</h1>
           <div className="flex items-center gap-2 mr-1">
             <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
           </div>
@@ -1764,7 +1764,7 @@ function BibliotecaPage({ onOpenDrawer, onOpenWallet, tokenBalance }: Biblioteca
 
       </div>
 
-      <div className="space-y-2.5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5 lg:gap-3">
         {filtered.map((entry) => (
           <div
             key={entry.id}
@@ -1854,11 +1854,14 @@ function ScanPage({
         <button
           type="button"
           onClick={onOpenDrawer}
-          className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90"
+          className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 lg:hidden"
           aria-label="Abrir menú"
         >
           <Menu className="h-5 w-5" />
         </button>
+        <div className="hidden lg:flex items-center gap-2">
+          <h1 className="text-xl lg:text-2xl font-bold tracking-[-0.5px] text-black">Escanear</h1>
+        </div>
         <div className="flex items-center gap-2">
           <WalletBadge balance={tokenBalance} onClick={onOpenWallet} compact />
           <button
@@ -1884,7 +1887,7 @@ function ScanPage({
             onOpenCamera();
           }}
           disabled={loading}
-          className="flex w-full max-w-[360px] flex-col items-center justify-center gap-1.5 rounded-2xl bg-blue-600 px-4 sm:px-6 py-4 text-white shadow-lg transition-all active:scale-[0.98] hover:bg-[#0a6fd4] disabled:opacity-50"
+          className="flex w-full max-w-[360px] lg:max-w-[440px] flex-col items-center justify-center gap-1.5 rounded-2xl bg-blue-600 px-4 sm:px-6 py-4 text-white shadow-lg transition-all active:scale-[0.98] hover:bg-[#0a6fd4] disabled:opacity-50"
         >
           {loading ? (
             <Loader2 className="h-7 w-7 sm:h-8 sm:w-8 animate-spin" />
@@ -1921,7 +1924,7 @@ function ScanPage({
           </div>
         ) : null}
 
-        <div className="w-full max-w-[360px] mt-8 sm:mt-10">
+        <div className="w-full max-w-[360px] lg:max-w-[440px] mt-8 sm:mt-10">
           <label className="mb-1.5 block text-xs font-semibold text-black">
             Dinos qué mancha es para mayor precisión
           </label>
@@ -2090,20 +2093,20 @@ function ResultPage({
           <button
             type="button"
             onClick={onOpenDrawer}
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90"
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 lg:hidden"
             aria-label="Abrir menú"
           >
             <Menu className="h-5 w-5" />
           </button>
 
         </div>
-        <h1 className="text-xl sm:text-2xl font-bold tracking-[-0.5px] text-black">Resultado</h1>
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-[-0.5px] text-black">Resultado</h1>
         <div className="flex items-center gap-2 mr-1">
           <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
         </div>
       </div>
 
-      <div ref={chatScrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-3 sm:px-6 pb-6 leading-relaxed">
+      <div ref={chatScrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-3 sm:px-6 lg:px-8 pb-6 leading-relaxed">
         {main && <AnalysisText text={main} />}
 
         {warning && (
@@ -2245,14 +2248,14 @@ function BotiquinPage({ onOpenDrawer, onOpenWallet, onAskAI, tokenBalance }: Bot
             <button
               type="button"
               onClick={onOpenDrawer}
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90"
+              className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 lg:hidden"
               aria-label="Abrir menú"
             >
               <Menu className="h-5 w-5" />
             </button>
 
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-[-0.5px] text-black">Botiquín</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-[-0.5px] text-black">Botiquín</h1>
           <div className="flex items-center gap-2 mr-1">
             <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
           </div>
@@ -2279,7 +2282,7 @@ function BotiquinPage({ onOpenDrawer, onOpenWallet, onAskAI, tokenBalance }: Bot
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3">
         {filtered.map((product) => (
           <div
             key={product.id}
@@ -2350,20 +2353,20 @@ function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWa
           <button
             type="button"
             onClick={onOpenDrawer}
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90"
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 lg:hidden"
             aria-label="Abrir menú"
           >
             <Menu className="h-5 w-5" />
           </button>
 
         </div>
-        <h1 className="text-xl sm:text-2xl font-bold tracking-[-0.5px] text-black">Premium</h1>
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-[-0.5px] text-black">Premium</h1>
         <div className="flex items-center gap-2 mr-1">
           <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         {SUBSCRIPTION_PLANS.map((plan) => (
           <div
             key={plan.name}
@@ -2442,6 +2445,153 @@ function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWa
         />
       )}
     </section>
+  );
+}
+
+/* ---------- Desktop Sidebar ---------- */
+
+type DesktopSidebarProps = {
+  activeTab: Tab;
+  onTabChange: (tab: Tab) => void;
+  isLoggedIn: boolean;
+  loggedInEmail: string;
+  tokenBalance: number;
+  onOpenWallet: () => void;
+  onOpenLogin: () => void;
+  onOpenProfile: () => void;
+  onOpenAbout: () => void;
+  onOpenHistory: () => void;
+  onLogout: () => void;
+};
+
+function DesktopSidebar({
+  activeTab,
+  onTabChange,
+  isLoggedIn,
+  loggedInEmail,
+  tokenBalance,
+  onOpenWallet,
+  onOpenLogin,
+  onOpenProfile,
+  onOpenAbout,
+  onOpenHistory,
+  onLogout,
+}: DesktopSidebarProps) {
+  const navItems: { id: Tab; label: string; icon: React.ReactNode }[] = [
+    { id: "inicio", label: "Inicio", icon: <Home className="h-5 w-5" /> },
+    { id: "escanear", label: "Escanear", icon: <Camera className="h-5 w-5" /> },
+    { id: "biblioteca", label: "Biblioteca", icon: <BookOpen className="h-5 w-5" /> },
+    { id: "botiquin", label: "Botiquín", icon: <Package className="h-5 w-5" /> },
+    { id: "premium", label: "Premium", icon: <Crown className="h-5 w-5" /> },
+  ];
+
+  return (
+    <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-[#e5e7eb] bg-white p-4">
+      {/* Logo */}
+      <div className="flex items-center gap-2 px-2 py-3 mb-4">
+        <SnapLogo className="h-9 w-9" />
+        <span className="font-brand text-lg font-extrabold tracking-tight text-black">
+          snapcle<span className="text-[#087ff5]">AI</span>n
+        </span>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex flex-col gap-1">
+        {navItems.map((item) => {
+          const active = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onTabChange(item.id)}
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
+                active
+                  ? "bg-blue-50 text-[#087ff5]"
+                  : "text-gray-600 hover:bg-[#f3f4f6]"
+              }`}
+            >
+              <span className={active ? "text-[#087ff5]" : "text-gray-400"}>
+                {item.icon}
+              </span>
+              {item.label}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Secondary actions */}
+      <div className="mt-4 flex flex-col gap-1 border-t border-[#e5e7eb] pt-4">
+        <button
+          type="button"
+          onClick={onOpenHistory}
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-[#f3f4f6]"
+        >
+          <Clock className="h-5 w-5 text-gray-400" />
+          Mi Historial
+        </button>
+        <button
+          type="button"
+          onClick={onOpenAbout}
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-[#f3f4f6]"
+        >
+          <Info className="h-5 w-5 text-gray-400" />
+          Acerca de
+        </button>
+      </div>
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Wallet + User section */}
+      <div className="border-t border-[#e5e7eb] pt-4 space-y-3">
+        <button
+          type="button"
+          onClick={onOpenWallet}
+          className="flex w-full items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 transition-colors hover:bg-amber-100"
+        >
+          <div className="flex items-center gap-2">
+            <Wallet className="h-4 w-4 text-amber-600" />
+            <span className="text-sm font-bold text-amber-700">Tokens</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-sm font-extrabold text-amber-700 tabular-nums">{tokenBalance.toFixed(2)}</span>
+            <Gem className="h-3.5 w-3.5 text-amber-500" />
+          </div>
+        </button>
+
+        {isLoggedIn ? (
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={onOpenProfile}
+              className="flex w-full items-center gap-3 rounded-xl border border-[#e5e7eb] bg-[#f9fafb] px-3 py-2.5 text-left transition-colors hover:bg-[#f3f4f6]"
+            >
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100">
+                <User className="h-4 w-4 text-blue-600" />
+              </div>
+              <span className="truncate text-xs font-semibold text-black">{loggedInEmail}</span>
+            </button>
+            <button
+              type="button"
+              onClick={onLogout}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 px-3 py-2 text-xs font-bold text-red-500 transition-colors hover:bg-red-50"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              Cerrar sesión
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={onOpenLogin}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#087ff5] px-3 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#0a6fd4]"
+          >
+            <LogIn className="h-4 w-4" />
+            Iniciar sesión
+          </button>
+        )}
+      </div>
+    </aside>
   );
 }
 
@@ -2758,8 +2908,39 @@ function App() {
 
   return (
     <div className="flex min-h-[100dvh] items-center justify-center bg-[#f4f5f7] overflow-hidden sm:py-4">
-      <div className="w-full h-[100dvh] sm:h-[min(100dvh-2rem,900px)] sm:max-w-[440px] bg-white sm:rounded-3xl shadow-xl p-4 sm:p-5 pb-20 flex flex-col mx-auto relative overflow-hidden">
-        {/* Page content area */}
+      <div className="w-full h-[100dvh] lg:h-[min(100dvh-2rem,920px)] lg:max-w-[1200px] bg-white sm:rounded-3xl shadow-xl flex mx-auto relative overflow-hidden">
+        {/* Desktop sidebar */}
+        <DesktopSidebar
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          isLoggedIn={isLoggedIn}
+          loggedInEmail={loggedInEmail}
+          tokenBalance={tokenBalance}
+          onOpenWallet={openWallet}
+          onOpenLogin={() => setDrawerPanel("login")}
+          onOpenProfile={() => setShowProfilePanel(true)}
+          onOpenAbout={() => {
+            if (aboutMessages.length === 0) {
+              setAboutMessages([
+                {
+                  role: "model",
+                  text: "¡Hola! Soy snapcleAIn, tu Inteligencia Artificial experta en limpieza. Mi funcion es simple: haces una foto a cualquier mancha y yo te doy el manual exacto, paso a paso, para eliminarla.\n\nFunciono con tokens: cada analisis o pregunta cuesta 1 token entero. Empiezas con 3 tokens de regalo. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual con tokens automaticos.\n\nPuedes preguntarme cualquier cosa sobre limpieza, manchas o productos. Estoy aqui para ayudarte.",
+                },
+              ]);
+            }
+            setDrawerPanel("about");
+          }}
+          onOpenHistory={() => setDrawerPanel("history")}
+          onLogout={() => {
+            setIsLoggedIn(false);
+            setLoggedInEmail("");
+            setTokenBalance(loadTokenBalance(null));
+            setShowProfilePanel(false);
+          }}
+        />
+
+        {/* Main content area */}
+        <div className="flex-1 flex flex-col min-h-0 p-4 sm:p-5 lg:p-6 pb-20 lg:pb-6">
         <div className="flex-1 flex flex-col min-h-0">
           {activeTab === "inicio" && (
             <InicioPage
@@ -2864,8 +3045,10 @@ function App() {
           )}
         </div>
 
-        {/* Bottom tab bar */}
-        <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
+        {/* Bottom tab bar - mobile only */}
+        <div className="lg:hidden">
+          <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
+        </div>
 
         {/* Hidden file inputs */}
         <input
@@ -2894,7 +3077,7 @@ function App() {
 
         {/* Error */}
         {error && (
-          <div className="absolute bottom-16 left-3 right-3 sm:bottom-20 sm:left-5 sm:right-5 z-40 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800 animate-fade-in">
+          <div className="absolute bottom-16 left-3 right-3 sm:bottom-20 lg:bottom-6 lg:left-6 lg:right-6 sm:left-5 sm:right-5 z-40 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800 animate-fade-in">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
             <p>{error}</p>
           </div>
@@ -2971,7 +3154,7 @@ function App() {
         {showProfilePanel && isLoggedIn && (
           <div className="absolute inset-0 z-[70] flex" onClick={() => setShowProfilePanel(false)}>
             <div
-              className="flex h-full w-[280px] max-w-[80%] flex-col bg-white p-5 animate-slide-in-right shadow-2xl ml-auto"
+              className="flex h-full w-[280px] max-w-[80%] flex-col bg-white p-4 sm:p-5 animate-slide-in-right shadow-2xl ml-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-5 flex items-center justify-between">
@@ -3030,13 +3213,14 @@ function App() {
         )}
 
         {showTokenToast && (
-          <div className="absolute inset-0 z-[80] -translate-x-1/2 left-1/2 top-3 animate-fade-in">
+          <div className="absolute left-1/2 top-3 z-[80] -translate-x-1/2 animate-fade-in">
             <div className="flex items-center gap-2 rounded-full bg-amber-500 px-4 py-2 shadow-lg">
               <AlertTriangle className="h-4 w-4 text-white" />
               <span className="text-xs font-bold text-white">Te has quedado sin tokens</span>
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
