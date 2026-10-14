@@ -681,11 +681,11 @@ function StripeCheckoutCard({ planName, planPrice, onClose }: StripeCheckoutCard
 
   return (
     <div
-      className="absolute inset-0 z-[80] flex items-center justify-center bg-black/50 px-6 animate-fade-in"
+      className="absolute inset-0 z-[80] flex items-center justify-center bg-black/50 px-4 sm:px-6 animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[320px] rounded-3xl bg-white p-6 shadow-2xl animate-pop-in"
+        className="w-full max-w-[320px] rounded-3xl bg-white p-5 sm:p-6 shadow-2xl animate-pop-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
@@ -811,11 +811,11 @@ type OutOfTokensAlertProps = {
 function OutOfTokensAlert({ adLoading, onClose, onWatchAd, onOpenPlans }: OutOfTokensAlertProps) {
   return (
     <div
-      className="absolute inset-0 z-[75] flex items-center justify-center bg-black/50 px-6 animate-fade-in"
+      className="absolute inset-0 z-[75] flex items-center justify-center bg-black/50 px-4 sm:px-6 animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[300px] rounded-3xl bg-white p-6 shadow-2xl animate-pop-in"
+        className="w-full max-w-[300px] rounded-3xl bg-white p-5 sm:p-6 shadow-2xl animate-pop-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex flex-col items-center text-center">
@@ -869,11 +869,11 @@ function WalletShopCard({ balance, adLoading, onClose, onWatchAd }: WalletShopCa
 
   return (
     <div
-      className="absolute inset-0 z-[70] flex items-center justify-center bg-black/40 px-6 animate-fade-in"
+      className="absolute inset-0 z-[70] flex items-center justify-center bg-black/40 px-4 sm:px-6 animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[320px] max-h-[90%] overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl animate-pop-in"
+        className="w-full max-w-[320px] max-h-[90%] overflow-y-auto rounded-3xl bg-white p-5 sm:p-6 shadow-2xl animate-pop-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
@@ -1106,7 +1106,7 @@ function LoginCard({ onClose, onSuccess, accounts, onRegister }: LoginCardProps)
 
   return (
     <div
-      className="absolute inset-0 z-[70] flex items-center justify-center bg-black/50 px-6 animate-fade-in"
+      className="absolute inset-0 z-[70] flex items-center justify-center bg-black/50 px-4 sm:px-6 animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -1135,7 +1135,7 @@ function LoginCard({ onClose, onSuccess, accounts, onRegister }: LoginCardProps)
             type="button"
             onClick={handleGoogle}
             disabled={socialPicker !== null}
-            className="flex h-13 w-full items-center justify-center gap-3 rounded-full border border-[#e5e7eb] bg-white py-3.5 text-sm font-semibold text-black transition-all hover:bg-[#f7f7f8] active:scale-[0.98] disabled:opacity-50"
+            className="flex h-13 sm:h-13 w-full items-center justify-center gap-3 rounded-full border border-[#e5e7eb] bg-white py-3.5 text-sm font-semibold text-black transition-all hover:bg-[#f7f7f8] active:scale-[0.98] disabled:opacity-50"
           >
             <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -1150,7 +1150,7 @@ function LoginCard({ onClose, onSuccess, accounts, onRegister }: LoginCardProps)
             type="button"
             onClick={handleApple}
             disabled={socialPicker !== null}
-            className="flex h-13 w-full items-center justify-center gap-3 rounded-full border border-[#e5e7eb] bg-white py-3.5 text-sm font-semibold text-black transition-all hover:bg-[#f7f7f8] active:scale-[0.98] disabled:opacity-50"
+            className="flex h-13 sm:h-13 w-full items-center justify-center gap-3 rounded-full border border-[#e5e7eb] bg-white py-3.5 text-sm font-semibold text-black transition-all hover:bg-[#f7f7f8] active:scale-[0.98] disabled:opacity-50"
           >
             <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
               <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C5.22 15.6 4.91 8.5 8.25 6.1c1.35-.96 2.5-.85 3.48-.5.9.32 1.5.5 2.5.5 1 0 1.6-.18 2.5-.5.98-.35 2.13-.46 3.48.5 3.34 2.4 3.03 9.5-1.16 14.18zM12 5.5c-.1-2.2 1.8-4 3.8-4.2.3 2.5-2.1 4.3-3.8 4.2z"/>
@@ -1162,7 +1162,7 @@ function LoginCard({ onClose, onSuccess, accounts, onRegister }: LoginCardProps)
             type="button"
             onClick={handlePhone}
             disabled={socialPicker !== null}
-            className="flex h-13 w-full items-center justify-center gap-3 rounded-full border border-[#e5e7eb] bg-white py-3.5 text-sm font-semibold text-black transition-all hover:bg-[#f7f7f8] active:scale-[0.98] disabled:opacity-50"
+            className="flex h-13 sm:h-13 w-full items-center justify-center gap-3 rounded-full border border-[#e5e7eb] bg-white py-3.5 text-sm font-semibold text-black transition-all hover:bg-[#f7f7f8] active:scale-[0.98] disabled:opacity-50"
           >
             <Phone className="h-5 w-5 shrink-0 text-gray-700" />
             Continuar con el teléfono
@@ -1377,7 +1377,7 @@ type AboutPanelProps = {
 
 function AboutPanel({ messages, input, loading, onInputChange, onSend, onClose }: AboutPanelProps) {
   return (
-    <div className="absolute inset-0 z-[60] flex flex-col bg-white p-6 animate-slide-in">
+    <div className="absolute inset-0 z-[60] flex flex-col bg-white p-4 sm:p-6 animate-slide-in">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Info className="h-5 w-5 text-[#087ff5]" />
@@ -1461,7 +1461,7 @@ type HistoryPanelProps = {
 
 function HistoryPanel({ history, onClose, onLoad, onDelete }: HistoryPanelProps) {
   return (
-    <div className="absolute inset-0 z-[60] flex flex-col bg-white p-6 animate-slide-in">
+    <div className="absolute inset-0 z-[60] flex flex-col bg-white p-4 sm:p-6 animate-slide-in">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Clock className="h-5 w-5 text-[#087ff5]" />
@@ -1546,7 +1546,7 @@ function DrawerMenu({ onClose, onSelect }: DrawerMenuProps) {
   return (
     <div className="absolute inset-0 z-[60] flex" onClick={onClose}>
       <div
-        className="flex h-full w-[280px] max-w-[80%] flex-col bg-white p-5 animate-slide-in shadow-2xl"
+        className="flex h-full w-[280px] max-w-[80%] flex-col bg-white p-4 sm:p-5 animate-slide-in shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex items-center justify-between">
@@ -1646,7 +1646,7 @@ type InicioPageProps = {
 function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProfile, onOpenLogin }: InicioPageProps) {
   return (
     <div
-      className="flex h-full flex-col items-center justify-between rounded-3xl bg-blue-600 p-6"
+      className="flex h-full flex-col items-center justify-between rounded-2xl sm:rounded-3xl bg-blue-600 p-4 sm:p-6"
       style={splashContainerStyle}
     >
       {/* Top: menu + brand (left) + login (right) */}
@@ -1679,9 +1679,9 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
 
       <div className="flex w-full flex-1 items-center justify-center">
         <h1
-          className="font-brand -translate-y-16 text-center leading-none"
+          className="font-brand -translate-y-8 sm:-translate-y-16 text-center leading-none"
           style={{
-            fontSize: "clamp(2rem, 7vw, 2.75rem)",
+            fontSize: "clamp(1.75rem, 8vw, 2.75rem)",
             fontWeight: 800,
             letterSpacing: "0.01em",
             color: "#000553",
@@ -1703,7 +1703,7 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
       </div>
 
       {/* Bottom: about button + CTA with elegant spacing */}
-      <div className="flex w-full flex-col items-center space-y-4 pb-3">
+      <div className="flex w-full flex-col items-center space-y-3 sm:space-y-4 pb-2 sm:pb-3">
         <button
           type="button"
           onClick={onOpenAbout}
@@ -1752,7 +1752,7 @@ function BibliotecaPage({ onOpenDrawer, onOpenWallet, tokenBalance }: Biblioteca
             </button>
 
           </div>
-          <h1 className="text-2xl font-bold tracking-[-0.5px] text-black">Biblioteca</h1>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-[-0.5px] text-black">Biblioteca</h1>
           <div className="flex items-center gap-2 mr-1">
             <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
           </div>
@@ -1875,7 +1875,7 @@ function ScanPage({
         </div>
       </div>
 
-      <div className="flex w-full flex-col items-center px-4 pt-8">
+      <div className="flex w-full flex-col items-center px-3 sm:px-4 pt-6 sm:pt-8">
         {/* Big scan button near top - always opens camera */}
         <button
           type="button"
@@ -1884,14 +1884,14 @@ function ScanPage({
             onOpenCamera();
           }}
           disabled={loading}
-          className="flex w-full max-w-[340px] flex-col items-center justify-center gap-1.5 rounded-2xl bg-blue-600 px-6 py-4 text-white shadow-lg transition-all active:scale-[0.98] hover:bg-[#0a6fd4] disabled:opacity-50"
+          className="flex w-full max-w-[360px] flex-col items-center justify-center gap-1.5 rounded-2xl bg-blue-600 px-4 sm:px-6 py-4 text-white shadow-lg transition-all active:scale-[0.98] hover:bg-[#0a6fd4] disabled:opacity-50"
         >
           {loading ? (
-            <Loader2 className="h-8 w-8 animate-spin" />
+            <Loader2 className="h-7 w-7 sm:h-8 sm:w-8 animate-spin" />
           ) : (
-            <Camera className="h-9 w-9" />
+            <Camera className="h-8 w-8 sm:h-9 sm:w-9" />
           )}
-          <span className="text-xl font-bold uppercase tracking-[0.08em] whitespace-nowrap">
+          <span className="text-lg sm:text-xl font-bold uppercase tracking-[0.08em] whitespace-nowrap">
             ESCANEAR MANCHA
           </span>
           <span className="text-[11px] font-medium text-white/80">
@@ -1901,7 +1901,7 @@ function ScanPage({
 
         {/* Photo preview appears below the button */}
         {hasImage && imagePreview ? (
-          <div className="flex w-full max-w-[340px] justify-center mt-5">
+          <div className="flex w-full max-w-[360px] justify-center mt-4 sm:mt-5">
           <div className="relative" style={{ width: '88px', height: '88px' }}>
             <img
               src={imagePreview}
@@ -1921,7 +1921,7 @@ function ScanPage({
           </div>
         ) : null}
 
-        <div className="w-full max-w-[340px] mt-10">
+        <div className="w-full max-w-[360px] mt-8 sm:mt-10">
           <label className="mb-1.5 block text-xs font-semibold text-black">
             Dinos qué mancha es para mayor precisión
           </label>
@@ -1937,7 +1937,7 @@ function ScanPage({
 
       {/* Bottom blue label - becomes the analyze button when photo is taken */}
       <div className="flex flex-1" />
-      <div className="w-full px-4 pb-6">
+      <div className="w-full px-3 sm:px-4 pb-5 sm:pb-6">
         <button
           type="button"
           onClick={() => {
@@ -1946,7 +1946,7 @@ function ScanPage({
             onRunAnalysis();
           }}
           disabled={!hasImage || loading}
-          className={`mx-auto flex max-w-[320px] w-full items-center justify-center gap-2 rounded-2xl px-6 py-4 text-center transition-all active:scale-[0.98] ${
+          className={`mx-auto flex max-w-[340px] w-full items-center justify-center gap-2 rounded-2xl px-6 py-4 text-center transition-all active:scale-[0.98] ${
             hasImage
               ? "bg-[#087ff5] hover:bg-[#0770d8] shadow-lg cursor-pointer"
               : "bg-[#087ff5] cursor-default"
@@ -2084,7 +2084,7 @@ function ResultPage({
   const warning = idx === -1 ? null : analysis.slice(idx).trim();
 
   return (
-    <section className="animate-results flex w-full flex-1 flex-col overflow-hidden px-2">
+    <section className="animate-results flex w-full flex-1 flex-col overflow-hidden px-1 sm:px-2">
       <div className="w-full flex justify-between items-center mb-3">
         <div className="flex items-center gap-2">
           <button
@@ -2097,13 +2097,13 @@ function ResultPage({
           </button>
 
         </div>
-        <h1 className="text-2xl font-bold tracking-[-0.5px] text-black">Resultado</h1>
+        <h1 className="text-xl sm:text-2xl font-bold tracking-[-0.5px] text-black">Resultado</h1>
         <div className="flex items-center gap-2 mr-1">
           <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
         </div>
       </div>
 
-      <div ref={chatScrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-6 pb-6 leading-relaxed">
+      <div ref={chatScrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-3 sm:px-6 pb-6 leading-relaxed">
         {main && <AnalysisText text={main} />}
 
         {warning && (
@@ -2252,22 +2252,22 @@ function BotiquinPage({ onOpenDrawer, onOpenWallet, onAskAI, tokenBalance }: Bot
             </button>
 
           </div>
-          <h1 className="text-2xl font-bold tracking-[-0.5px] text-black">Botiquín</h1>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-[-0.5px] text-black">Botiquín</h1>
           <div className="flex items-center gap-2 mr-1">
             <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
           </div>
         </div>
 
         <div className="flex flex-wrap gap-2.5 pb-1">
-          {([
+          {[
             { id: "todos" as const, label: "Todos" },
             ...PRODUCT_CATEGORIES,
-          ]).map((f) => (
+          ].map((f) => (
             <button
               key={f.id}
               type="button"
               onClick={() => setFilter(f.id)}
-              className={`flex h-11 items-center rounded-full px-5 text-sm font-bold uppercase tracking-wide transition-all active:scale-95 ${
+              className={`flex h-9 sm:h-11 items-center rounded-full px-3 sm:px-5 text-xs sm:text-sm font-bold uppercase tracking-wide transition-all active:scale-95 ${
                 filter === f.id
                   ? "bg-[#087ff5] text-white shadow-[0_2px_8px_rgba(8,127,245,0.3)]"
                   : "border border-[#e5e7eb] bg-white text-black hover:bg-[#f3f4f6]"
@@ -2279,7 +2279,7 @@ function BotiquinPage({ onOpenDrawer, onOpenWallet, onAskAI, tokenBalance }: Bot
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
         {filtered.map((product) => (
           <div
             key={product.id}
@@ -2344,8 +2344,8 @@ function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWa
   const [checkoutPlan, setCheckoutPlan] = useState<{ name: string; price: string } | null>(null);
 
   return (
-    <section className="flex w-full flex-1 flex-col overflow-y-auto">
-      <div className="w-full flex justify-between items-center mb-6">
+    <section className="flex w-full flex-1 flex-col overflow-y-auto px-1 sm:px-0">
+      <div className="w-full flex justify-between items-center mb-4 sm:mb-6">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -2357,7 +2357,7 @@ function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWa
           </button>
 
         </div>
-        <h1 className="text-2xl font-bold tracking-[-0.5px] text-black">Premium</h1>
+        <h1 className="text-xl sm:text-2xl font-bold tracking-[-0.5px] text-black">Premium</h1>
         <div className="flex items-center gap-2 mr-1">
           <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
         </div>
@@ -2482,7 +2482,7 @@ function TabBar({ activeTab, onTabChange }: TabBarProps) {
   };
 
   return (
-    <nav className="absolute bottom-4 left-4 z-50 flex w-[calc(100%-2rem)] items-center justify-around rounded-2xl border border-[#e5e7eb] bg-white px-2 py-2 shadow-lg">
+    <nav className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 z-50 flex items-center justify-around rounded-2xl border border-[#e5e7eb] bg-white px-2 py-2 shadow-lg">
       {sideTabs.map(renderTab)}
       <button
         key="escanear"
@@ -2757,8 +2757,8 @@ function App() {
   }, []);
 
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-[#f4f5f7] overflow-hidden py-4">
-      <div className="max-w-[390px] w-full max-h-[844px] h-[100dvh] bg-white rounded-3xl shadow-xl p-5 pb-20 flex flex-col mx-auto relative overflow-hidden">
+    <div className="flex min-h-[100dvh] items-center justify-center bg-[#f4f5f7] overflow-hidden sm:py-4">
+      <div className="w-full h-[100dvh] sm:h-[min(100dvh-2rem,900px)] sm:max-w-[440px] bg-white sm:rounded-3xl shadow-xl p-4 sm:p-5 pb-20 flex flex-col mx-auto relative overflow-hidden">
         {/* Page content area */}
         <div className="flex-1 flex flex-col min-h-0">
           {activeTab === "inicio" && (
@@ -2894,7 +2894,7 @@ function App() {
 
         {/* Error */}
         {error && (
-          <div className="absolute bottom-20 left-5 right-5 z-40 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800 animate-fade-in">
+          <div className="absolute bottom-16 left-3 right-3 sm:bottom-20 sm:left-5 sm:right-5 z-40 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800 animate-fade-in">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
             <p>{error}</p>
           </div>
@@ -3030,7 +3030,7 @@ function App() {
         )}
 
         {showTokenToast && (
-          <div className="absolute left-1/2 top-3 z-[80] -translate-x-1/2 animate-fade-in">
+          <div className="absolute inset-0 z-[80] -translate-x-1/2 left-1/2 top-3 animate-fade-in">
             <div className="flex items-center gap-2 rounded-full bg-amber-500 px-4 py-2 shadow-lg">
               <AlertTriangle className="h-4 w-4 text-white" />
               <span className="text-xs font-bold text-white">Te has quedado sin tokens</span>
