@@ -1,0 +1,3 @@
+[functions.gemini-proxy]
+verify_jwt = false
+entrypoint = "./functions/gemini-proxy/index.ts"
