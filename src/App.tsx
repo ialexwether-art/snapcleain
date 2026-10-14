@@ -1681,7 +1681,7 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         <img
           src="/logo_snapcleAIn_negativo_alta.jpg"
           alt="snapcleAIn"
-          className="max-h-[40%] max-w-[62%] object-contain -translate-y-4 lg:-translate-y-12 drop-shadow-2xl"
+          className="max-h-[55%] max-w-[80%] object-contain -translate-y-4 lg:-translate-y-12 mix-blend-lighten"
         />
       </div>
 
@@ -2475,7 +2475,7 @@ function DesktopSidebar({
         <img
           src="/logo_snapcleAIn_positivo.png"
           alt="snapcleAIn"
-          className="h-10 w-auto object-contain"
+          className="h-14 w-auto object-contain"
         />
       </div>
 
