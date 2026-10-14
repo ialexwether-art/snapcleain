@@ -1647,7 +1647,7 @@ type InicioPageProps = {
 function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProfile, onOpenLogin }: InicioPageProps) {
   return (
     <div
-      className="flex h-full flex-col items-center justify-between rounded-2xl bg-[#000053] p-4 lg:rounded-2xl lg:p-10"
+      className="flex h-full flex-col items-center justify-between rounded-2xl bg-[#000053] p-4 @lg:rounded-2xl @lg:p-10"
       style={splashContainerStyle}
     >
       {/* Top: menu + login (right) */}
@@ -1656,7 +1656,7 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
           <button
             type="button"
             onClick={onOpenDrawer}
-            className="flex h-11 w-11 items-center justify-center rounded-xl text-white transition-colors hover:bg-white/15 active:scale-90 lg:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-xl text-white transition-colors hover:bg-white/15 active:scale-90 @lg:hidden"
             aria-label="Abrir menú"
           >
             <Menu className="h-6 w-6" />
@@ -1682,7 +1682,7 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         <img
           src="/logo_snapcleAIn_negativo_alta.jpg"
           alt="snapcleAIn"
-          className="max-h-[62%] max-w-[88%] scale-[1.03] object-contain -translate-y-4 lg:-translate-y-12 mix-blend-lighten"
+          className="max-h-[62%] max-w-[88%] scale-[1.03] object-contain -translate-y-4 @lg:-translate-y-12 mix-blend-lighten"
         />
       </div>
 
@@ -1699,7 +1699,7 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         <button
           type="button"
           onClick={onEnter}
-          className="flex h-14 w-full max-w-[280px] lg:max-w-[320px] items-center justify-center rounded-full bg-white text-base lg:text-lg font-bold text-[#0a47a3] shadow-[0_8px_24px_rgba(0,0,0,0.2)] transition-transform duration-200 hover:scale-105 active:scale-95"
+          className="flex h-14 w-full max-w-[280px] @lg:max-w-[320px] items-center justify-center rounded-full bg-white text-base @lg:text-lg font-bold text-[#0a47a3] shadow-[0_8px_24px_rgba(0,0,0,0.2)] transition-transform duration-200 hover:scale-105 active:scale-95"
         >
           ENTRAR A LA APP
         </button>
@@ -1729,14 +1729,14 @@ function BibliotecaPage({ onOpenDrawer, onOpenWallet, tokenBalance }: Biblioteca
             <button
               type="button"
               onClick={onOpenDrawer}
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 lg:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 @lg:hidden"
               aria-label="Abrir menú"
             >
               <Menu className="h-5 w-5" />
             </button>
 
           </div>
-          <h1 className="text-xl lg:text-3xl font-bold tracking-[-0.5px] text-black">Biblioteca</h1>
+          <h1 className="text-xl @lg:text-3xl font-bold tracking-[-0.5px] text-black">Biblioteca</h1>
           <div className="flex items-center gap-2 mr-1">
             <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
           </div>
@@ -1748,7 +1748,7 @@ function BibliotecaPage({ onOpenDrawer, onOpenWallet, tokenBalance }: Biblioteca
 
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5 lg:gap-3">
+      <div className="grid grid-cols-1 @lg:grid-cols-2 gap-2.5 @lg:gap-3">
         {filtered.map((entry) => (
           <div
             key={entry.id}
@@ -1834,18 +1834,15 @@ function ScanPage({
   return (
     <section className="flex w-full flex-1 flex-col overflow-hidden">
       {/* Top bar: menu + wallet/login */}
-      <div className="flex w-full items-center justify-between pt-1 pb-3">
+      <div className="flex w-full items-center justify-between @lg:justify-end pt-1 pb-3">
         <button
           type="button"
           onClick={onOpenDrawer}
-          className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 lg:hidden"
+          className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 @lg:hidden"
           aria-label="Abrir menú"
         >
           <Menu className="h-5 w-5" />
         </button>
-        <div className="hidden lg:flex items-center gap-2">
-          <h1 className="text-xl lg:text-2xl font-bold tracking-[-0.5px] text-black">Escanear</h1>
-        </div>
         <div className="flex items-center gap-2">
           <WalletBadge balance={tokenBalance} onClick={onOpenWallet} compact />
           <button
@@ -1871,7 +1868,7 @@ function ScanPage({
             onOpenCamera();
           }}
           disabled={loading}
-          className="flex w-full max-w-[360px] lg:max-w-[440px] flex-col items-center justify-center gap-1.5 rounded-2xl bg-blue-600 px-6 py-4 text-white shadow-lg transition-all active:scale-[0.98] hover:bg-[#0a6fd4] disabled:opacity-50"
+          className="flex w-full max-w-[360px] @lg:max-w-[440px] flex-col items-center justify-center gap-1.5 rounded-2xl bg-blue-600 px-6 py-4 text-white shadow-lg transition-all active:scale-[0.98] hover:bg-[#0a6fd4] disabled:opacity-50"
         >
           {loading ? (
             <Loader2 className="h-7 w-7 animate-spin" />
@@ -1908,7 +1905,7 @@ function ScanPage({
           </div>
         ) : null}
 
-        <div className="w-full max-w-[360px] lg:max-w-[440px] mt-10">
+        <div className="w-full max-w-[360px] @lg:max-w-[440px] mt-10">
           <label className="mb-1.5 block text-xs font-semibold text-black">
             Dinos qué mancha es para mayor precisión
           </label>
@@ -2077,20 +2074,20 @@ function ResultPage({
           <button
             type="button"
             onClick={onOpenDrawer}
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 lg:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 @lg:hidden"
             aria-label="Abrir menú"
           >
             <Menu className="h-5 w-5" />
           </button>
 
         </div>
-        <h1 className="text-xl lg:text-3xl font-bold tracking-[-0.5px] text-black">Resultado</h1>
+        <h1 className="text-xl @lg:text-3xl font-bold tracking-[-0.5px] text-black">Resultado</h1>
         <div className="flex items-center gap-2 mr-1">
           <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
         </div>
       </div>
 
-      <div ref={chatScrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-6 lg:px-8 pb-6 leading-relaxed">
+      <div ref={chatScrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-6 @lg:px-8 pb-6 leading-relaxed">
         {main && <AnalysisText text={main} />}
 
         {warning && (
@@ -2232,14 +2229,14 @@ function BotiquinPage({ onOpenDrawer, onOpenWallet, onAskAI, tokenBalance }: Bot
             <button
               type="button"
               onClick={onOpenDrawer}
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 lg:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 @lg:hidden"
               aria-label="Abrir menú"
             >
               <Menu className="h-5 w-5" />
             </button>
 
           </div>
-          <h1 className="text-xl lg:text-3xl font-bold tracking-[-0.5px] text-black">Botiquín</h1>
+          <h1 className="text-xl @lg:text-3xl font-bold tracking-[-0.5px] text-black">Botiquín</h1>
           <div className="flex items-center gap-2 mr-1">
             <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
           </div>
@@ -2266,7 +2263,7 @@ function BotiquinPage({ onOpenDrawer, onOpenWallet, onAskAI, tokenBalance }: Bot
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-3">
+      <div className="grid grid-cols-2 @lg:grid-cols-4 gap-2.5 @lg:gap-3">
         {filtered.map((product) => (
           <div
             key={product.id}
@@ -2332,25 +2329,25 @@ function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWa
 
   return (
     <section className="flex w-full flex-1 flex-col overflow-y-auto">
-      <div className="w-full flex justify-between items-center mb-6">
+      <div className="w-full flex justify-between items-center mb-10">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={onOpenDrawer}
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 lg:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-black transition-colors hover:bg-[#f3f4f6] active:scale-90 @lg:hidden"
             aria-label="Abrir menú"
           >
             <Menu className="h-5 w-5" />
           </button>
 
         </div>
-        <h1 className="text-xl lg:text-3xl font-bold tracking-[-0.5px] text-black">Premium</h1>
+        <h1 className="text-xl @lg:text-3xl font-bold tracking-[-0.5px] text-black">Planes</h1>
         <div className="flex items-center gap-2 mr-1">
           <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 @lg:grid-cols-3 gap-3">
         {SUBSCRIPTION_PLANS.map((plan) => (
           <div
             key={plan.name}
@@ -2470,11 +2467,11 @@ function DesktopSidebar({
     { id: "escanear", label: "Escanear", icon: <Camera className="h-5 w-5" /> },
     { id: "biblioteca", label: "Biblioteca", icon: <BookOpen className="h-5 w-5" /> },
     { id: "botiquin", label: "Botiquín", icon: <Package className="h-5 w-5" /> },
-    { id: "premium", label: "Premium", icon: <Crown className="h-5 w-5" /> },
+    { id: "premium", label: "Planes", icon: <Crown className="h-5 w-5" /> },
   ];
 
   return (
-    <aside className={`${mobilePreview ? "hidden" : "hidden lg:flex"} w-64 shrink-0 flex-col border-r border-[#e5e7eb] bg-white p-4`}> 
+    <aside className={`hidden @lg:flex w-64 shrink-0 flex-col border-r border-[#e5e7eb] bg-white p-4`}> 
       {/* Logo */}
       <div className="flex items-center px-2 py-3 mb-4">
         <img
@@ -2609,7 +2606,7 @@ function TabBar({ activeTab, onTabChange }: TabBarProps) {
   ];
   const rightTabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: "botiquin", label: "Botiquín", icon: <Package className="h-5 w-5" /> },
-    { id: "premium", label: "Premium", icon: <Crown className="h-5 w-5" /> },
+    { id: "premium", label: "Planes", icon: <Crown className="h-5 w-5" /> },
   ];
 
   const renderTab = (tab: { id: Tab; label: string; icon: React.ReactNode }) => {
@@ -2909,7 +2906,7 @@ function App() {
 
   return (
     <div className="flex min-h-[100dvh] items-center justify-center bg-[#f4f5f7] overflow-hidden py-4">
-      <div className={`${mobilePreview ? "max-w-[390px] w-full max-h-[844px] h-[100dvh] p-5 pb-20 flex-col" : "max-w-[390px] w-full max-h-[844px] h-[100dvh] p-5 pb-20 lg:max-w-[1200px] lg:max-h-none lg:h-[min(100dvh-2rem,920px)] lg:p-6 lg:pb-6 lg:flex-row"} bg-white rounded-3xl shadow-xl flex mx-auto relative overflow-hidden`}>
+      <div className={`${mobilePreview ? "max-w-[390px] w-full max-h-[844px] h-[100dvh] p-5 pb-20 flex-col" : "max-w-[390px] w-full max-h-[844px] h-[100dvh] p-5 pb-20 lg:max-w-[1200px] lg:max-h-none lg:h-[min(100dvh-2rem,920px)] lg:p-6 lg:pb-6 lg:flex-row"} bg-white rounded-3xl shadow-xl flex mx-auto relative overflow-hidden @container`}>
         {/* Desktop sidebar */}
         <DesktopSidebar
           activeTab={activeTab}
@@ -3048,7 +3045,7 @@ function App() {
         </div>
 
         {/* Bottom tab bar - mobile only */}
-        <div className={mobilePreview ? "block" : "lg:hidden"}>
+        <div className="@lg:hidden">
           <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
 
