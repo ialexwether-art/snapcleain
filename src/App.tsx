@@ -32,6 +32,7 @@ import {
   Sparkles,
   Star,
   Store,
+  Smartphone,
   Trash2,
   User,
   Wallet,
@@ -1681,7 +1682,7 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         <img
           src="/logo_snapcleAIn_negativo_alta.jpg"
           alt="snapcleAIn"
-          className="max-h-[55%] max-w-[80%] object-contain -translate-y-4 lg:-translate-y-12 mix-blend-lighten"
+          className="max-h-[62%] max-w-[88%] scale-[1.03] object-contain -translate-y-4 lg:-translate-y-12 mix-blend-lighten"
         />
       </div>
 
@@ -2445,6 +2446,8 @@ type DesktopSidebarProps = {
   onOpenAbout: () => void;
   onOpenHistory: () => void;
   onLogout: () => void;
+  mobilePreview: boolean;
+  onToggleMobilePreview: () => void;
 };
 
 function DesktopSidebar({
@@ -2459,6 +2462,8 @@ function DesktopSidebar({
   onOpenAbout,
   onOpenHistory,
   onLogout,
+  mobilePreview,
+  onToggleMobilePreview,
 }: DesktopSidebarProps) {
   const navItems: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: "inicio", label: "Inicio", icon: <Home className="h-5 w-5" /> },
@@ -2469,13 +2474,13 @@ function DesktopSidebar({
   ];
 
   return (
-    <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-[#e5e7eb] bg-white p-4">
+    <aside className={`${mobilePreview ? "hidden" : "hidden lg:flex"} w-64 shrink-0 flex-col border-r border-[#e5e7eb] bg-white p-4`}> 
       {/* Logo */}
       <div className="flex items-center px-2 py-3 mb-4">
         <img
           src="/logo_snapcleAIn_positivo.png"
           alt="snapcleAIn"
-          className="h-14 w-auto object-contain"
+          className="h-16 w-auto object-contain"
         />
       </div>
 
@@ -2522,6 +2527,17 @@ function DesktopSidebar({
           Acerca de
         </button>
       </div>
+
+      <button
+        type="button"
+        onClick={onToggleMobilePreview}
+        className={`mt-3 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
+          mobilePreview ? "bg-blue-50 text-[#087ff5]" : "text-gray-600 hover:bg-[#f3f4f6]"
+        }`}
+      >
+        <Smartphone className="h-5 w-5" />
+        Vista móvil
+      </button>
 
       {/* Spacer */}
       <div className="flex-1" />
@@ -2668,6 +2684,7 @@ function App() {
   const [loggedInEmail, setLoggedInEmail] = useState("");
   const [showProfilePanel, setShowProfilePanel] = useState(false);
   const [registeredAccounts, setRegisteredAccounts] = useState<Account[]>(() => loadAccounts());
+  const [mobilePreview, setMobilePreview] = useState(false);
 
   useEffect(() => {
     if (tokenBalance < 1) {
@@ -2892,7 +2909,7 @@ function App() {
 
   return (
     <div className="flex min-h-[100dvh] items-center justify-center bg-[#f4f5f7] overflow-hidden py-4">
-      <div className="max-w-[390px] w-full max-h-[844px] h-[100dvh] bg-white rounded-3xl shadow-xl p-5 pb-20 flex flex-col mx-auto relative overflow-hidden lg:max-w-[1200px] lg:max-h-none lg:h-[min(100dvh-2rem,920px)] lg:p-6 lg:pb-6 lg:flex-row">
+      <div className={`${mobilePreview ? "max-w-[390px] w-full max-h-[844px] h-[100dvh] p-5 pb-20 flex-col" : "max-w-[390px] w-full max-h-[844px] h-[100dvh] p-5 pb-20 lg:max-w-[1200px] lg:max-h-none lg:h-[min(100dvh-2rem,920px)] lg:p-6 lg:pb-6 lg:flex-row"} bg-white rounded-3xl shadow-xl flex mx-auto relative overflow-hidden`}>
         {/* Desktop sidebar */}
         <DesktopSidebar
           activeTab={activeTab}
@@ -2921,6 +2938,8 @@ function App() {
             setTokenBalance(loadTokenBalance(null));
             setShowProfilePanel(false);
           }}
+          mobilePreview={mobilePreview}
+          onToggleMobilePreview={() => setMobilePreview((previous) => !previous)}
         />
 
         {/* Main content area */}
@@ -3029,9 +3048,20 @@ function App() {
         </div>
 
         {/* Bottom tab bar - mobile only */}
-        <div className="lg:hidden">
+        <div className={mobilePreview ? "block" : "lg:hidden"}>
           <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
+
+        {mobilePreview && (
+          <button
+            type="button"
+            onClick={() => setMobilePreview(false)}
+            className="absolute right-3 top-3 z-50 flex items-center gap-1.5 rounded-full bg-white px-3 py-2 text-xs font-bold text-black shadow-lg"
+          >
+            <Smartphone className="h-4 w-4 text-[#087ff5]" />
+            Volver a ordenador
+          </button>
+        )}
 
         {/* Hidden file inputs */}
         <input
