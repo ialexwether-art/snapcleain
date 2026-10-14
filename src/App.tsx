@@ -1649,9 +1649,14 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
       className="flex h-full flex-col items-center justify-between rounded-2xl bg-blue-600 p-4 lg:rounded-2xl lg:p-10"
       style={splashContainerStyle}
     >
-      {/* Top: menu + brand (left) + login (right) */}
+      {/* Top: menu + logo (left) + login (right) */}
       <div className="flex w-full items-center justify-between pt-2">
         <div className="flex items-center gap-2">
+          <img
+            src="/logo_snapcleAIn_positivo.png"
+            alt="snapcleAIn"
+            className="h-8 w-auto object-contain"
+          />
           <button
             type="button"
             onClick={onOpenDrawer}
@@ -1678,28 +1683,11 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
       </div>
 
       <div className="flex w-full flex-1 items-center justify-center">
-        <h1
-          className="font-brand -translate-y-8 lg:-translate-y-24 text-center leading-none"
-          style={{
-            fontSize: "clamp(1.75rem, 8vw, 3.5rem)",
-            fontWeight: 800,
-            letterSpacing: "0.01em",
-            color: "#000553",
-          }}
-        >
-          snapcle
-          <span
-            style={{
-              background: "linear-gradient(180deg, #263c91 0%, #05a6e8 100%)",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              color: "transparent",
-            }}
-          >
-            AI
-          </span>
-          n
-        </h1>
+        <img
+          src="/snapcleain-hand-hd.webp"
+          alt="snapcleAIn"
+          className="max-h-[60%] max-w-[80%] object-contain -translate-y-4 lg:-translate-y-12 drop-shadow-2xl"
+        />
       </div>
 
       {/* Bottom: about button + CTA with elegant spacing */}
