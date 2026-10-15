@@ -9,7 +9,7 @@ import {
   Coffee, Wine, Shirt, Home as HomeIcon, Car, Search, Crown,
   Zap, Heart, Star, ArrowRight, CircleCheck, Clock, TrendingUp,
   MessageCircle, Send, Plus, RefreshCw, HelpCircle,
-  Smartphone, Monitor,
+  Smartphone, Monitor, Menu,
 } from 'lucide-react';
 
 /* ============================================================
@@ -139,12 +139,19 @@ function useGoogleAuth() {
    TOKEN HOOK
    ============================================================ */
 
+const FREE_SCAN_LIMIT = 2;
+
 function useTokens(user: User | null) {
-  const [tokens, setTokens] = useState<number>(3);
+  const [tokens, setTokens] = useState<number>(FREE_SCAN_LIMIT);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) { setTokens(3); setLoading(false); return; }
+    if (!user) {
+      const used = parseInt(localStorage.getItem('snapcleain_free_scans') || '0', 10);
+      setTokens(Math.max(FREE_SCAN_LIMIT - used, 0));
+      setLoading(false);
+      return;
+    }
 
     let cancelled = false;
 
@@ -165,7 +172,15 @@ function useTokens(user: User | null) {
   }, [user]);
 
   const consumeToken = useCallback(async (): Promise<boolean> => {
-    if (!user) return true;
+    if (!user) {
+      const used = parseInt(localStorage.getItem('snapcleain_free_scans') || '0', 10);
+      const remaining = Math.max(FREE_SCAN_LIMIT - used, 0);
+      if (remaining <= 0) return false;
+      localStorage.setItem('snapcleain_free_scans', String(used + 1));
+      setTokens(remaining - 1);
+      return true;
+    }
+
     if (tokens <= 0) return false;
 
     const newBalance = tokens - 1;
@@ -256,6 +271,19 @@ export default function App() {
     setView('scanner');
   }, []);
 
+  const [scanBlocked, setScanBlocked] = useState(false);
+
+  const handleScanAttempt = useCallback(async () => {
+    if (!user && !subscriptionActive) {
+      const used = parseInt(localStorage.getItem('snapcleain_free_scans') || '0', 10);
+      if (used >= FREE_SCAN_LIMIT) {
+        setScanBlocked(true);
+        return;
+      }
+    }
+    setView('scanner');
+  }, [user, subscriptionActive]);
+
   const handlePricingSelect = async (product: StripeProduct) => {
     if (!user) { setShowAuthModal(true); return; }
     try {
@@ -277,14 +305,15 @@ export default function App() {
           subscriptionActive={subscriptionActive}
           onSignOut={signOut}
           onSignIn={() => setShowAuthModal(true)}
+          mobileMode={mobileMode}
         />
 
-        <main className="pb-16 md:pb-0">
+        <main className={mobileMode ? 'pb-6' : 'pb-16 md:pb-0'}>
           {view === 'home' && (
             <HomeView
               user={user}
               tokens={tokens}
-              onScan={handleStartScan}
+              onScan={handleScanAttempt}
               setView={setView}
             />
           )}
@@ -315,6 +344,13 @@ export default function App() {
           />
         )}
 
+        {scanBlocked && !showAuthModal && (
+          <ScanLimitModal
+            onClose={() => setScanBlocked(false)}
+            onLogin={() => { setScanBlocked(false); setShowAuthModal(true); }}
+          />
+        )}
+
         <Footer />
       </div>
 
@@ -334,7 +370,7 @@ export default function App() {
    ============================================================ */
 
 function Header({
-  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn,
+  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn, mobileMode,
 }: {
   user: User | null;
   view: View;
@@ -343,7 +379,9 @@ function Header({
   subscriptionActive: boolean;
   onSignOut: () => void;
   onSignIn: () => void;
+  mobileMode: boolean;
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const navItems: { id: View; label: string; icon: any }[] = [
     { id: 'home', label: 'Inicio', icon: HomeIcon },
     { id: 'scanner', label: 'Escáner', icon: Scan },
@@ -357,10 +395,10 @@ function Header({
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-ink-200/60">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <button onClick={() => setView('home')} className="flex items-center group">
-            <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-9 w-auto group-hover:scale-105 transition-transform" />
+            <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-12 w-auto group-hover:scale-105 transition-transform" />
           </button>
 
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className={`${mobileMode ? 'hidden' : 'hidden md:flex'} items-center gap-1`}>
             {navItems.map((item) => (
               <button
                 key={item.id}
@@ -379,14 +417,14 @@ function Header({
 
           <div className="flex items-center gap-2">
             {user && !subscriptionActive && (
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-50 border border-accent-200">
+              <div className={`${mobileMode ? 'flex' : 'hidden sm:flex'} items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-50 border border-accent-200`}>
                 <Zap className="w-3.5 h-3.5 text-accent-600" />
                 <span className="text-sm font-semibold text-accent-700">{tokens}</span>
                 <span className="text-xs text-accent-600">tokens</span>
               </div>
             )}
             {user && subscriptionActive && (
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200">
+              <div className={`${mobileMode ? 'flex' : 'hidden sm:flex'} items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200`}>
                 <Crown className="w-3.5 h-3.5 text-brand-600" />
                 <span className="text-sm font-semibold text-brand-700">Premium</span>
               </div>
@@ -397,22 +435,64 @@ function Header({
                 className="flex items-center gap-1.5 text-sm text-ink-600 hover:text-ink-900 transition-colors px-3 py-2 rounded-lg hover:bg-ink-100"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="hidden sm:block">Salir</span>
+                <span className={`${mobileMode ? 'hidden' : 'hidden sm:block'}`}>Salir</span>
               </button>
             ) : (
               <button
                 onClick={onSignIn}
-                className="text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors px-4 py-2 rounded-lg shadow-sm"
+                className="text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors px-4 py-2 rounded-lg shadow-sm whitespace-nowrap"
               >
-                Entrar
+                Iniciar sesión
+              </button>
+            )}
+            {mobileMode && (
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="w-10 h-10 rounded-lg flex items-center justify-center text-ink-700 hover:bg-ink-100 transition-colors"
+              >
+                <Menu className="w-6 h-6" />
               </button>
             )}
           </div>
         </div>
       </header>
 
-      {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur-md border-t border-ink-200/60 px-2 h-14 flex items-center justify-around">
+      {/* Hamburger menu for mobile mode */}
+      {mobileMode && menuOpen && (
+        <div className="fixed inset-0 z-[60]" onClick={() => setMenuOpen(false)}>
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm animate-fade-in" />
+          <div
+            className="absolute top-0 right-0 w-64 h-full bg-white shadow-2xl p-6 animate-slide-down"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <span className="font-bold text-ink-900">Menú</span>
+              <button onClick={() => setMenuOpen(false)} className="text-ink-400 hover:text-ink-600 p-1 rounded-lg hover:bg-ink-100">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <nav className="flex flex-col gap-1">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => { setView(item.id); setMenuOpen(false); }}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                    view === item.id
+                      ? 'bg-brand-50 text-brand-700'
+                      : 'text-ink-600 hover:text-ink-900 hover:bg-ink-100'
+                  }`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
+
+      {/* Bottom nav for real mobile (not mobileMode) */}
+      <nav className={`${mobileMode ? 'hidden' : 'flex md:hidden'} fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur-md border-t border-ink-200/60 px-2 h-14 items-center justify-around`}>
         {navItems.map((item) => (
           <button
             key={item.id}
@@ -605,10 +685,14 @@ function ScannerView({
     setAnalyzing(true);
     setError('');
 
-    if (user && !subscriptionActive) {
+    if (!subscriptionActive) {
       const ok = await consumeToken();
       if (!ok) {
-        setError('No te quedan escaneos. Suscríbete a un plan para escaneos ilimitados.');
+ if (!user) {
+          setError('Has usado tus 2 escaneos gratis. Inicia sesión para seguir escaneando.');
+ } else {
+          setError('No te quedan escaneos. Suscríbete a un plan para escaneos ilimitados.');
+ }
         setAnalyzing(false);
         return;
       }
@@ -642,12 +726,12 @@ function ScannerView({
           <p className="text-ink-500">Sube una foto y recibe tu solución personalizada</p>
         </div>
 
-        {user && !subscriptionActive && (
+        {!subscriptionActive && (
           <div className="mb-6 flex items-center justify-center gap-2 text-sm">
             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${tokens > 0 ? 'bg-accent-50 border border-accent-200 text-accent-700' : 'bg-error-500/10 border border-error-500/30 text-error-600'}`}>
               <Zap className="w-3.5 h-3.5" />
               <span className="font-semibold">{tokens}</span>
-              <span className="text-xs">escaneos restantes</span>
+              <span className="text-xs">{user ? 'escaneos restantes' : 'escaneos gratis restantes'}</span>
             </div>
           </div>
         )}
@@ -1343,7 +1427,7 @@ function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center">
-            <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-8 w-auto" />
+            <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-10 w-auto" />
           </div>
           <p className="text-sm text-ink-400">
             IA experta en manchas · Hecho con Gemini 3.6
@@ -1355,6 +1439,48 @@ function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+/* ============================================================
+   SCAN LIMIT MODAL
+   ============================================================ */
+
+function ScanLimitModal({ onClose, onLogin }: { onClose: () => void; onLogin: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in" onClick={onClose}>
+      <div
+        className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 relative animate-zoom-in text-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-ink-400 hover:text-ink-600 transition-colors p-1 rounded-lg hover:bg-ink-100"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mx-auto mb-4">
+          <Zap className="w-7 h-7 text-brand-600" />
+        </div>
+        <h2 className="text-xl font-bold text-ink-900 mb-2">Has usado tus 2 escaneos gratis</h2>
+        <p className="text-sm text-ink-500 mb-6 leading-relaxed">
+          Inicia sesión para seguir escaneando manchas con la IA, o suscríbete a un plan para escaneos ilimitados.
+        </p>
+        <button
+          onClick={onLogin}
+          className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-all shadow-sm mb-3"
+        >
+          Iniciar sesión
+        </button>
+        <button
+          onClick={onClose}
+          className="w-full py-3 rounded-xl border border-ink-200 text-ink-600 font-medium text-sm hover:bg-ink-50 transition-colors"
+        >
+          Ahora no
+        </button>
+      </div>
+    </div>
   );
 }
 
