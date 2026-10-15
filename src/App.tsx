@@ -9,7 +9,7 @@ import {
   Coffee, Wine, Shirt, Home as HomeIcon, Car, Search, Crown,
   Zap, Heart, Star, ArrowRight, CircleCheck, Clock, TrendingUp,
   MessageCircle, Send, Plus, RefreshCw, HelpCircle,
-  Smartphone, Monitor, Menu,
+  Smartphone, Monitor,
 } from 'lucide-react';
 
 /* ============================================================
@@ -245,7 +245,6 @@ export default function App() {
   const [subscriptionActive, setSubscriptionActive] = useState(false);
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
   const [checkoutMsg, setCheckoutMsg] = useState('');
-  const [mobileMode, setMobileMode] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('snapcleain_history');
@@ -295,8 +294,8 @@ export default function App() {
   };
 
   return (
-    <div className={mobileMode ? 'min-h-screen bg-gray-300 flex justify-center' : 'min-h-screen bg-ink-50'}>
-      <div className={mobileMode ? 'w-full max-w-[430px] bg-ink-50 min-h-screen shadow-2xl overflow-x-hidden [transform:translateZ(0)]' : 'w-full'}>
+    <div className="min-h-screen bg-ink-50">
+      <div className="w-full">
         <Header
           user={user}
           view={view}
@@ -305,10 +304,9 @@ export default function App() {
           subscriptionActive={subscriptionActive}
           onSignOut={signOut}
           onSignIn={() => setShowAuthModal(true)}
-          mobileMode={mobileMode}
         />
 
-        <main className={mobileMode ? 'pb-6' : 'pb-16 md:pb-0'}>
+        <main className="pb-16 md:pb-0">
           {view === 'home' && (
             <HomeView
               user={user}
@@ -353,14 +351,6 @@ export default function App() {
 
         <Footer />
       </div>
-
-      <button
-        onClick={() => setMobileMode(!mobileMode)}
-        className="fixed bottom-6 right-6 z-[100] w-12 h-12 rounded-full bg-ink-900 text-white shadow-2xl hover:bg-ink-800 flex items-center justify-center transition-all hover:scale-110"
-        title={mobileMode ? 'Ver en escritorio' : 'Ver en móvil'}
-      >
-        {mobileMode ? <Monitor className="w-5 h-5" /> : <Smartphone className="w-5 h-5" />}
-      </button>
     </div>
   );
 }
@@ -370,7 +360,7 @@ export default function App() {
    ============================================================ */
 
 function Header({
-  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn, mobileMode,
+  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn,
 }: {
   user: User | null;
   view: View;
@@ -379,9 +369,7 @@ function Header({
   subscriptionActive: boolean;
   onSignOut: () => void;
   onSignIn: () => void;
-  mobileMode: boolean;
 }) {
-  const [menuOpen, setMenuOpen] = useState(false);
   const navItems: { id: View; label: string; icon: any }[] = [
     { id: 'home', label: 'Inicio', icon: HomeIcon },
     { id: 'scanner', label: 'Escáner', icon: Scan },
@@ -398,7 +386,7 @@ function Header({
             <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-12 w-auto group-hover:scale-105 transition-transform" />
           </button>
 
-          <nav className={`${mobileMode ? 'hidden' : 'hidden md:flex'} items-center gap-1`}>
+          <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
               <button
                 key={item.id}
@@ -417,14 +405,14 @@ function Header({
 
           <div className="flex items-center gap-2">
             {user && !subscriptionActive && (
-              <div className={`${mobileMode ? 'flex' : 'hidden sm:flex'} items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-50 border border-accent-200`}>
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-50 border border-accent-200">
                 <Zap className="w-3.5 h-3.5 text-accent-600" />
                 <span className="text-sm font-semibold text-accent-700">{tokens}</span>
                 <span className="text-xs text-accent-600">tokens</span>
               </div>
             )}
             {user && subscriptionActive && (
-              <div className={`${mobileMode ? 'flex' : 'hidden sm:flex'} items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200`}>
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200">
                 <Crown className="w-3.5 h-3.5 text-brand-600" />
                 <span className="text-sm font-semibold text-brand-700">Premium</span>
               </div>
@@ -435,7 +423,7 @@ function Header({
                 className="flex items-center gap-1.5 text-sm text-ink-600 hover:text-ink-900 transition-colors px-3 py-2 rounded-lg hover:bg-ink-100"
               >
                 <LogOut className="w-4 h-4" />
-                <span className={`${mobileMode ? 'hidden' : 'hidden sm:block'}`}>Salir</span>
+                <span className="hidden sm:block">Salir</span>
               </button>
             ) : (
               <button
@@ -445,54 +433,12 @@ function Header({
                 Iniciar sesión
               </button>
             )}
-            {mobileMode && (
-              <button
-                onClick={() => setMenuOpen(!menuOpen)}
-                className="w-10 h-10 rounded-lg flex items-center justify-center text-ink-700 hover:bg-ink-100 transition-colors"
-              >
-                <Menu className="w-6 h-6" />
-              </button>
-            )}
           </div>
         </div>
       </header>
 
-      {/* Hamburger menu for mobile mode */}
-      {mobileMode && menuOpen && (
-        <div className="fixed inset-0 z-[60]" onClick={() => setMenuOpen(false)}>
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm animate-fade-in" />
-          <div
-            className="absolute top-0 right-0 w-64 h-full bg-white shadow-2xl p-6 animate-slide-down"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <span className="font-bold text-ink-900">Menú</span>
-              <button onClick={() => setMenuOpen(false)} className="text-ink-400 hover:text-ink-600 p-1 rounded-lg hover:bg-ink-100">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <nav className="flex flex-col gap-1">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => { setView(item.id); setMenuOpen(false); }}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                    view === item.id
-                      ? 'bg-brand-50 text-brand-700'
-                      : 'text-ink-600 hover:text-ink-900 hover:bg-ink-100'
-                  }`}
-                >
-                  <item.icon className="w-5 h-5" />
-                  {item.label}
-                </button>
-              ))}
-            </nav>
-          </div>
-        </div>
-      )}
-
-      {/* Bottom nav for real mobile (not mobileMode) */}
-      <nav className={`${mobileMode ? 'hidden' : 'flex md:hidden'} fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur-md border-t border-ink-200/60 px-2 h-14 items-center justify-around`}>
+      {/* Mobile bottom nav */}
+      <nav className="flex md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur-md border-t border-ink-200/60 px-2 h-14 items-center justify-around">
         {navItems.map((item) => (
           <button
             key={item.id}
