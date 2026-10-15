@@ -617,6 +617,8 @@ const SUBSCRIPTION_PLANS = [
   {
     name: "Gratuito",
     price: "0",
+    priceId: "",
+    mode: "subscription" as const,
     icon: <Sparkles className="h-5 w-5 text-blue-500" />,
     features: [
       "3 tokens iniciales de regalo",
@@ -629,6 +631,8 @@ const SUBSCRIPTION_PLANS = [
   {
     name: "Aficionado",
     price: "3,99",
+    priceId: "price_...",
+    mode: "subscription" as const,
     icon: <Star className="h-5 w-5 text-blue-500" />,
     features: [
       "5 tokens de recarga automáticos cada semana",
@@ -640,6 +644,8 @@ const SUBSCRIPTION_PLANS = [
   {
     name: "Limpieza Total",
     price: "7,99",
+    priceId: "price_...",
+    mode: "subscription" as const,
     icon: <Crown className="h-5 w-5 text-amber-500" />,
     features: [
       "Tokens infinitos e ilimitados",
@@ -657,28 +663,53 @@ const SUBSCRIPTION_PLANS = [
 type StripeCheckoutCardProps = {
   planName: string;
   planPrice: string;
+  priceId: string;
+  mode: "payment" | "subscription";
+  userEmail: string | null;
   onClose: () => void;
 };
 
-function StripeCheckoutCard({ planName, planPrice, onClose }: StripeCheckoutCardProps) {
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvc, setCvc] = useState("");
-  const [processing, setProcessing] = useState(false);
-  const [success, setSuccess] = useState(false);
+function StripeCheckoutCard({ planName, planPrice, priceId, mode, userEmail, onClose }: StripeCheckoutCardProps) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const formatCardNumber = (value: string) => {
-    const digits = value.replace(/\D/g, "").slice(0, 16);
-    return digits.replace(/(.{4})/g, "$1 ").trim();
+  const handleCheckout = async () => {
+    if (!userEmail) {
+      setError("Necesitas iniciar sesión para suscribirte.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const checkoutUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-checkout`;
+      const res = await fetch(checkoutUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          price_id: priceId,
+          mode,
+          email: userEmail,
+          success_url: `${window.location.origin}?checkout=success`,
+          cancel_url: `${window.location.origin}?checkout=cancelled`,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error ?? "No se pudo iniciar el pago.");
+      }
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("Stripe no devolvió una URL de pago.");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al conectar con Stripe.");
+      setLoading(false);
+    }
   };
-
-  const formatExpiry = (value: string) => {
-    const digits = value.replace(/\D/g, "").slice(0, 4);
-    if (digits.length >= 3) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-    return digits;
-  };
-
-  const canSubmit = cardNumber.replace(/\s/g, "").length === 16 && expiry.length === 5 && cvc.length >= 3;
 
   return (
     <div
@@ -709,92 +740,42 @@ function StripeCheckoutCard({ planName, planPrice, onClose }: StripeCheckoutCard
           </button>
         </div>
 
-        {success ? (
-          <div className="flex flex-col items-center gap-3 py-6 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
-              <Check className="h-8 w-8 text-green-600" />
-            </div>
-            <p className="text-sm font-bold text-black">¡Suscripción activada!</p>
-            <p className="text-xs font-medium text-gray-500">Tu plan {planName} está listo para usar.</p>
-            <button
-              type="button"
-              onClick={onClose}
-              className="mt-2 rounded-xl bg-[#635bff] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#5851eb]"
-            >
-              Continuar
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-black">Número de tarjeta</label>
-              <div className="flex items-center gap-2 rounded-xl border border-[#e5e7eb] bg-white px-3 focus-within:border-[#635bff]">
-                <CreditCard className="h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={cardNumber}
-                  onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-                  placeholder="4242 4242 4242 4242"
-                  className="h-11 w-full bg-transparent text-sm font-medium text-black outline-none placeholder:text-gray-400"
-                />
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <label className="mb-1 block text-xs font-semibold text-black">Caducidad</label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={expiry}
-                  onChange={(e) => setExpiry(formatExpiry(e.target.value))}
-                  placeholder="MM/AA"
-                  className="h-11 w-full rounded-xl border border-[#e5e7eb] bg-white px-3 text-sm font-medium text-black outline-none focus:border-[#635bff]"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="mb-1 block text-xs font-semibold text-black">CVC</label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={cvc}
-                  onChange={(e) => setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                  placeholder="123"
-                  className="h-11 w-full rounded-xl border border-[#e5e7eb] bg-white px-3 text-sm font-medium text-black outline-none focus:border-[#635bff]"
-                />
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                if (!canSubmit) return;
-                setProcessing(true);
-                setTimeout(() => {
-                  setProcessing(false);
-                  setSuccess(true);
-                }, 3000);
-              }}
-              disabled={!canSubmit || processing}
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#635bff] text-sm font-bold uppercase tracking-wide text-white shadow-md transition-all hover:bg-[#5851eb] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {processing ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Procesando...
-                </>
-              ) : (
-                <>
-                  <Lock className="h-4 w-4" />
-                  Pagar {planPrice}€/mes
-                </>
-              )}
-            </button>
-            <p className="flex items-center justify-center gap-1 text-center text-xs font-medium text-gray-400">
-              <Lock className="h-3 w-3" />
-              Pago seguro cifrado con Stripe
+        <div className="space-y-3">
+          <div className="rounded-xl border border-[#e5e7eb] bg-[#f9fafb] p-4 text-center">
+            <Shield className="mx-auto mb-2 h-8 w-8 text-[#635bff]" />
+            <p className="text-sm font-semibold text-black">Serás redirigido a Stripe</p>
+            <p className="mt-1 text-xs font-medium text-gray-500">
+              Pago seguro alojado por Stripe. No almacenamos datos de tarjeta.
             </p>
           </div>
-        )}
+          {error && (
+            <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700 animate-fade-in">
+              {error}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={handleCheckout}
+            disabled={loading}
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#635bff] text-sm font-bold uppercase tracking-wide text-white shadow-md transition-all hover:bg-[#5851eb] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Redirigiendo...
+              </>
+            ) : (
+              <>
+                <CreditCard className="h-4 w-4" />
+                Pagar {planPrice}€/mes
+              </>
+            )}
+          </button>
+          <p className="flex items-center justify-center gap-1 text-center text-xs font-medium text-gray-400">
+            <Lock className="h-3 w-3" />
+            Pago seguro cifrado con Stripe
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -861,12 +842,13 @@ function OutOfTokensAlert({ adLoading, onClose, onWatchAd, onOpenPlans }: OutOfT
 type WalletShopCardProps = {
   balance: number;
   adLoading: boolean;
+  userEmail: string | null;
   onClose: () => void;
   onWatchAd: () => void;
 };
 
-function WalletShopCard({ balance, adLoading, onClose, onWatchAd }: WalletShopCardProps) {
-  const [checkoutPlan, setCheckoutPlan] = useState<{ name: string; price: string } | null>(null);
+function WalletShopCard({ balance, adLoading, userEmail, onClose, onWatchAd }: WalletShopCardProps) {
+  const [checkoutPlan, setCheckoutPlan] = useState<{ name: string; price: string; priceId: string; mode: "payment" | "subscription" } | null>(null);
 
   return (
     <div
@@ -933,7 +915,7 @@ function WalletShopCard({ balance, adLoading, onClose, onWatchAd }: WalletShopCa
               ) : (
                 <button
                   type="button"
-                  onClick={() => setCheckoutPlan({ name: plan.name, price: plan.price })}
+                  onClick={() => setCheckoutPlan({ name: plan.name, price: plan.price, priceId: plan.priceId, mode: plan.mode })}
                   className={`flex h-9 w-full items-center justify-center gap-1.5 rounded-xl text-xs font-bold uppercase tracking-wide transition-all active:scale-[0.98] ${
                     plan.highlight
                       ? "bg-amber-500 text-white hover:bg-amber-600"
@@ -973,6 +955,9 @@ function WalletShopCard({ balance, adLoading, onClose, onWatchAd }: WalletShopCa
         <StripeCheckoutCard
           planName={checkoutPlan.name}
           planPrice={checkoutPlan.price}
+          priceId={checkoutPlan.priceId}
+          mode={checkoutPlan.mode}
+          userEmail={userEmail}
           onClose={() => setCheckoutPlan(null)}
         />
       )}
@@ -2322,10 +2307,11 @@ type PremiumPageProps = {
   tokenBalance: number;
   adLoading: boolean;
   onWatchAd: () => void;
+  userEmail: string | null;
 };
 
-function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWatchAd }: PremiumPageProps) {
-  const [checkoutPlan, setCheckoutPlan] = useState<{ name: string; price: string } | null>(null);
+function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWatchAd, userEmail }: PremiumPageProps) {
+  const [checkoutPlan, setCheckoutPlan] = useState<{ name: string; price: string; priceId: string; mode: "payment" | "subscription" } | null>(null);
 
   return (
     <section className="flex w-full flex-1 flex-col overflow-y-auto">
@@ -2383,7 +2369,7 @@ function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWa
             ) : (
               <button
                 type="button"
-                onClick={() => setCheckoutPlan({ name: plan.name, price: plan.price })}
+                onClick={() => setCheckoutPlan({ name: plan.name, price: plan.price, priceId: plan.priceId, mode: plan.mode })}
                 className={`mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-xl text-sm font-bold uppercase tracking-wide transition-all active:scale-[0.98] ${
                   plan.highlight
                     ? "bg-amber-500 text-white hover:bg-amber-600"
@@ -2422,6 +2408,9 @@ function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWa
         <StripeCheckoutCard
           planName={checkoutPlan.name}
           planPrice={checkoutPlan.price}
+          priceId={checkoutPlan.priceId}
+          mode={checkoutPlan.mode}
+          userEmail={userEmail}
           onClose={() => setCheckoutPlan(null)}
         />
       )}
@@ -3040,6 +3029,7 @@ function App() {
               tokenBalance={tokenBalance}
               adLoading={adLoading}
               onWatchAd={watchAd}
+              userEmail={isLoggedIn ? loggedInEmail : null}
             />
           )}
         </div>
@@ -3156,6 +3146,7 @@ function App() {
           <WalletShopCard
             balance={tokenBalance}
             adLoading={adLoading}
+            userEmail={isLoggedIn ? loggedInEmail : null}
             onClose={closeDrawer}
             onWatchAd={watchAd}
           />
