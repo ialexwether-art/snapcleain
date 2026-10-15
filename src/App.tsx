@@ -8,6 +8,7 @@ import {
   FlaskRound, Brush, Hand, ShoppingBag, Leaf, Recycle, Wind,
   Coffee, Wine, Shirt, Home as HomeIcon, Car, Search, Crown,
   Zap, Heart, Star, ArrowRight, CircleCheck, Clock, TrendingUp,
+  MessageCircle, Send, Plus, RefreshCw, HelpCircle,
 } from 'lucide-react';
 
 /* ============================================================
@@ -29,6 +30,7 @@ type ScanResult = {
   warning: string;
   imageUrl: string;
   date: string;
+  followUp?: { question: string; answer: string }[];
 };
 
 type LibraryProduct = {
@@ -717,48 +719,71 @@ function ScannerView({
         )}
 
         {result && (
-          <ScanResultCard result={result} onReset={reset} />
+          <ScanResultCard result={result} onReset={reset} selectedFile={selectedFile} />
         )}
       </div>
     </div>
   );
 }
 
-function ScanResultCard({ result, onReset }: { result: ScanResult; onReset: () => void }) {
+function ScanResultCard({ result, onReset, selectedFile }: { result: ScanResult; onReset: () => void; selectedFile: File | null }) {
+  const [showFollowUp, setShowFollowUp] = useState(false);
+  const [followUpQuestion, setFollowUpQuestion] = useState('');
+  const [followUpLoading, setFollowUpLoading] = useState(false);
+  const [followUpList, setFollowUpList] = useState<{ question: string; answer: string }[]>(result.followUp ?? []);
+  const [followUpError, setFollowUpError] = useState('');
+
+  const handleAsk = async () => {
+    if (!followUpQuestion.trim() || !selectedFile) return;
+    setFollowUpLoading(true);
+    setFollowUpError('');
+    try {
+      const answer = await askFollowUp(selectedFile, result, followUpQuestion.trim());
+      const entry = { question: followUpQuestion.trim(), answer };
+      setFollowUpList((prev) => [...prev, entry]);
+      setFollowUpQuestion('');
+      setShowFollowUp(false);
+    } catch (err: any) {
+      setFollowUpError(err.message || 'No se pudo procesar tu pregunta.');
+    } finally {
+      setFollowUpLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-4 animate-fade-in-up">
       {/* Image + identification */}
       <div className="bg-white rounded-3xl overflow-hidden border border-ink-200/60 shadow-sm">
         <img src={result.imageUrl} alt="Mancha analizada" className="w-full max-h-72 object-cover" />
-        <div className="p-6">
+        <div className="p-5 sm:p-6">
           <div className="flex items-start gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
               <Scan className="w-5 h-5 text-brand-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-ink-900">{result.stainType}</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-ink-900">{result.stainType}</h2>
               <p className="text-sm text-ink-500">{result.surface}</p>
             </div>
           </div>
-          <div className="bg-brand-50 rounded-xl px-4 py-3 flex items-center gap-2">
-            <Droplet className="w-5 h-5 text-brand-600 flex-shrink-0" />
+          <div className="bg-brand-50 rounded-xl px-4 py-3 flex items-start gap-2">
+            <Droplet className="w-5 h-5 text-brand-600 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-brand-800">
-              <span className="font-semibold">Producto recomendado:</span> {result.product}
+              <span className="font-semibold">Producto:</span> {result.product}
             </p>
           </div>
         </div>
       </div>
 
       {/* Steps */}
-      <div className="bg-white rounded-3xl p-6 border border-ink-200/60 shadow-sm">
+      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-ink-200/60 shadow-sm">
         <h3 className="font-semibold text-ink-900 mb-4 flex items-center gap-2">
           <Brush className="w-5 h-5 text-brand-600" />
           Paso a paso
         </h3>
         <div className="space-y-3">
           {result.steps.map((step, i) => (
-            <div key={i} className="flex gap-3 p-4 rounded-xl bg-ink-50 border border-ink-200/50">
-              <div className="text-2xl flex-shrink-0">{step.emoji}</div>
+            <div key={i} className="flex gap-3 p-3 sm:p-4 rounded-xl bg-ink-50 border border-ink-200/50">
+              <div className="text-xl sm:text-2xl flex-shrink-0">{step.emoji}</div>
               <div className="flex-1">
                 <span className="text-xs font-bold text-brand-600 uppercase tracking-wider">Paso {i + 1}</span>
                 <p className="text-sm text-ink-700 leading-relaxed mt-0.5">{step.text}</p>
@@ -769,7 +794,7 @@ function ScanResultCard({ result, onReset }: { result: ScanResult; onReset: () =
       </div>
 
       {/* Warning */}
-      <div className="bg-error-500/5 border border-error-500/20 rounded-3xl p-6">
+      <div className="bg-error-500/5 border border-error-500/20 rounded-3xl p-5 sm:p-6">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl bg-error-500/10 flex items-center justify-center flex-shrink-0">
             <AlertTriangle className="w-5 h-5 text-error-600" />
@@ -781,13 +806,98 @@ function ScanResultCard({ result, onReset }: { result: ScanResult; onReset: () =
         </div>
       </div>
 
-      <button
-        onClick={onReset}
-        className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-white border border-ink-200 hover:border-brand-300 text-ink-700 font-semibold rounded-xl transition-all"
-      >
-        <Camera className="w-5 h-5" />
-        Escanear otra mancha
-      </button>
+      {/* Follow-up Q&A history */}
+      {followUpList.length > 0 && (
+        <div className="space-y-3">
+          {followUpList.map((qa, i) => (
+            <div key={i} className="bg-white rounded-2xl p-4 sm:p-5 border border-brand-200/40 shadow-sm animate-slide-down">
+              <div className="flex items-start gap-2 mb-3">
+                <div className="w-6 h-6 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0">
+                  <HelpCircle className="w-3.5 h-3.5 text-brand-600" />
+                </div>
+                <p className="text-sm font-medium text-ink-900">{qa.question}</p>
+              </div>
+              <div className="pl-8">
+                <p className="text-sm text-ink-600 leading-relaxed">{qa.answer}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Follow-up error */}
+      {followUpError && (
+        <div className="flex items-start gap-3 bg-error-500/10 border border-error-500/30 rounded-xl px-4 py-3 animate-slide-down">
+          <AlertTriangle className="w-5 h-5 text-error-600 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-error-600">{followUpError}</p>
+        </div>
+      )}
+
+      {/* Follow-up question input */}
+      {showFollowUp ? (
+        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-ink-200/60 shadow-sm animate-zoom-in">
+          <div className="flex items-center gap-2 mb-4">
+            <MessageCircle className="w-5 h-5 text-brand-600" />
+            <h3 className="font-semibold text-ink-900">Haz una pregunta</h3>
+          </div>
+          <textarea
+            value={followUpQuestion}
+            onChange={(e) => setFollowUpQuestion(e.target.value)}
+            placeholder="Ej: ¿Puedo usar este producto en seda? ¿Cuánto tiempo dejo actuar?"
+            className="w-full px-4 py-3 rounded-xl border border-ink-200 text-ink-900 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm resize-none mb-3"
+            rows={3}
+            autoFocus
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={() => { setShowFollowUp(false); setFollowUpError(''); }}
+              className="flex-1 py-3 rounded-xl border border-ink-200 text-ink-600 font-medium text-sm hover:bg-ink-50 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleAsk}
+              disabled={followUpLoading || !followUpQuestion.trim()}
+              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {followUpLoading ? (
+                <Loader className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  Preguntar
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          onClick={() => setShowFollowUp(true)}
+          className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-50 border border-brand-200 hover:bg-brand-100 text-brand-700 font-semibold rounded-xl transition-all"
+        >
+          <Plus className="w-5 h-5" />
+          Preguntar otra cosa
+        </button>
+      )}
+
+      {/* Action buttons */}
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          onClick={() => shareOnWhatsApp(result)}
+          className="flex items-center justify-center gap-2 px-4 py-3.5 bg-[#25D366] hover:bg-[#1ebd5a] text-white font-semibold rounded-xl transition-all shadow-sm"
+        >
+          <MessageCircle className="w-5 h-5" />
+          WhatsApp
+        </button>
+        <button
+          onClick={onReset}
+          className="flex items-center justify-center gap-2 px-4 py-3.5 bg-white border border-ink-200 hover:border-brand-300 text-ink-700 font-semibold rounded-xl transition-all"
+        >
+          <Camera className="w-5 h-5" />
+          Otra mancha
+        </button>
+      </div>
     </div>
   );
 }
@@ -1212,6 +1322,84 @@ function Footer() {
       </div>
     </footer>
   );
+}
+
+/* ============================================================
+   WHATSAPP SHARE
+   ============================================================ */
+
+function buildShareText(result: ScanResult): string {
+  let text = `*snapcleAIn - Resultado del escaneo*\n\n`;
+  text += `*Mancha:* ${result.stainType}\n`;
+  text += `*Superficie:* ${result.surface}\n`;
+  text += `*Producto recomendado:* ${result.product}\n\n`;
+  text += `*Paso a paso:*\n`;
+  result.steps.forEach((s, i) => {
+    text += `${s.emoji} PASO ${i + 1}: ${s.text}\n`;
+  });
+  text += `\n*⚠️ Advertencia:* ${result.warning}\n\n`;
+  text += `_Analizado con snapcleAIn - IA experta en manchas_`;
+  return text;
+}
+
+function shareOnWhatsApp(result: ScanResult) {
+  const text = buildShareText(result);
+  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
+}
+
+/* ============================================================
+   GEMINI FOLLOW-UP
+   ============================================================ */
+
+async function askFollowUp(
+  originalImageFile: File,
+  previousResult: ScanResult,
+  question: string,
+): Promise<string> {
+  const { base64, mimeType } = await new Promise<{ base64: string; mimeType: string }>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const r = reader.result as string;
+      resolve({ base64: r.split(',')[1] ?? '', mimeType: originalImageFile.type || 'image/jpeg' });
+    };
+    reader.onerror = () => reject(new Error('No se pudo leer la imagen.'));
+    reader.readAsDataURL(originalImageFile);
+  });
+
+  const contextText = `Resultado previo del análisis:\n- Mancha: ${previousResult.stainType}\n- Superficie: ${previousResult.surface}\n- Producto: ${previousResult.product}\n- Pasos: ${previousResult.steps.map((s) => s.text).join('; ')}\n- Advertencia: ${previousResult.warning}\n\nPregunta adicional del usuario: "${question}"\n\nResponde la pregunta del usuario en español, en texto plano, de forma clara y concisa (máximo 4 frases). No uses Markdown ni asteriscos.`;
+
+  const body = {
+    contents: [
+      {
+        role: 'user',
+        parts: [
+          { text: contextText },
+          { inline_data: { mime_type: mimeType, data: base64 } },
+        ],
+      },
+    ],
+    generationConfig: { temperature: 0.4 },
+  };
+
+  const proxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gemini-proxy`;
+  const res = await fetch(proxyUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) throw new Error('No se pudo procesar tu pregunta.');
+  const data = await res.json();
+  if (data?.error) throw new Error(data.error);
+  const text: string =
+    data?.candidates?.[0]?.content?.parts?.[0]?.text ??
+    data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text).join('') ?? '';
+  if (!text) throw new Error('La IA no devolvió una respuesta.');
+  return text.trim();
 }
 
 /* ============================================================
