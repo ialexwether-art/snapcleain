@@ -1,116 +1,65 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap');
 @import 'tailwindcss';
 
-html,
-body {
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  text-rendering: optimizeLegibility;
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+
+  --color-indigo-50: #eef2ff;
+  --color-indigo-100: #e0e7ff;
+  --color-indigo-500: #6366f1;
+  --color-indigo-600: #4f46e5;
+  --color-indigo-700: #4338ca;
 }
 
-.font-brand {
-  font-family: 'Sora', system-ui, sans-serif;
-}
-
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
-.animate-results {
-  animation: fade-in-up 0.4s ease-out;
-}
-
-@keyframes slide-in {
-  from {
-    transform: translateX(-100%);
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  to {
-    transform: translateX(0);
-  }
-}
 
-.animate-slide-in {
-  animation: slide-in 0.3s ease-out;
-}
-
-@keyframes slide-in-right {
-  from {
-    transform: translateX(100%);
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
   }
-  to {
-    transform: translateX(0);
-  }
-}
-
-.animate-slide-in-right {
-  animation: slide-in-right 0.3s ease-out;
-}
-
-@keyframes fade-out {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-.splash-fade-out {
-  animation: fade-out 0.5s ease-out 1.5s forwards;
 }
 
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.animate-fade-in {
-  animation: fade-in 0.2s ease-out;
+@keyframes zoom-in-95 {
+  from { transform: scale(0.95); }
+  to { transform: scale(1); }
 }
 
-@keyframes pop-in {
-  from {
-    opacity: 0;
-    transform: scale(0.92) translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+.animate-in {
+  animation-fill-mode: both;
 }
 
-.animate-pop-in {
-  animation: pop-in 0.25s ease-out;
+.fade-in {
+  animation-name: fade-in;
 }
 
-@keyframes laser-scan {
-  0% {
-    top: 0%;
-    opacity: 1;
-  }
-  50% {
-    top: 100%;
-    opacity: 1;
-  }
-  50.01% {
-    opacity: 0;
-  }
-  100% {
-    top: 0%;
-    opacity: 0;
-  }
+.zoom-in-95 {
+  animation-name: zoom-in-95;
 }
 
-.animate-laser-scan {
-  animation: laser-scan 2s ease-in-out infinite;
+.duration-200 {
+  animation-duration: 200ms;
 }
