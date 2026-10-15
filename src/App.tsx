@@ -9,6 +9,7 @@ import {
   Coffee, Wine, Shirt, Home as HomeIcon, Car, Search, Crown,
   Zap, Heart, Star, ArrowRight, CircleCheck, Clock, TrendingUp,
   MessageCircle, Send, Plus, RefreshCw, HelpCircle,
+  Smartphone, Monitor,
 } from 'lucide-react';
 
 /* ============================================================
@@ -229,6 +230,7 @@ export default function App() {
   const [subscriptionActive, setSubscriptionActive] = useState(false);
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
   const [checkoutMsg, setCheckoutMsg] = useState('');
+  const [mobileMode, setMobileMode] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('snapcleain_history');
@@ -251,9 +253,8 @@ export default function App() {
   }, [scanHistory]);
 
   const handleStartScan = useCallback(() => {
-    if (!user) { setShowAuthModal(true); return; }
     setView('scanner');
-  }, [user]);
+  }, []);
 
   const handlePricingSelect = async (product: StripeProduct) => {
     if (!user) { setShowAuthModal(true); return; }
@@ -266,55 +267,64 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-ink-50">
-      <Header
-        user={user}
-        view={view}
-        setView={setView}
-        tokens={tokens}
-        subscriptionActive={subscriptionActive}
-        onSignOut={signOut}
-        onSignIn={() => setShowAuthModal(true)}
-      />
-
-      <main className="pb-16 md:pb-0">
-        {view === 'home' && (
-          <HomeView
-            user={user}
-            tokens={tokens}
-            onScan={handleStartScan}
-            setView={setView}
-          />
-        )}
-        {view === 'scanner' && (
-          <ScannerView
-            user={user}
-            tokens={tokens}
-            consumeToken={consumeToken}
-            onScanComplete={handleScan}
-            subscriptionActive={subscriptionActive}
-          />
-        )}
-        {view === 'library' && <LibraryView />}
-        {view === 'kit' && <KitView />}
-        {view === 'pricing' && (
-          <PricingView
-            user={user}
-            subscriptionActive={subscriptionActive}
-            onSelect={handlePricingSelect}
-            checkoutMsg={checkoutMsg}
-          />
-        )}
-      </main>
-
-      {showAuthModal && (
-        <AuthModal
-          onClose={() => setShowAuthModal(false)}
-          onSuccess={() => setShowAuthModal(false)}
+    <div className={mobileMode ? 'min-h-screen bg-gray-300 flex justify-center' : 'min-h-screen bg-ink-50'}>
+      <div className={mobileMode ? 'w-full max-w-[430px] bg-ink-50 min-h-screen shadow-2xl overflow-x-hidden [transform:translateZ(0)]' : 'w-full'}>
+        <Header
+          user={user}
+          view={view}
+          setView={setView}
+          tokens={tokens}
+          subscriptionActive={subscriptionActive}
+          onSignOut={signOut}
+          onSignIn={() => setShowAuthModal(true)}
         />
-      )}
 
-      <Footer />
+        <main className="pb-16 md:pb-0">
+          {view === 'home' && (
+            <HomeView
+              user={user}
+              tokens={tokens}
+              onScan={handleStartScan}
+              setView={setView}
+            />
+          )}
+          {view === 'scanner' && (
+            <ScannerView
+              user={user}
+              tokens={tokens}
+              consumeToken={consumeToken}
+              onScanComplete={handleScan}
+              subscriptionActive={subscriptionActive}
+            />
+          )}
+          {view === 'library' && <LibraryView setView={setView} />}
+          {view === 'kit' && <KitView setView={setView} />}
+          {view === 'pricing' && (
+            <PricingView
+              user={user}
+              subscriptionActive={subscriptionActive}
+              onSelect={handlePricingSelect}
+              checkoutMsg={checkoutMsg}
+            />
+          )}
+        </main>
+
+        {showAuthModal && (
+          <AuthModal
+            onClose={() => setShowAuthModal(false)}
+          />
+        )}
+
+        <Footer />
+      </div>
+
+      <button
+        onClick={() => setMobileMode(!mobileMode)}
+        className="fixed bottom-6 right-6 z-[100] w-12 h-12 rounded-full bg-ink-900 text-white shadow-2xl hover:bg-ink-800 flex items-center justify-center transition-all hover:scale-110"
+        title={mobileMode ? 'Ver en escritorio' : 'Ver en móvil'}
+      >
+        {mobileMode ? <Monitor className="w-5 h-5" /> : <Smartphone className="w-5 h-5" />}
+      </button>
     </div>
   );
 }
@@ -343,67 +353,66 @@ function Header({
   ];
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-md border-b border-ink-200/60">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <button onClick={() => setView('home')} className="flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-            <Sparkles className="w-5 h-5 text-white" />
+    <>
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-ink-200/60">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <button onClick={() => setView('home')} className="flex items-center group">
+            <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-9 w-auto group-hover:scale-105 transition-transform" />
+          </button>
+
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setView(item.id)}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  view === item.id
+                    ? 'bg-brand-50 text-brand-700'
+                    : 'text-ink-600 hover:text-ink-900 hover:bg-ink-100'
+                }`}
+              >
+                <item.icon className="w-4 h-4" />
+                {item.label}
+              </button>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            {user && !subscriptionActive && (
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-50 border border-accent-200">
+                <Zap className="w-3.5 h-3.5 text-accent-600" />
+                <span className="text-sm font-semibold text-accent-700">{tokens}</span>
+                <span className="text-xs text-accent-600">tokens</span>
+              </div>
+            )}
+            {user && subscriptionActive && (
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200">
+                <Crown className="w-3.5 h-3.5 text-brand-600" />
+                <span className="text-sm font-semibold text-brand-700">Premium</span>
+              </div>
+            )}
+            {user ? (
+              <button
+                onClick={onSignOut}
+                className="flex items-center gap-1.5 text-sm text-ink-600 hover:text-ink-900 transition-colors px-3 py-2 rounded-lg hover:bg-ink-100"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:block">Salir</span>
+              </button>
+            ) : (
+              <button
+                onClick={onSignIn}
+                className="text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors px-4 py-2 rounded-lg shadow-sm"
+              >
+                Entrar
+              </button>
+            )}
           </div>
-          <span className="font-bold text-ink-900 tracking-tight text-lg">snapcle<span className="text-brand-600">AIn</span></span>
-        </button>
-
-        <nav className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setView(item.id)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                view === item.id
-                  ? 'bg-brand-50 text-brand-700'
-                  : 'text-ink-600 hover:text-ink-900 hover:bg-ink-100'
-              }`}
-            >
-              <item.icon className="w-4 h-4" />
-              {item.label}
-            </button>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-2">
-          {user && !subscriptionActive && (
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-50 border border-accent-200">
-              <Zap className="w-3.5 h-3.5 text-accent-600" />
-              <span className="text-sm font-semibold text-accent-700">{tokens}</span>
-              <span className="text-xs text-accent-600">tokens</span>
-            </div>
-          )}
-          {user && subscriptionActive && (
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200">
-              <Crown className="w-3.5 h-3.5 text-brand-600" />
-              <span className="text-sm font-semibold text-brand-700">Premium</span>
-            </div>
-          )}
-          {user ? (
-            <button
-              onClick={onSignOut}
-              className="flex items-center gap-1.5 text-sm text-ink-600 hover:text-ink-900 transition-colors px-3 py-2 rounded-lg hover:bg-ink-100"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:block">Salir</span>
-            </button>
-          ) : (
-            <button
-              onClick={onSignIn}
-              className="text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors px-4 py-2 rounded-lg shadow-sm"
-            >
-              Entrar
-            </button>
-          )}
         </div>
-      </div>
+      </header>
 
-      {/* Mobile nav */}
-      <nav className="md:hidden flex items-center justify-around border-t border-ink-200/60 px-2 h-14">
+      {/* Mobile bottom nav */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur-md border-t border-ink-200/60 px-2 h-14 flex items-center justify-around">
         {navItems.map((item) => (
           <button
             key={item.id}
@@ -417,7 +426,7 @@ function Header({
           </button>
         ))}
       </nav>
-    </header>
+    </>
   );
 }
 
@@ -434,10 +443,10 @@ function HomeView({
   setView: (v: View) => void;
 }) {
   return (
-    <div className="pt-[120px] md:pt-16">
+    <div className="min-h-screen">
       {/* Hero */}
       <section className="relative overflow-hidden hero-grid-bg">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-20 pb-24 md:pt-28 md:pb-32">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-24 md:pt-20 md:pb-32">
           <div className="text-center max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-2 bg-brand-50 border border-brand-200 text-brand-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 animate-fade-in">
               <Sparkles className="w-3.5 h-3.5" />
@@ -541,7 +550,7 @@ function HomeView({
               Tu próxima mancha, resuelta en segundos
             </h2>
             <p className="text-brand-100 text-lg max-w-xl mx-auto mb-8">
-              Prueba snapcleAIn gratis. Tres escaneos sin coste al registrarte.
+              Prueba snapcleAIn gratis. Escanea sin registrarte y sin límites.
             </p>
             <button
               onClick={onScan}
@@ -596,7 +605,7 @@ function ScannerView({
     setAnalyzing(true);
     setError('');
 
-    if (!subscriptionActive) {
+    if (user && !subscriptionActive) {
       const ok = await consumeToken();
       if (!ok) {
         setError('No te quedan escaneos. Suscríbete a un plan para escaneos ilimitados.');
@@ -626,14 +635,14 @@ function ScannerView({
   };
 
   return (
-    <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
+    <div className="min-h-screen pb-20">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Escáner de manchas</h1>
           <p className="text-ink-500">Sube una foto y recibe tu solución personalizada</p>
         </div>
 
-        {!subscriptionActive && (
+        {user && !subscriptionActive && (
           <div className="mb-6 flex items-center justify-center gap-2 text-sm">
             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${tokens > 0 ? 'bg-accent-50 border border-accent-200 text-accent-700' : 'bg-error-500/10 border border-error-500/30 text-error-600'}`}>
               <Zap className="w-3.5 h-3.5" />
@@ -906,7 +915,7 @@ function ScanResultCard({ result, onReset, selectedFile }: { result: ScanResult;
    LIBRARY VIEW
    ============================================================ */
 
-function LibraryView() {
+function LibraryView({ setView }: { setView: (v: View) => void }) {
   const [category, setCategory] = useState('Todos');
   const [search, setSearch] = useState('');
 
@@ -925,7 +934,7 @@ function LibraryView() {
   };
 
   return (
-    <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
+    <div className="min-h-screen pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Biblioteca de productos</h1>
@@ -1001,6 +1010,20 @@ function LibraryView() {
             <p className="text-ink-400">No se encontraron productos.</p>
           </div>
         )}
+
+        {/* Kit CTA */}
+        <div className="mt-12 bg-gradient-to-br from-brand-600 to-brand-800 rounded-3xl p-8 text-center">
+          <Backpack className="w-10 h-10 text-white mx-auto mb-3" />
+          <h2 className="text-xl font-bold text-white mb-2">¿Tu botiquín de limpieza?</h2>
+          <p className="text-brand-100 text-sm mb-5 max-w-md mx-auto">Descubre los 8 productos imprescindibles para resolver el 90% de las manchas del hogar.</p>
+          <button
+            onClick={() => setView('kit')}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-brand-700 font-semibold rounded-xl text-sm transition-all hover:scale-105 shadow-lg"
+          >
+            Ver botiquín esencial
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -1010,9 +1033,9 @@ function LibraryView() {
    KIT VIEW
    ============================================================ */
 
-function KitView() {
+function KitView({ setView }: { setView: (v: View) => void }) {
   return (
-    <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
+    <div className="min-h-screen pb-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Tu botiquín de limpieza</h1>
@@ -1073,6 +1096,20 @@ function KitView() {
             </div>
           ))}
         </div>
+
+        {/* Library CTA */}
+        <div className="mt-8 bg-white rounded-3xl p-8 border border-ink-200/60 shadow-sm text-center">
+          <BookOpen className="w-10 h-10 text-brand-600 mx-auto mb-3" />
+          <h2 className="text-xl font-bold text-ink-900 mb-2">Explora la biblioteca completa</h2>
+          <p className="text-ink-500 text-sm mb-5 max-w-md mx-auto">Más de 20 productos catalogados: naturales, químicos, quitamanchas y herramientas.</p>
+          <button
+            onClick={() => setView('library')}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-sm transition-all hover:scale-105 shadow-lg"
+          >
+            Ver biblioteca
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -1099,7 +1136,7 @@ function PricingView({
   };
 
   return (
-    <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
+    <div className="min-h-screen pb-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-brand-50 border border-brand-200 text-brand-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-6">
@@ -1229,7 +1266,7 @@ function PricingCardView({
    AUTH MODAL
    ============================================================ */
 
-function AuthModal({ onClose }: { onClose: () => void; onSuccess: () => void }) {
+function AuthModal({ onClose }: { onClose: () => void }) {
   const [loading, setLoading] = useState(false);
 
   const handleGoogle = () => {
@@ -1305,11 +1342,8 @@ function Footer() {
     <footer className="bg-white border-t border-ink-200/60">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-ink-900">snapcle<span className="text-brand-600">AIn</span></span>
+          <div className="flex items-center">
+            <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-8 w-auto" />
           </div>
           <p className="text-sm text-ink-400">
             IA experta en manchas · Hecho con Gemini 3.6
