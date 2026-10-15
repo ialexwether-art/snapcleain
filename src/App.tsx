@@ -277,7 +277,7 @@ export default function App() {
         onSignIn={() => setShowAuthModal(true)}
       />
 
-      <main>
+      <main className="pb-16 md:pb-0">
         {view === 'home' && (
           <HomeView
             user={user}
@@ -434,7 +434,7 @@ function HomeView({
   setView: (v: View) => void;
 }) {
   return (
-    <div className="pt-30 md:pt-16">
+    <div className="pt-[120px] md:pt-16">
       {/* Hero */}
       <section className="relative overflow-hidden hero-grid-bg">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-20 pb-24 md:pt-28 md:pb-32">
@@ -626,7 +626,7 @@ function ScannerView({
   };
 
   return (
-    <div className="pt-30 md:pt-20 min-h-screen pb-20">
+    <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Escáner de manchas</h1>
@@ -925,7 +925,7 @@ function LibraryView() {
   };
 
   return (
-    <div className="pt-30 md:pt-20 min-h-screen pb-20">
+    <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Biblioteca de productos</h1>
@@ -1012,7 +1012,7 @@ function LibraryView() {
 
 function KitView() {
   return (
-    <div className="pt-30 md:pt-20 min-h-screen pb-20">
+    <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Tu botiquín de limpieza</h1>
@@ -1099,7 +1099,7 @@ function PricingView({
   };
 
   return (
-    <div className="pt-30 md:pt-20 min-h-screen pb-20">
+    <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-brand-50 border border-brand-200 text-brand-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-6">
