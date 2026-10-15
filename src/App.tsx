@@ -295,18 +295,17 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-ink-50">
-      <div className="w-full">
-        <Header
-          user={user}
-          view={view}
-          setView={setView}
-          tokens={tokens}
-          subscriptionActive={subscriptionActive}
-          onSignOut={signOut}
-          onSignIn={() => setShowAuthModal(true)}
-        />
+      <Header
+        user={user}
+        view={view}
+        setView={setView}
+        tokens={tokens}
+        subscriptionActive={subscriptionActive}
+        onSignOut={signOut}
+        onSignIn={() => setShowAuthModal(true)}
+      />
 
-        <main className="pb-16 md:pb-0">
+      <main className="pb-16 md:pb-0">
           {view === 'home' && (
             <HomeView
               user={user}
@@ -350,7 +349,6 @@ export default function App() {
         )}
 
         <Footer />
-      </div>
     </div>
   );
 }
@@ -379,66 +377,64 @@ function Header({
   ];
 
   return (
-    <>
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-ink-200/60">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <button onClick={() => setView('home')} className="flex items-center group">
-            <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-12 w-auto group-hover:scale-105 transition-transform" />
-          </button>
+    <header className="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-md border-b border-ink-200/60">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <button onClick={() => setView('home')} className="flex items-center group">
+          <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-12 w-auto group-hover:scale-105 transition-transform" />
+        </button>
 
-          <nav className="hidden md:flex items-center gap-1">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setView(item.id)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  view === item.id
-                    ? 'bg-brand-50 text-brand-700'
-                    : 'text-ink-600 hover:text-ink-900 hover:bg-ink-100'
-                }`}
-              >
-                <item.icon className="w-4 h-4" />
-                {item.label}
-              </button>
-            ))}
-          </nav>
+        <nav className="hidden md:flex items-center gap-1">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setView(item.id)}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                view === item.id
+                  ? 'bg-brand-50 text-brand-700'
+                  : 'text-ink-600 hover:text-ink-900 hover:bg-ink-100'
+              }`}
+            >
+              <item.icon className="w-4 h-4" />
+              {item.label}
+            </button>
+          ))}
+        </nav>
 
-          <div className="flex items-center gap-2">
-            {user && !subscriptionActive && (
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-50 border border-accent-200">
-                <Zap className="w-3.5 h-3.5 text-accent-600" />
-                <span className="text-sm font-semibold text-accent-700">{tokens}</span>
-                <span className="text-xs text-accent-600">tokens</span>
-              </div>
-            )}
-            {user && subscriptionActive && (
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200">
-                <Crown className="w-3.5 h-3.5 text-brand-600" />
-                <span className="text-sm font-semibold text-brand-700">Premium</span>
-              </div>
-            )}
-            {user ? (
-              <button
-                onClick={onSignOut}
-                className="flex items-center gap-1.5 text-sm text-ink-600 hover:text-ink-900 transition-colors px-3 py-2 rounded-lg hover:bg-ink-100"
-              >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:block">Salir</span>
-              </button>
-            ) : (
-              <button
-                onClick={onSignIn}
-                className="text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors px-4 py-2 rounded-lg shadow-sm whitespace-nowrap"
-              >
-                Iniciar sesión
-              </button>
-            )}
-          </div>
+        <div className="flex items-center gap-2">
+          {user && !subscriptionActive && (
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-50 border border-accent-200">
+              <Zap className="w-3.5 h-3.5 text-accent-600" />
+              <span className="text-sm font-semibold text-accent-700">{tokens}</span>
+              <span className="text-xs text-accent-600">tokens</span>
+            </div>
+          )}
+          {user && subscriptionActive && (
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200">
+              <Crown className="w-3.5 h-3.5 text-brand-600" />
+              <span className="text-sm font-semibold text-brand-700">Premium</span>
+            </div>
+          )}
+          {user ? (
+            <button
+              onClick={onSignOut}
+              className="flex items-center gap-1.5 text-sm text-ink-600 hover:text-ink-900 transition-colors px-3 py-2 rounded-lg hover:bg-ink-100"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:block">Salir</span>
+            </button>
+          ) : (
+            <button
+              onClick={onSignIn}
+              className="text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors px-4 py-2 rounded-lg shadow-sm whitespace-nowrap"
+            >
+              Iniciar sesión
+            </button>
+          )}
         </div>
-      </header>
+      </div>
 
-      {/* Mobile bottom nav */}
-      <nav className="flex md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur-md border-t border-ink-200/60 px-2 h-14 items-center justify-around">
+      {/* Mobile nav */}
+      <nav className="md:hidden flex items-center justify-around border-t border-ink-200/60 px-2 h-14">
         {navItems.map((item) => (
           <button
             key={item.id}
@@ -452,7 +448,7 @@ function Header({
           </button>
         ))}
       </nav>
-    </>
+    </header>
   );
 }
 
@@ -469,10 +465,10 @@ function HomeView({
   setView: (v: View) => void;
 }) {
   return (
-    <div className="min-h-screen">
+    <div className="pt-[120px] md:pt-16">
       {/* Hero */}
       <section className="relative overflow-hidden hero-grid-bg">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-24 md:pt-20 md:pb-32">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-24 md:pt-16 md:pb-32">
           <div className="text-center max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-2 bg-brand-50 border border-brand-200 text-brand-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 animate-fade-in">
               <Sparkles className="w-3.5 h-3.5" />
@@ -665,7 +661,7 @@ function ScannerView({
   };
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Escáner de manchas</h1>
@@ -964,7 +960,7 @@ function LibraryView({ setView }: { setView: (v: View) => void }) {
   };
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Biblioteca de productos</h1>
@@ -1065,7 +1061,7 @@ function LibraryView({ setView }: { setView: (v: View) => void }) {
 
 function KitView({ setView }: { setView: (v: View) => void }) {
   return (
-    <div className="min-h-screen pb-20">
+    <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Tu botiquín de limpieza</h1>
@@ -1166,7 +1162,7 @@ function PricingView({
   };
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-brand-50 border border-brand-200 text-brand-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-6">
