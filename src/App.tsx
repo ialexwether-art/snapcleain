@@ -380,7 +380,7 @@ function Header({
     <header className="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-md border-b border-ink-200/60">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <button onClick={() => setView('home')} className="flex items-center group">
-          <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-12 w-auto group-hover:scale-105 transition-transform" />
+          <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-16 w-auto group-hover:scale-105 transition-transform" />
         </button>
 
         <nav className="hidden md:flex items-center gap-1">
@@ -467,43 +467,44 @@ function HomeView({
   return (
     <div className="pt-[120px] md:pt-16">
       {/* Hero */}
-      <section className="relative overflow-hidden hero-grid-bg">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-24 md:pt-16 md:pb-32">
+      <section className="relative overflow-hidden bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900">
+        <div className="absolute inset-0 hero-grid-bg opacity-15" />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-24 md:pt-16 md:pb-32">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-brand-50 border border-brand-200 text-brand-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 animate-fade-in">
+            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white text-xs font-semibold px-4 py-1.5 rounded-full mb-6 animate-fade-in backdrop-blur-sm">
               <Sparkles className="w-3.5 h-3.5" />
               IA experta en manchas, disponible 24/7
             </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-ink-900 tracking-tight leading-[1.1] mb-6 animate-fade-in-up">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight leading-[1.1] mb-6 animate-fade-in-up">
               Fotografía la mancha.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-brand-700">
+              <span className="text-brand-200">
                 Recibe la solución al instante.
               </span>
             </h1>
-            <p className="text-lg text-ink-500 max-w-xl mx-auto leading-relaxed mb-10 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+            <p className="text-lg text-brand-100 max-w-xl mx-auto leading-relaxed mb-10 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
               snapcleAIn analiza tu foto con inteligencia artificial y te dice exactamente qué producto usar y cómo limpiar la mancha paso a paso.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               <button
                 onClick={onScan}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-2xl text-base transition-all shadow-lg shadow-brand-200 hover:shadow-xl hover:shadow-brand-300 hover:scale-[1.02]"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-brand-50 text-brand-700 font-semibold rounded-2xl text-base transition-all shadow-lg shadow-brand-900/30 hover:shadow-xl hover:scale-[1.02]"
               >
                 <Camera className="w-5 h-5" />
                 Escanea tu mancha
               </button>
               <button
                 onClick={() => setView('library')}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-white border border-ink-200 hover:border-brand-300 text-ink-700 font-semibold rounded-2xl text-base transition-all hover:bg-brand-50"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-white/10 border border-white/30 hover:bg-white/20 text-white font-semibold rounded-2xl text-base transition-all backdrop-blur-sm"
               >
                 <BookOpen className="w-5 h-5" />
                 Ver biblioteca
               </button>
             </div>
             {user && (
-              <div className="mt-8 inline-flex items-center gap-2 text-sm text-ink-500 animate-fade-in">
-                <Check className="w-4 h-4 text-brand-500" />
-                Has iniciado sesión con <span className="font-semibold text-ink-700">{user.email}</span>
-                {!tokens ? null : <span className="text-ink-400">· {tokens} escaneos disponibles</span>}
+              <div className="mt-8 inline-flex items-center gap-2 text-sm text-brand-100 animate-fade-in">
+                <Check className="w-4 h-4 text-white" />
+                Has iniciado sesión con <span className="font-semibold text-white">{user.email}</span>
+                {!tokens ? null : <span className="text-brand-200">· {tokens} escaneos disponibles</span>}
               </div>
             )}
           </div>
@@ -1369,7 +1370,7 @@ function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center">
-            <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-10 w-auto" />
+            <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-12 w-auto" />
           </div>
           <p className="text-sm text-ink-400">
             IA experta en manchas · Hecho con Gemini 3.6
