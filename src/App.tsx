@@ -376,10 +376,11 @@ export default function App() {
 
       <button
         onClick={() => setMobileMode(!mobileMode)}
-        className="fixed bottom-6 right-6 z-[100] w-12 h-12 rounded-full bg-ink-900 text-white shadow-2xl hover:bg-ink-800 flex items-center justify-center transition-all hover:scale-110"
+        className="fixed bottom-6 right-6 z-[200] w-14 h-14 rounded-full bg-white border-2 border-brand-600 text-brand-600 shadow-2xl hover:bg-brand-50 flex items-center justify-center transition-all hover:scale-110"
         title={mobileMode ? 'Ver en escritorio' : 'Ver en móvil'}
+        aria-label="Cambiar vista móvil"
       >
-        {mobileMode ? <Monitor className="w-5 h-5" /> : <Smartphone className="w-5 h-5" />}
+        {mobileMode ? <Monitor className="w-6 h-6" /> : <Smartphone className="w-6 h-6" />}
       </button>
     </div>
   );
@@ -412,10 +413,10 @@ function Header({
 
   return (
     <>
-    <header className="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-md border-b border-ink-200/60">
+    <header className="fixed top-0 inset-x-0 z-50 bg-white border-b border-ink-200/60 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <button onClick={() => setView('home')} className="flex items-center group">
-          <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-20 w-auto group-hover:scale-105 transition-transform" />
+          <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-12 w-auto group-hover:scale-105 transition-transform" />
         </button>
 
         <nav className={`${mobileMode ? 'hidden' : 'hidden md:flex'} items-center gap-1`}>
@@ -555,7 +556,11 @@ function HomeView({
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 hero-grid-bg opacity-15" />
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-24 md:pt-16 md:pb-32">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-24 md:pt-12 md:pb-32">
+          {/* Logo grande centrado */}
+          <div className="flex justify-center mb-8 animate-fade-in">
+            <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="w-full max-w-md md:max-w-lg h-auto" />
+          </div>
           <div className="text-center max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white text-xs font-semibold px-4 py-1.5 rounded-full mb-6 animate-fade-in backdrop-blur-sm">
               <Sparkles className="w-3.5 h-3.5" />
