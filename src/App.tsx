@@ -9,7 +9,7 @@ import {
   Coffee, Wine, Shirt, Home as HomeIcon, Car, Search, Crown,
   Zap, Heart, Star, ArrowRight, CircleCheck, Clock, TrendingUp,
   MessageCircle, Send, Plus, RefreshCw, HelpCircle,
-  Image as ImageIcon, ShoppingCart, Sparkle,
+  Image as ImageIcon, ShoppingCart, Sparkle, Menu, History, Info, PlayCircle,
 } from 'lucide-react';
 
 /* ============================================================
@@ -21,7 +21,7 @@ type User = {
   provider: 'google' | 'apple';
 };
 
-type View = 'home' | 'scanner' | 'library' | 'kit' | 'pricing';
+type View = 'home' | 'scanner' | 'library' | 'kit' | 'pricing' | 'history' | 'about';
 
 type ScanResult = {
   stainType: string;
@@ -323,6 +323,7 @@ export default function App() {
         subscriptionActive={subscriptionActive}
         onSignOut={signOut}
         onSignIn={() => setShowAuthModal(true)}
+        scanHistory={scanHistory}
       />
 
       <main className="pb-16 md:pb-0">
@@ -341,6 +342,7 @@ export default function App() {
               consumeToken={consumeToken}
               onScanComplete={handleScan}
               subscriptionActive={subscriptionActive}
+              onShowPlans={() => setView('pricing')}
             />
           )}
           {view === 'library' && <LibraryView setView={setView} />}
@@ -353,6 +355,8 @@ export default function App() {
               checkoutMsg={checkoutMsg}
             />
           )}
+          {view === 'history' && <HistoryView setView={setView} />}
+          {view === 'about' && <AboutView setView={setView} />}
         </main>
 
         {showAuthModal && (
@@ -365,6 +369,7 @@ export default function App() {
           <ScanLimitModal
             onClose={() => setScanBlocked(false)}
             onLogin={() => { setScanBlocked(false); setShowAuthModal(true); }}
+            onShowPlans={() => { setScanBlocked(false); setView('pricing'); }}
           />
         )}
 
@@ -378,7 +383,7 @@ export default function App() {
    ============================================================ */
 
 function Header({
-  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn,
+  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn, scanHistory,
 }: {
   user: User | null;
   view: View;
@@ -387,13 +392,21 @@ function Header({
   subscriptionActive: boolean;
   onSignOut: () => void;
   onSignIn: () => void;
+  scanHistory: ScanResult[];
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const navItems: { id: View; label: string; icon: any }[] = [
     { id: 'home', label: 'Inicio', icon: HomeIcon },
     { id: 'library', label: 'Biblioteca', icon: BookOpen },
-    { id: 'scanner', label: 'Escáner', icon: Scan },
+    { id: 'scanner', label: 'Escáner', icon: Camera },
     { id: 'kit', label: 'Botiquín', icon: Backpack },
     { id: 'pricing', label: 'Planes', icon: CreditCard },
+  ];
+
+  const menuItems: { id: View; label: string; icon: any }[] = [
+    { id: 'pricing', label: 'Planes', icon: CreditCard },
+    { id: 'history', label: 'Historial', icon: History },
+    { id: 'about', label: 'Sobre nosotros', icon: Info },
   ];
 
   return (
@@ -439,19 +452,28 @@ function Header({
           {user ? (
             <button
               onClick={onSignOut}
-              className="flex items-center gap-1.5 text-sm text-ink-600 hover:text-ink-900 transition-colors px-3 py-2 rounded-lg hover:bg-ink-100"
+              className="hidden md:flex items-center gap-1.5 text-sm text-ink-600 hover:text-ink-900 transition-colors px-3 py-2 rounded-lg hover:bg-ink-100"
             >
               <LogOut className="w-4 h-4" />
-              <span className="hidden sm:block">Salir</span>
+              <span>Salir</span>
             </button>
           ) : (
             <button
               onClick={onSignIn}
-              className="text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors px-4 py-2 rounded-lg shadow-sm whitespace-nowrap"
+              className="hidden md:inline-flex items-center text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors px-4 py-2 rounded-lg shadow-sm whitespace-nowrap"
             >
               Iniciar sesión
             </button>
           )}
+
+          {/* Hamburger menu button - always visible */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="w-10 h-10 rounded-lg flex items-center justify-center text-ink-700 hover:bg-ink-100 transition-colors"
+            aria-label="Menú"
+          >
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </div>
 
@@ -474,6 +496,51 @@ function Header({
           </button>
         ))}
       </nav>
+
+      {/* Dropdown menu */}
+      {menuOpen && (
+        <div className="absolute top-16 right-0 w-64 bg-white shadow-2xl rounded-bl-2xl border-l border-b border-ink-200/60 animate-slide-down z-50">
+          <nav className="flex flex-col gap-1 p-4">
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => { setView(item.id); setMenuOpen(false); }}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                  view === item.id
+                    ? 'bg-brand-50 text-brand-700'
+                    : 'text-ink-600 hover:text-ink-900 hover:bg-ink-100'
+                }`}
+              >
+                <item.icon className="w-5 h-5" />
+                {item.label}
+              </button>
+            ))}
+            <div className="border-t border-ink-200/60 my-2" />
+            {user ? (
+              <>
+                <div className="px-4 py-2 text-xs text-ink-400">
+                  Sesión: <span className="font-medium text-ink-600">{user.email}</span>
+                </div>
+                <button
+                  onClick={() => { onSignOut(); setMenuOpen(false); }}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-ink-600 hover:text-ink-900 hover:bg-ink-100 transition-colors"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Cerrar sesión
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => { onSignIn(); setMenuOpen(false); }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-brand-700 bg-brand-50 hover:bg-brand-100 transition-colors"
+              >
+                <LogOut className="w-5 h-5 rotate-180" />
+                Iniciar sesión
+              </button>
+            )}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
@@ -495,11 +562,7 @@ function HomeView({
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 hero-grid-bg opacity-15" />
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-24 md:pt-12 md:pb-32">
-          {/* Logo grande centrado */}
-          <div className="flex justify-center mb-8 animate-fade-in">
-            <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="w-full max-w-md md:max-w-lg h-auto" />
-          </div>
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-24 md:pt-20 md:pb-32">
           <div className="text-center max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white text-xs font-semibold px-4 py-1.5 rounded-full mb-6 animate-fade-in backdrop-blur-sm">
               <Sparkles className="w-3.5 h-3.5" />
@@ -623,13 +686,14 @@ function HomeView({
    ============================================================ */
 
 function ScannerView({
-  user, tokens, consumeToken, onScanComplete, subscriptionActive,
+  user, tokens, consumeToken, onScanComplete, subscriptionActive, onShowPlans,
 }: {
   user: User | null;
   tokens: number;
   consumeToken: () => Promise<boolean>;
   onScanComplete: (r: ScanResult) => void;
   subscriptionActive: boolean;
+  onShowPlans: () => void;
 }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState('');
@@ -661,12 +725,8 @@ function ScannerView({
     if (!subscriptionActive) {
       const ok = await consumeToken();
       if (!ok) {
- if (!user) {
-          setError('Has usado tus 2 escaneos gratis. Inicia sesión para seguir escaneando.');
- } else {
-          setError('No te quedan escaneos. Suscríbete a un plan para escaneos ilimitados.');
- }
         setAnalyzing(false);
+        onShowPlans();
         return;
       }
     }
@@ -1545,6 +1605,138 @@ function AuthModal({ onClose }: { onClose: () => void }) {
 }
 
 /* ============================================================
+   HISTORY VIEW
+   ============================================================ */
+
+function HistoryView({ setView }: { setView: (v: View) => void }) {
+  const [history, setHistory] = useState<ScanResult[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('snapcleain_history');
+    if (saved) {
+      try { setHistory(JSON.parse(saved)); } catch { /* ignore */ }
+    }
+  }, []);
+
+  return (
+    <div className="pt-[120px] md:pt-24 min-h-screen pb-20">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-8">
+          <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mx-auto mb-4">
+            <History className="w-7 h-7 text-brand-600" />
+          </div>
+          <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Historial</h1>
+          <p className="text-ink-500">Tus últimos escaneos realizados</p>
+        </div>
+
+        {history.length === 0 ? (
+          <div className="bg-white rounded-3xl p-12 text-center border border-ink-200/60 shadow-sm">
+            <Camera className="w-12 h-12 text-ink-300 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-ink-900 mb-2">Aún no has escaneado nada</h3>
+            <p className="text-sm text-ink-500 mb-6">Escanea tu primera mancha para verla aquí.</p>
+            <button
+              onClick={() => setView('scanner')}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-all shadow-sm"
+            >
+              <Camera className="w-5 h-5" />
+              Escanear mancha
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {history.map((result, i) => (
+              <div key={i} className="bg-white rounded-2xl overflow-hidden border border-ink-200/60 shadow-sm flex">
+                <img src={result.imageUrl} alt="Mancha" className="w-24 h-24 object-cover flex-shrink-0" />
+                <div className="p-4 flex-1">
+                  <h3 className="font-semibold text-ink-900 text-sm">{result.stainType}</h3>
+                  <p className="text-xs text-ink-500 mb-2">{result.surface}</p>
+                  <p className="text-xs text-brand-600 font-medium">{result.product}</p>
+                  <p className="text-[10px] text-ink-400 mt-1">
+                    {new Date(result.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   ABOUT VIEW
+   ============================================================ */
+
+function AboutView({ setView }: { setView: (v: View) => void }) {
+  return (
+    <div className="pt-[120px] md:pt-24 min-h-screen pb-20">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-8">
+          <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mx-auto mb-4">
+            <Info className="w-7 h-7 text-brand-600" />
+          </div>
+          <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Sobre nosotros</h1>
+          <p className="text-ink-500">Conoce snapcleAIn</p>
+        </div>
+
+        <div className="bg-white rounded-3xl p-8 border border-ink-200/60 shadow-sm space-y-6">
+          <div>
+            <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-16 w-auto mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-ink-900 text-center mb-3">¿Qué es snapcleAIn?</h2>
+            <p className="text-sm text-ink-600 leading-relaxed">
+              snapcleAIn es una aplicación que usa inteligencia artificial para identificar manchas en tus fotos
+              y decirte exactamente qué producto usar y cómo limpiarlas paso a paso. Todo desde tu móvil, en segundos.
+            </p>
+          </div>
+
+          <div className="border-t border-ink-200/60 pt-6">
+            <h3 className="font-semibold text-ink-900 mb-3 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-brand-600" />
+              Cómo funciona
+            </h3>
+            <p className="text-sm text-ink-600 leading-relaxed">
+              Fotografías la mancha, nuestra IA la analiza y te devuelve el tipo de mancha, la superficie afectada,
+              el mejor producto para eliminarla, los pasos detallados y las advertencias críticas para no dañar tus cosas.
+            </p>
+          </div>
+
+          <div className="border-t border-ink-200/60 pt-6">
+            <h3 className="font-semibold text-ink-900 mb-3 flex items-center gap-2">
+              <Leaf className="w-5 h-5 text-brand-600" />
+              Nuestra misión
+            </h3>
+            <p className="text-sm text-ink-600 leading-relaxed">
+              Queremos ayudar a las personas a limpiar de forma más eficiente y ecológica, priorizando productos
+              naturales y caseros antes de recurrir a químicos agresivos. Menos desperdicio, menos productos
+              innecesarios, mejores resultados.
+            </p>
+          </div>
+
+          <div className="border-t border-ink-200/60 pt-6">
+            <h3 className="font-semibold text-ink-900 mb-3 flex items-center gap-2">
+              <Crown className="w-5 h-5 text-brand-600" />
+              Planes
+            </h3>
+            <p className="text-sm text-ink-600 leading-relaxed mb-4">
+              Puedes empezar gratis con 2 escaneos. Si necesitas más, suscríbete a uno de nuestros planes
+              para escaneos ilimitados.
+            </p>
+            <button
+              onClick={() => setView('pricing')}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-all shadow-sm"
+            >
+              <CreditCard className="w-5 h-5" />
+              Ver planes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
    FOOTER
    ============================================================ */
 
@@ -1573,7 +1765,7 @@ function Footer() {
    SCAN LIMIT MODAL
    ============================================================ */
 
-function ScanLimitModal({ onClose, onLogin }: { onClose: () => void; onLogin: () => void }) {
+function ScanLimitModal({ onClose, onLogin, onShowPlans }: { onClose: () => void; onLogin: () => void; onShowPlans: () => void }) {
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in" onClick={onClose}>
       <div
@@ -1587,18 +1779,26 @@ function ScanLimitModal({ onClose, onLogin }: { onClose: () => void; onLogin: ()
           <X className="w-5 h-5" />
         </button>
 
-        <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mx-auto mb-4">
-          <Zap className="w-7 h-7 text-brand-600" />
+        <div className="w-14 h-14 rounded-2xl bg-error-500/10 flex items-center justify-center mx-auto mb-4">
+          <Zap className="w-7 h-7 text-error-600" />
         </div>
-        <h2 className="text-xl font-bold text-ink-900 mb-2">Has usado tus 2 escaneos gratis</h2>
+        <h2 className="text-xl font-bold text-ink-900 mb-2">Te has quedado sin tokens</h2>
         <p className="text-sm text-ink-500 mb-6 leading-relaxed">
-          Inicia sesión para seguir escaneando manchas con la IA, o suscríbete a un plan para escaneos ilimitados.
+          Suscríbete a un plan para escaneos ilimitados o ver un anuncio para conseguir un escaneo gratis.
         </p>
         <button
-          onClick={onLogin}
+          onClick={onShowPlans}
           className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-all shadow-sm mb-3"
         >
-          Iniciar sesión
+          <CreditCard className="w-5 h-5" />
+          Ver planes
+        </button>
+        <button
+          onClick={onLogin}
+          className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-white border border-brand-200 hover:bg-brand-50 text-brand-700 font-semibold rounded-xl transition-all shadow-sm mb-3"
+        >
+          <PlayCircle className="w-5 h-5" />
+          Ver anuncio para un escaneo gratis
         </button>
         <button
           onClick={onClose}
