@@ -266,7 +266,7 @@ export default function App() {
   const [subscriptionActive, setSubscriptionActive] = useState(false);
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
   const [checkoutMsg, setCheckoutMsg] = useState('');
-  const [previewMode, setPreviewMode] = useState<'pc' | 'mobile'>('pc');
+  const [previewMode, setPreviewMode] = useState<'pc' | 'mobile'>('mobile');
 
   useEffect(() => {
     const saved = localStorage.getItem('snapcleain_history');
@@ -329,7 +329,7 @@ export default function App() {
         forceMobile={previewMode === 'mobile'}
       />
 
-      <main className="pb-16 md:pb-0">
+      <main className={`pb-16 md:pb-0 ${previewMode === 'mobile' ? 'force-mobile' : ''}`}>
           {view === 'home' && (
             <HomeView
               user={user}
