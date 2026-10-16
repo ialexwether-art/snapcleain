@@ -10,7 +10,6 @@ import {
   Zap, Heart, Star, ArrowRight, CircleCheck, Clock, TrendingUp,
   MessageCircle, Send, Plus, RefreshCw, HelpCircle,
   Image as ImageIcon, ShoppingCart, Sparkle, Menu, History, Info, PlayCircle,
-  Smartphone, Monitor,
 } from 'lucide-react';
 
 /* ============================================================
@@ -266,7 +265,6 @@ export default function App() {
   const [subscriptionActive, setSubscriptionActive] = useState(false);
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
   const [checkoutMsg, setCheckoutMsg] = useState('');
-  const [previewMode, setPreviewMode] = useState<'pc' | 'mobile'>('pc');
 
   useEffect(() => {
     const saved = localStorage.getItem('snapcleain_history');
@@ -316,8 +314,7 @@ export default function App() {
   };
 
   return (
-    <div className={previewMode === 'mobile' ? 'min-h-screen bg-gray-200 flex justify-center' : 'min-h-screen bg-ink-50'}>
-      <div className={previewMode === 'mobile' ? 'w-full max-w-[430px] bg-ink-50 min-h-screen shadow-2xl relative overflow-x-hidden force-mobile' : 'w-full'}>
+    <div className="min-h-screen bg-ink-50">
       <Header
         user={user}
         view={view}
@@ -327,7 +324,6 @@ export default function App() {
         onSignOut={signOut}
         onSignIn={() => setShowAuthModal(true)}
         scanHistory={scanHistory}
-        forceMobile={previewMode === 'mobile'}
       />
 
       <main className="pb-16 md:pb-0">
@@ -378,17 +374,6 @@ export default function App() {
         )}
 
         <Footer />
-      </div>
-
-      <button
-        onClick={() => setPreviewMode(previewMode === 'mobile' ? 'pc' : 'mobile')}
-        className="fixed top-4 right-4 z-[300] flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border-2 border-brand-600 text-brand-700 font-semibold text-sm shadow-2xl hover:bg-brand-50 transition-all hover:scale-105"
-        title="Cambiar entre vista móvil y PC"
-      >
-        {previewMode === 'mobile'
-          ? <><Monitor className="w-4 h-4" /> Cambiar Vista (Móvil/PC)</>
-          : <><Smartphone className="w-4 h-4" /> Cambiar Vista (Móvil/PC)</>}
-      </button>
     </div>
   );
 }
@@ -398,7 +383,7 @@ export default function App() {
    ============================================================ */
 
 function Header({
-  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn, scanHistory, forceMobile,
+  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn, scanHistory,
 }: {
   user: User | null;
   view: View;
@@ -408,7 +393,6 @@ function Header({
   onSignOut: () => void;
   onSignIn: () => void;
   scanHistory: ScanResult[];
-  forceMobile: boolean;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const navItems: { id: View; label: string; icon: any }[] = [
@@ -425,14 +409,10 @@ function Header({
     { id: 'about', label: 'Sobre nosotros', icon: Info },
   ];
 
-  const showMobile = forceMobile;
-  const mobileClass = showMobile ? 'flex' : 'flex md:hidden';
-  const desktopClass = showMobile ? 'hidden' : 'hidden md:flex';
-
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-white border-b border-ink-200/60 shadow-sm">
       {/* ===== MOBILE HEADER (below md) ===== */}
-      <div className={`${mobileClass} h-14 items-center justify-between px-4`}>
+      <div className="md:hidden h-14 flex items-center justify-between px-4">
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="w-9 h-9 rounded-lg flex items-center justify-center text-ink-700 hover:bg-ink-100 transition-colors flex-shrink-0"
@@ -465,7 +445,7 @@ function Header({
       </div>
 
       {/* ===== DESKTOP HEADER (md and up) ===== */}
-      <div className={`${desktopClass} max-w-6xl mx-auto px-6 h-16 items-center justify-between`}>
+      <div className="hidden md:flex max-w-6xl mx-auto px-6 h-16 items-center justify-between">
         <button onClick={() => setView('home')} className="flex items-center group">
           <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-12 w-auto group-hover:scale-105 transition-transform" />
         </button>
@@ -523,7 +503,7 @@ function Header({
       </div>
 
       {/* ===== MOBILE BOTTOM NAV ===== */}
-      <nav className={`${mobileClass} items-center justify-around border-t border-ink-200/60 px-2 h-14`}>
+      <nav className="md:hidden flex items-center justify-around border-t border-ink-200/60 px-2 h-14">
         {navItems.map((item) => (
           <button
             key={item.id}
@@ -544,7 +524,7 @@ function Header({
 
       {/* ===== MOBILE DROPDOWN MENU ===== */}
       {menuOpen && (
-        <div className={`${mobileClass === 'flex' ? 'flex' : 'flex md:hidden'} absolute top-[112px] left-0 right-0 bg-white shadow-2xl border-b border-ink-200/60 animate-slide-down z-50`}>
+        <div className="md:hidden absolute top-[112px] left-0 right-0 bg-white shadow-2xl border-b border-ink-200/60 animate-slide-down z-50">
           <nav className="flex flex-col gap-1 p-4">
             {menuItems.map((item) => (
               <button
