@@ -10,6 +10,7 @@ import {
   Zap, Heart, Star, ArrowRight, CircleCheck, Clock, TrendingUp,
   MessageCircle, Send, Plus, RefreshCw, HelpCircle,
   Image as ImageIcon, ShoppingCart, Sparkle, Menu, History, Info, PlayCircle,
+  Smartphone, Monitor,
 } from 'lucide-react';
 
 /* ============================================================
@@ -265,6 +266,7 @@ export default function App() {
   const [subscriptionActive, setSubscriptionActive] = useState(false);
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
   const [checkoutMsg, setCheckoutMsg] = useState('');
+  const [previewMode, setPreviewMode] = useState<'mobile' | 'pc'>('mobile');
 
   useEffect(() => {
     const saved = localStorage.getItem('snapcleain_history');
@@ -314,17 +316,19 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-ink-50">
-      <Header
-        user={user}
-        view={view}
-        setView={setView}
-        tokens={tokens}
-        subscriptionActive={subscriptionActive}
-        onSignOut={signOut}
-        onSignIn={() => setShowAuthModal(true)}
-        scanHistory={scanHistory}
-      />
+    <div className={previewMode === 'mobile' ? 'min-h-screen bg-ink-200 flex justify-center' : 'min-h-screen bg-ink-50'}>
+      <div className={previewMode === 'mobile' ? 'w-[390px] min-h-screen bg-ink-50 relative shadow-2xl' : 'w-full min-h-screen bg-ink-50 relative'}>
+        <Header
+          user={user}
+          view={view}
+          setView={setView}
+          tokens={tokens}
+          subscriptionActive={subscriptionActive}
+          onSignOut={signOut}
+          onSignIn={() => setShowAuthModal(true)}
+          scanHistory={scanHistory}
+          previewMode={previewMode}
+        />
 
       <main className="pb-16 md:pb-0">
           {view === 'home' && (
@@ -374,6 +378,17 @@ export default function App() {
         )}
 
         <Footer />
+      </div>
+
+      <button
+        onClick={() => setPreviewMode(previewMode === 'mobile' ? 'pc' : 'mobile')}
+        className="fixed top-4 right-4 z-[300] flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border-2 border-brand-600 text-brand-700 font-semibold text-sm shadow-2xl hover:bg-brand-50 transition-all hover:scale-105"
+        title="Cambiar entre vista móvil y PC"
+      >
+        {previewMode === 'mobile'
+          ? <><Monitor className="w-4 h-4" /> Cambiar Vista</>
+          : <><Smartphone className="w-4 h-4" /> Cambiar Vista</>}
+      </button>
     </div>
   );
 }
@@ -383,7 +398,7 @@ export default function App() {
    ============================================================ */
 
 function Header({
-  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn, scanHistory,
+  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn, scanHistory, previewMode,
 }: {
   user: User | null;
   view: View;
@@ -393,6 +408,7 @@ function Header({
   onSignOut: () => void;
   onSignIn: () => void;
   scanHistory: ScanResult[];
+  previewMode: 'mobile' | 'pc';
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const navItems: { id: View; label: string; icon: any }[] = [
@@ -409,8 +425,11 @@ function Header({
     { id: 'about', label: 'Sobre nosotros', icon: Info },
   ];
 
+  const isMobilePreview = previewMode === 'mobile';
+  const headerPosClass = isMobilePreview ? 'absolute top-0 left-0 right-0' : 'fixed top-0 inset-x-0';
+
   return (
-    <header className="fixed top-0 inset-x-0 z-50 bg-white border-b border-ink-200/60 shadow-sm">
+    <header className={`${headerPosClass} z-50 bg-white border-b border-ink-200/60 shadow-sm`}>
       {/* ===== MOBILE HEADER (below md) ===== */}
       <div className="md:hidden h-14 flex items-center justify-between px-4">
         <button
