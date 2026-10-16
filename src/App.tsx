@@ -9,7 +9,7 @@ import {
   Coffee, Wine, Shirt, Home as HomeIcon, Car, Search, Crown,
   Zap, Heart, Star, ArrowRight, CircleCheck, Clock, TrendingUp,
   MessageCircle, Send, Plus, RefreshCw, HelpCircle,
-  Smartphone, Monitor,
+  Smartphone, Monitor, Menu, Image as ImageIcon, ShoppingCart, Sparkle,
 } from 'lucide-react';
 
 /* ============================================================
@@ -39,6 +39,13 @@ type LibraryProduct = {
   image: string;
   category: string;
   description: string;
+  amazonUrl?: string;
+};
+
+type StainCategory = {
+  name: string;
+  icon: any;
+  color: string;
 };
 
 /* ============================================================
@@ -46,29 +53,29 @@ type LibraryProduct = {
    ============================================================ */
 
 const PRODUCTS: LibraryProduct[] = [
-  { name: 'Vinagre blanco', image: '/vinagre.webp', category: 'Natural', description: 'Desengrasante y desodorizante natural. Ideal para cristales, suelos y desinfección general.' },
-  { name: 'Bicarbonato de sodio', image: '/bicarbonato.webp', category: 'Natural', description: 'Abrillantador y eliminador de olores. Excelente para superficies rugosas y manchas persistentes.' },
-  { name: 'Limón natural', image: '/limon-natural.webp', category: 'Natural', description: 'Antibacteriano y blanqueador natural. Perfecto para manchas orgánicas y óxido.' },
-  { name: 'Aceite esencial de limón', image: '/aceite-esencial-limon.webp', category: 'Natural', description: 'Desengrasante concentrado. Unas gotas potencian cualquier mezcla de limpieza.' },
-  { name: 'Jabón de Castilla', image: '/jabon-castilla.webp', category: 'Natural', description: 'Jabón vegetal multiusos, suave con tejidos delicados y superficies sensibles.' },
-  { name: 'Escamas de jabón', image: '/escamas-jabon.webp', category: 'Natural', description: 'Base para detergente casero. Disuelve en agua caliente para limpieza profunda.' },
-  { name: 'Sal gorda', image: '/sal-grosa.webp', category: 'Natural', description: 'Abrupta para manchas frescas. Absorbe líquidos y actúa como exfoliante.' },
-  { name: 'Alcohol', image: '/alcohol.webp', category: 'Químico', description: 'Evaporante rápido para desinfección y manchas de tinta o adhesivos.' },
-  { name: 'Acetona', image: '/acetona.webp', category: 'Químico', description: 'Disolvente fuerte para manchas de esmalte, pintura o pegamento. No usar en tejidos sintéticos.' },
-  { name: 'Agua oxigenada', image: '/agua-oxigenada.webp', category: 'Químico', description: 'Blanqueador suave para manchas de sangre, vino o café en tejidos blancos.' },
-  { name: 'Detergente líquido', image: '/detergente-liquido.webp', category: 'Químico', description: 'Agente surfactante general. Base para pretratamiento de manchas en ropa.' },
-  { name: 'Jabón de platos', image: '/jabon-platos.webp', category: 'Químico', description: 'Desengrasante suave. Ideal para manchas de grasa alimentaria en tejidos.' },
-  { name: 'Fairy Ultra', image: '/fairy-ultra.webp', category: 'Químico', description: 'Concentrado desengrasante. Unas gotas disuelven grasa incrustada en cualquier superficie.' },
-  { name: 'KH-7 Professional', image: '/kh-7-professional.webp', category: 'Químico', description: 'Quitagrasas profesional para cocinas y baños. Potente sobre grasa quemada.' },
-  { name: 'Dr. Beckmann Mago', image: '/dr-beckmann-mago.webp', category: 'Quitamanchas', description: 'Eliminador de manchas específico para ropa. Actúa sobre manchas mixtas.' },
-  { name: 'Vanish Oxi Action', image: '/vanish-oxi-action.webp', category: 'Quitamanchas', description: 'Oxigenante para blancos y color. Potente sobre manchas orgánicas.' },
-  { name: 'The Pink Stuff', image: '/the-pink-stuff.webp', category: 'Quitamanchas', description: 'Pasta limpiadora abrasiva suave. Para manchas incrustadas en superficies duras.' },
-  { name: 'Quitamanchas genérico', image: '/quitamanchas.webp', category: 'Quitamanchas', description: 'Pretratamiento en spray para ropa. Aplicar antes del lavado.' },
-  { name: 'Limpiador multiusos ecológico', image: '/limpiador-eco-multi.webp', category: 'Químico', description: 'Fórmula vegetal para limpieza diaria de toda la casa.' },
-  { name: 'Limpiador de madera', image: '/limpiador-madera.webp', category: 'Químico', description: 'Nutre y limpia maderas sin dañar el barniz. Devuelve el brillo natural.' },
-  { name: 'Cepillo de cerdas', image: '/cepillo.webp', category: 'Herramienta', description: 'Cepillo de cerdas suaves para trabajar el producto sobre la mancha sin dañar.' },
-  { name: 'Paños de microfibra', image: '/panos-microfibra.webp', category: 'Herramienta', description: 'Absorbentes y no rayan. Esenciales para secar y pulir tras la limpieza.' },
-  { name: 'Guantes de goma', image: '/guantes.webp', category: 'Herramienta', description: 'Protección para manos durante el uso de productos químicos.' },
+  { name: 'Vinagre blanco', image: '/vinagre.webp', category: 'Natural', description: 'Desengrasante y desodorizante natural. Ideal para cristales, suelos y desinfección general.', amazonUrl: 'https://www.amazon.es/s?k=vinagre+blanco+limpieza' },
+  { name: 'Bicarbonato de sodio', image: '/bicarbonato.webp', category: 'Natural', description: 'Abrillantador y eliminador de olores. Excelente para superficies rugosas y manchas persistentes.', amazonUrl: 'https://www.amazon.es/s?k=bicarbonato+sodio' },
+  { name: 'Limón natural', image: '/limon-natural.webp', category: 'Natural', description: 'Antibacteriano y blanqueador natural. Perfecto para manchas orgánicas y óxido.', amazonUrl: 'https://www.amazon.es/s?k=limon+natural' },
+  { name: 'Aceite esencial de limón', image: '/aceite-esencial-limon.webp', category: 'Natural', description: 'Desengrasante concentrado. Unas gotas potencian cualquier mezcla de limpieza.', amazonUrl: 'https://www.amazon.es/s?k=aceite+esencial+limon' },
+  { name: 'Jabón de Castilla', image: '/jabon-castilla.webp', category: 'Natural', description: 'Jabón vegetal multiusos, suave con tejidos delicados y superficies sensibles.', amazonUrl: 'https://www.amazon.es/s?k=jabon+castilla' },
+  { name: 'Escamas de jabón', image: '/escamas-jabon.webp', category: 'Natural', description: 'Base para detergente casero. Disuelve en agua caliente para limpieza profunda.', amazonUrl: 'https://www.amazon.es/s?k=escamas+jabon' },
+  { name: 'Sal gorda', image: '/sal-grosa.webp', category: 'Natural', description: 'Abrupta para manchas frescas. Absorbe líquidos y actúa como exfoliante.', amazonUrl: 'https://www.amazon.es/s?k=sal+gorda' },
+  { name: 'Alcohol', image: '/alcohol.webp', category: 'Químico', description: 'Evaporante rápido para desinfección y manchas de tinta o adhesivos.', amazonUrl: 'https://www.amazon.es/s?k=alcohol+limpieza' },
+  { name: 'Acetona', image: '/acetona.webp', category: 'Químico', description: 'Disolvente fuerte para manchas de esmalte, pintura o pegamento. No usar en tejidos sintéticos.', amazonUrl: 'https://www.amazon.es/s?k=acetona' },
+  { name: 'Agua oxigenada', image: '/agua-oxigenada.webp', category: 'Químico', description: 'Blanqueador suave para manchas de sangre, vino o café en tejidos blancos.', amazonUrl: 'https://www.amazon.es/s?k=agua+oxigenada' },
+  { name: 'Detergente líquido', image: '/detergente-liquido.webp', category: 'Químico', description: 'Agente surfactante general. Base para pretratamiento de manchas en ropa.', amazonUrl: 'https://www.amazon.es/s?k=detergente+liquido' },
+  { name: 'Jabón de platos', image: '/jabon-platos.webp', category: 'Químico', description: 'Desengrasante suave. Ideal para manchas de grasa alimentaria en tejidos.', amazonUrl: 'https://www.amazon.es/s?k=jabon+platos' },
+  { name: 'Fairy Ultra', image: '/fairy-ultra.webp', category: 'Químico', description: 'Concentrado desengrasante. Unas gotas disuelven grasa incrustada en cualquier superficie.', amazonUrl: 'https://www.amazon.es/s?k=fairy+ultra' },
+  { name: 'KH-7 Professional', image: '/kh-7-professional.webp', category: 'Químico', description: 'Quitagrasas profesional para cocinas y baños. Potente sobre grasa quemada.', amazonUrl: 'https://www.amazon.es/s?k=kh-7+professional' },
+  { name: 'Dr. Beckmann Mago', image: '/dr-beckmann-mago.webp', category: 'Quitamanchas', description: 'Eliminador de manchas específico para ropa. Actúa sobre manchas mixtas.', amazonUrl: 'https://www.amazon.es/s?k=dr+beckmann+mago' },
+  { name: 'Vanish Oxi Action', image: '/vanish-oxi-action.webp', category: 'Quitamanchas', description: 'Oxigenante para blancos y color. Potente sobre manchas orgánicas.', amazonUrl: 'https://www.amazon.es/s?k=vanish+oxi+action' },
+  { name: 'The Pink Stuff', image: '/the-pink-stuff.webp', category: 'Quitamanchas', description: 'Pasta limpiadora abrasiva suave. Para manchas incrustadas en superficies duras.', amazonUrl: 'https://www.amazon.es/s?k=the+pink+stuff' },
+  { name: 'Quitamanchas genérico', image: '/quitamanchas.webp', category: 'Quitamanchas', description: 'Pretratamiento en spray para ropa. Aplicar antes del lavado.', amazonUrl: 'https://www.amazon.es/s?k=quitamanchas' },
+  { name: 'Limpiador multiusos ecológico', image: '/limpiador-eco-multi.webp', category: 'Químico', description: 'Fórmula vegetal para limpieza diaria de toda la casa.', amazonUrl: 'https://www.amazon.es/s?k=limpiador+multiusos+ecologico' },
+  { name: 'Limpiador de madera', image: '/limpiador-madera.webp', category: 'Químico', description: 'Nutre y limpia maderas sin dañar el barniz. Devuelve el brillo natural.', amazonUrl: 'https://www.amazon.es/s?k=limpiador+madera' },
+  { name: 'Cepillo de cerdas', image: '/cepillo.webp', category: 'Herramienta', description: 'Cepillo de cerdas suaves para trabajar el producto sobre la mancha sin dañar.', amazonUrl: 'https://www.amazon.es/s?k=cepillo+cerdas+limpieza' },
+  { name: 'Paños de microfibra', image: '/panos-microfibra.webp', category: 'Herramienta', description: 'Absorbentes y no rayan. Esenciales para secar y pulir tras la limpieza.', amazonUrl: 'https://www.amazon.es/s?k=panos+microfibra' },
+  { name: 'Guantes de goma', image: '/guantes.webp', category: 'Herramienta', description: 'Protección para manos durante el uso de productos químicos.', amazonUrl: 'https://www.amazon.es/s?k=guantes+goma+limpieza' },
 ];
 
 const KIT_ESSENTIALS = [
@@ -83,6 +90,19 @@ const KIT_ESSENTIALS = [
 ];
 
 const CATEGORIES = ['Todos', 'Natural', 'Químico', 'Quitamanchas', 'Herramienta'];
+
+const STAIN_CATEGORIES: StainCategory[] = [
+  { name: 'Café', icon: Coffee, color: 'amber' },
+  { name: 'Vino', icon: Wine, color: 'rose' },
+  { name: 'Ropa', icon: Shirt, color: 'blue' },
+  { name: 'Cocina', icon: HomeIcon, color: 'orange' },
+  { name: 'Coche', icon: Car, color: 'slate' },
+  { name: 'Grasa', icon: Droplet, color: 'yellow' },
+  { name: 'Tinta', icon: Brush, color: 'violet' },
+  { name: 'Sangre', icon: AlertTriangle, color: 'red' },
+  { name: 'Moho', icon: Leaf, color: 'green' },
+  { name: 'Polvo', icon: Wind, color: 'gray' },
+];
 
 /* ============================================================
    AUTH
@@ -245,6 +265,7 @@ export default function App() {
   const [subscriptionActive, setSubscriptionActive] = useState(false);
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
   const [checkoutMsg, setCheckoutMsg] = useState('');
+  const [mobileMode, setMobileMode] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('snapcleain_history');
@@ -294,18 +315,20 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-ink-50">
-      <Header
-        user={user}
-        view={view}
-        setView={setView}
-        tokens={tokens}
-        subscriptionActive={subscriptionActive}
-        onSignOut={signOut}
-        onSignIn={() => setShowAuthModal(true)}
-      />
+    <div className={mobileMode ? 'min-h-screen bg-gray-300 flex justify-center' : 'min-h-screen bg-ink-50'}>
+      <div className={mobileMode ? 'w-full max-w-[430px] bg-ink-50 min-h-screen shadow-2xl overflow-x-hidden relative' : 'w-full'}>
+        <Header
+          user={user}
+          view={view}
+          setView={setView}
+          tokens={tokens}
+          subscriptionActive={subscriptionActive}
+          onSignOut={signOut}
+          onSignIn={() => setShowAuthModal(true)}
+          mobileMode={mobileMode}
+        />
 
-      <main className="pb-16 md:pb-0">
+      <main className={mobileMode ? 'pb-6' : 'pb-16 md:pb-0'}>
           {view === 'home' && (
             <HomeView
               user={user}
@@ -349,6 +372,15 @@ export default function App() {
         )}
 
         <Footer />
+      </div>
+
+      <button
+        onClick={() => setMobileMode(!mobileMode)}
+        className="fixed bottom-6 right-6 z-[100] w-12 h-12 rounded-full bg-ink-900 text-white shadow-2xl hover:bg-ink-800 flex items-center justify-center transition-all hover:scale-110"
+        title={mobileMode ? 'Ver en escritorio' : 'Ver en móvil'}
+      >
+        {mobileMode ? <Monitor className="w-5 h-5" /> : <Smartphone className="w-5 h-5" />}
+      </button>
     </div>
   );
 }
@@ -358,7 +390,7 @@ export default function App() {
    ============================================================ */
 
 function Header({
-  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn,
+  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn, mobileMode,
 }: {
   user: User | null;
   view: View;
@@ -367,31 +399,36 @@ function Header({
   subscriptionActive: boolean;
   onSignOut: () => void;
   onSignIn: () => void;
+  mobileMode: boolean;
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const navItems: { id: View; label: string; icon: any }[] = [
     { id: 'home', label: 'Inicio', icon: HomeIcon },
-    { id: 'scanner', label: 'Escáner', icon: Scan },
     { id: 'library', label: 'Biblioteca', icon: BookOpen },
+    { id: 'scanner', label: 'Escáner', icon: Scan },
     { id: 'kit', label: 'Botiquín', icon: Backpack },
     { id: 'pricing', label: 'Planes', icon: CreditCard },
   ];
 
   return (
+    <>
     <header className="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-md border-b border-ink-200/60">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <button onClick={() => setView('home')} className="flex items-center group">
-          <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-16 w-auto group-hover:scale-105 transition-transform" />
+          <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-20 w-auto group-hover:scale-105 transition-transform" />
         </button>
 
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className={`${mobileMode ? 'hidden' : 'hidden md:flex'} items-center gap-1`}>
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setView(item.id)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                view === item.id
-                  ? 'bg-brand-50 text-brand-700'
-                  : 'text-ink-600 hover:text-ink-900 hover:bg-ink-100'
+                item.id === 'scanner'
+                  ? 'bg-brand-600 text-white hover:bg-brand-700'
+                  : view === item.id
+                    ? 'bg-brand-50 text-brand-700'
+                    : 'text-ink-600 hover:text-ink-900 hover:bg-ink-100'
               }`}
             >
               <item.icon className="w-4 h-4" />
@@ -402,14 +439,14 @@ function Header({
 
         <div className="flex items-center gap-2">
           {user && !subscriptionActive && (
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-50 border border-accent-200">
+            <div className={`${mobileMode ? 'flex' : 'hidden sm:flex'} items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-50 border border-accent-200`}>
               <Zap className="w-3.5 h-3.5 text-accent-600" />
               <span className="text-sm font-semibold text-accent-700">{tokens}</span>
               <span className="text-xs text-accent-600">tokens</span>
             </div>
           )}
           {user && subscriptionActive && (
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200">
+            <div className={`${mobileMode ? 'flex' : 'hidden sm:flex'} items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200`}>
               <Crown className="w-3.5 h-3.5 text-brand-600" />
               <span className="text-sm font-semibold text-brand-700">Premium</span>
             </div>
@@ -420,7 +457,7 @@ function Header({
               className="flex items-center gap-1.5 text-sm text-ink-600 hover:text-ink-900 transition-colors px-3 py-2 rounded-lg hover:bg-ink-100"
             >
               <LogOut className="w-4 h-4" />
-              <span className="hidden sm:block">Salir</span>
+              <span className={`${mobileMode ? 'hidden' : 'hidden sm:block'}`}>Salir</span>
             </button>
           ) : (
             <button
@@ -430,17 +467,29 @@ function Header({
               Iniciar sesión
             </button>
           )}
+          {mobileMode && (
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="w-10 h-10 rounded-lg flex items-center justify-center text-ink-700 hover:bg-ink-100 transition-colors"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Mobile nav */}
-      <nav className="md:hidden flex items-center justify-around border-t border-ink-200/60 px-2 h-14">
+      {/* Mobile nav (not mobileMode) */}
+      <nav className={`${mobileMode ? 'hidden' : 'flex md:hidden'} items-center justify-around border-t border-ink-200/60 px-2 h-14`}>
         {navItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setView(item.id)}
             className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors ${
-              view === item.id ? 'text-brand-600' : 'text-ink-400'
+              item.id === 'scanner'
+                ? 'bg-brand-600 text-white rounded-full -mt-4 -mb-1 shadow-lg px-3'
+                : view === item.id
+                  ? 'text-brand-600'
+                  : 'text-ink-400'
             }`}
           >
             <item.icon className="w-5 h-5" />
@@ -449,6 +498,43 @@ function Header({
         ))}
       </nav>
     </header>
+
+      {/* Hamburger menu for mobileMode */}
+      {mobileMode && menuOpen && (
+        <div className="fixed inset-0 z-[60]" onClick={() => setMenuOpen(false)}>
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm animate-fade-in" />
+          <div
+            className="absolute top-0 right-0 w-64 h-full bg-white shadow-2xl p-6 animate-slide-down"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <span className="font-bold text-ink-900">Menú</span>
+              <button onClick={() => setMenuOpen(false)} className="text-ink-400 hover:text-ink-600 p-1 rounded-lg hover:bg-ink-100">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <nav className="flex flex-col gap-1">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => { setView(item.id); setMenuOpen(false); }}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                    item.id === 'scanner'
+                      ? 'bg-brand-600 text-white'
+                      : view === item.id
+                        ? 'bg-brand-50 text-brand-700'
+                        : 'text-ink-600 hover:text-ink-900 hover:bg-ink-100'
+                  }`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -465,9 +551,9 @@ function HomeView({
   setView: (v: View) => void;
 }) {
   return (
-    <div className="pt-[120px] md:pt-16">
+    <div className="pt-[120px] md:pt-16 min-h-screen bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900">
+      <section className="relative overflow-hidden">
         <div className="absolute inset-0 hero-grid-bg opacity-15" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-24 md:pt-16 md:pb-32">
           <div className="text-center max-w-3xl mx-auto">
@@ -514,36 +600,36 @@ function HomeView({
       {/* How it works */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
         <div className="text-center mb-14">
-          <h2 className="text-3xl font-bold text-ink-900 tracking-tight mb-3">Cómo funciona</h2>
-          <p className="text-ink-500 max-w-lg mx-auto">Tres pasos. Menos de 30 segundos.</p>
+          <h2 className="text-3xl font-bold text-white tracking-tight mb-3">Cómo funciona</h2>
+          <p className="text-brand-200 max-w-lg mx-auto">Tres pasos. Menos de 30 segundos.</p>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {[
-            { icon: Camera, title: '1. Fotografía', desc: 'Haz una foto clara de la mancha con tu móvil. Sin preparar nada especial.', color: 'brand' },
-            { icon: Sparkles, title: '2. Analiza', desc: 'La IA identifica la mancha, la superficie y el mejor producto para eliminarla.', color: 'accent' },
-            { icon: CircleCheck, title: '3. Limpia', desc: 'Sigue los pasos detallados con emojis y advertencias. Mancha eliminada.', color: 'success' },
+            { icon: Camera, title: '1. Fotografía', desc: 'Haz una foto clara de la mancha con tu móvil. Sin preparar nada especial.' },
+            { icon: Sparkles, title: '2. Analiza', desc: 'La IA identifica la mancha, la superficie y el mejor producto para eliminarla.' },
+            { icon: CircleCheck, title: '3. Limpia', desc: 'Sigue los pasos detallados con emojis y advertencias. Mancha eliminada.' },
           ].map((step, i) => (
             <div
               key={i}
-              className="bg-white rounded-2xl p-8 border border-ink-200/60 shadow-sm hover:shadow-md transition-all hover:scale-[1.02] animate-fade-in-up"
+              className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all hover:scale-[1.02] animate-fade-in-up"
               style={{ animationDelay: `${i * 0.1}s` }}
             >
-              <div className={`w-14 h-14 rounded-2xl bg-${step.color}-50 flex items-center justify-center mb-5`}>
-                <step.icon className={`w-7 h-7 text-${step.color}-600`} />
+              <div className="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center mb-5">
+                <step.icon className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-ink-900 mb-2">{step.title}</h3>
-              <p className="text-sm text-ink-500 leading-relaxed">{step.desc}</p>
+              <h3 className="text-lg font-semibold text-white mb-2">{step.title}</h3>
+              <p className="text-sm text-brand-100 leading-relaxed">{step.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Features */}
-      <section className="bg-white border-y border-ink-200/60">
+      <section className="bg-white/5 border-y border-white/10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
           <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-ink-900 tracking-tight mb-3">Por qué snapcleAIn</h2>
-            <p className="text-ink-500 max-w-lg mx-auto">El limpiador inteligente que cabe en tu bolsillo.</p>
+            <h2 className="text-3xl font-bold text-white tracking-tight mb-3">Por qué snapcleAIn</h2>
+            <p className="text-brand-200 max-w-lg mx-auto">El limpiador inteligente que cabe en tu bolsillo.</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -553,11 +639,11 @@ function HomeView({
               { icon: Recycle, title: 'Soluciones eco', desc: 'Prioriza productos naturales y caseros antes de recurrir a químicos.' },
             ].map((f, i) => (
               <div key={i} className="text-center animate-fade-in-up" style={{ animationDelay: `${i * 0.08}s` }}>
-                <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center mx-auto mb-4">
-                  <f.icon className="w-6 h-6 text-brand-600" />
+                <div className="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center mx-auto mb-4">
+                  <f.icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="font-semibold text-ink-900 mb-2">{f.title}</h3>
-                <p className="text-sm text-ink-500 leading-relaxed">{f.desc}</p>
+                <h3 className="font-semibold text-white mb-2">{f.title}</h3>
+                <p className="text-sm text-brand-100 leading-relaxed">{f.desc}</p>
               </div>
             ))}
           </div>
@@ -566,8 +652,7 @@ function HomeView({
 
       {/* CTA */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 p-10 md:p-16 text-center">
-          <div className="absolute inset-0 hero-grid-bg opacity-20" />
+        <div className="relative overflow-hidden rounded-3xl bg-white/10 border border-white/20 backdrop-blur-md p-10 md:p-16 text-center">
           <div className="relative">
             <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-4">
               Tu próxima mancha, resuelta en segundos
@@ -609,6 +694,7 @@ function ScannerView({
   const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (file: File) => {
     setSelectedFile(file);
@@ -689,25 +775,45 @@ function ScannerView({
         )}
 
         {!selectedFile && !result && (
-          <div
-            onDrop={handleDrop}
-            onDragOver={(e) => e.preventDefault()}
-            className="border-2 border-dashed border-ink-300 rounded-3xl p-12 text-center bg-white hover:border-brand-400 hover:bg-brand-50/30 transition-all cursor-pointer animate-fade-in"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <div className="w-20 h-20 rounded-full bg-brand-50 flex items-center justify-center mx-auto mb-5 animate-pulse-ring">
-              <Upload className="w-10 h-10 text-brand-500" />
+          <div className="space-y-4">
+            <div
+              onDrop={handleDrop}
+              onDragOver={(e) => e.preventDefault()}
+              className="border-2 border-dashed border-brand-300 rounded-3xl p-12 text-center bg-white hover:border-brand-500 hover:bg-brand-50/30 transition-all cursor-pointer animate-fade-in"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <div className="w-20 h-20 rounded-full bg-brand-50 flex items-center justify-center mx-auto mb-5 animate-pulse-ring">
+                <Camera className="w-10 h-10 text-brand-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-ink-900 mb-2">Analizar mancha</h3>
+              <p className="text-sm text-ink-500 mb-4">Arrastra una imagen o haz clic para hacer una foto</p>
+              <p className="text-xs text-ink-400">JPG, PNG, WEBP · Máx 10MB</p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+              />
             </div>
-            <h3 className="text-lg font-semibold text-ink-900 mb-2">Sube la foto de tu mancha</h3>
-            <p className="text-sm text-ink-500 mb-4">Arrastra una imagen o haz clic para seleccionar</p>
-            <p className="text-xs text-ink-400">JPG, PNG, WEBP · Máx 10MB</p>
+
+            <button
+              onClick={() => galleryInputRef.current?.click()}
+              className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white border-2 border-brand-200 hover:border-brand-400 hover:bg-brand-50/50 text-brand-700 font-semibold rounded-2xl text-base transition-all"
+            >
+              <ImageIcon className="w-5 h-5" />
+              Subir de galería
+            </button>
             <input
-              ref={fileInputRef}
+              ref={galleryInputRef}
               type="file"
               accept="image/*"
               className="hidden"
               onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
             />
+
+            <p className="text-center text-xs text-ink-400">Echa mancha</p>
           </div>
         )}
 
@@ -943,15 +1049,104 @@ function ScanResultCard({ result, onReset, selectedFile }: { result: ScanResult;
    ============================================================ */
 
 function LibraryView({ setView }: { setView: (v: View) => void }) {
+  const [selectedStain, setSelectedStain] = useState<string | null>(null);
+
+  return (
+    <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Biblioteca de manchas</h1>
+          <p className="text-ink-500">Selecciona el tipo de mancha para ver la solución</p>
+        </div>
+
+        {/* 10 stain category buttons */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
+          {STAIN_CATEGORIES.map((stain, i) => {
+            const Icon = stain.icon;
+            const active = selectedStain === stain.name;
+            return (
+              <button
+                key={stain.name}
+                onClick={() => setSelectedStain(active ? null : stain.name)}
+                className={`flex flex-col items-center gap-3 p-6 rounded-2xl border-2 transition-all animate-fade-in-up hover:scale-[1.03] ${
+                  active
+                    ? 'border-brand-500 bg-brand-50 shadow-md'
+                    : 'border-ink-200 bg-white hover:border-brand-300 shadow-sm'
+                }`}
+                style={{ animationDelay: `${i * 0.05}s` }}
+              >
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${active ? 'bg-brand-600' : 'bg-ink-100'}`}>
+                  <Icon className={`w-6 h-6 ${active ? 'text-white' : 'text-ink-600'}`} />
+                </div>
+                <span className={`text-sm font-semibold ${active ? 'text-brand-700' : 'text-ink-700'}`}>{stain.name}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {selectedStain && (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-brand-200 shadow-sm animate-zoom-in mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center">
+                {(() => {
+                  const Icon = STAIN_CATEGORIES.find(s => s.name === selectedStain)?.icon;
+                  return Icon ? <Icon className="w-5 h-5 text-brand-600" /> : null;
+                })()}
+              </div>
+              <h2 className="text-xl font-bold text-ink-900">Mancha de {selectedStain}</h2>
+            </div>
+            <p className="text-sm text-ink-600 leading-relaxed mb-5">
+              Para eliminar una mancha de {selectedStain.toLowerCase()}, te recomendamos usar los productos disponibles en tu botiquín. Escanea la mancha con la IA para recibir instrucciones paso a paso personalizadas.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => setView('scanner')}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-sm transition-all shadow-sm"
+              >
+                <Camera className="w-4 h-4" />
+                Escanear mancha
+              </button>
+              <button
+                onClick={() => setView('kit')}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-white border border-ink-200 hover:border-brand-300 text-ink-700 font-semibold rounded-xl text-sm transition-all"
+              >
+                <Backpack className="w-4 h-4" />
+                Ver productos en botiquín
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Scanner CTA */}
+        <div className="bg-gradient-to-br from-brand-600 to-brand-800 rounded-3xl p-8 text-center">
+          <Scan className="w-10 h-10 text-white mx-auto mb-3" />
+          <h2 className="text-xl font-bold text-white mb-2">¿No sabes qué mancha es?</h2>
+          <p className="text-brand-100 text-sm mb-5 max-w-md mx-auto">Escanea con la IA y recibe la solución exacta para tu mancha en segundos.</p>
+          <button
+            onClick={() => setView('scanner')}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-brand-700 font-semibold rounded-xl text-sm transition-all hover:scale-105 shadow-lg"
+          >
+            Escanear ahora
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   KIT VIEW
+   ============================================================ */
+
+function KitView({ setView }: { setView: (v: View) => void }) {
   const [category, setCategory] = useState('Todos');
   const [search, setSearch] = useState('');
-
-  const filtered = PRODUCTS.filter((p) => {
-    const matchCat = category === 'Todos' || p.category === category;
-    const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.description.toLowerCase().includes(search.toLowerCase());
-    return matchCat && matchSearch;
-  });
+  const [askAiOpen, setAskAiOpen] = useState(false);
+  const [aiQuestion, setAiQuestion] = useState('');
+  const [aiAnswer, setAiAnswer] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState('');
 
   const categoryIcons: Record<string, any> = {
     'Natural': Leaf,
@@ -960,12 +1155,108 @@ function LibraryView({ setView }: { setView: (v: View) => void }) {
     'Herramienta': Hand,
   };
 
+  const filtered = PRODUCTS.filter((p) => {
+    const matchCat = category === 'Todos' || p.category === category;
+    const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
+      p.description.toLowerCase().includes(search.toLowerCase());
+    return matchCat && matchSearch;
+  });
+
+  const handleAskAi = async () => {
+    if (!aiQuestion.trim()) return;
+    setAiLoading(true);
+    setAiError('');
+    setAiAnswer('');
+    try {
+      const body = {
+        contents: [{
+          role: 'user',
+          parts: [{ text: `Eres un experto en limpieza. Responde la siguiente pregunta sobre productos de limpieza o manchas en español, de forma clara y concisa (máximo 4 frases). No uses Markdown.\n\nPregunta: ${aiQuestion}` }],
+        }],
+        generationConfig: { temperature: 0.4 },
+      };
+      const proxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gemini-proxy`;
+      const res = await fetch(proxyUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error('No se pudo procesar tu pregunta.');
+      const data = await res.json();
+      const text: string =
+        data?.candidates?.[0]?.content?.parts?.[0]?.text ??
+        data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text).join('') ?? '';
+      if (!text) throw new Error('La IA no devolvió una respuesta.');
+      setAiAnswer(text.trim());
+    } catch (err: any) {
+      setAiError(err.message || 'No se pudo procesar tu pregunta.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   return (
     <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Biblioteca de productos</h1>
-          <p className="text-ink-500">Todo lo que necesitas para eliminar cualquier mancha</p>
+          <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Tu botiquín de limpieza</h1>
+          <p className="text-ink-500">Productos recomendados para resolver cualquier mancha</p>
+        </div>
+
+        {/* Ask AI */}
+        <div className="bg-brand-50 border border-brand-200 rounded-2xl p-5 mb-8">
+          {askAiOpen ? (
+            <div className="animate-zoom-in">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkle className="w-5 h-5 text-brand-600" />
+                <h3 className="font-semibold text-ink-900">Preguntar a la IA</h3>
+              </div>
+              <textarea
+                value={aiQuestion}
+                onChange={(e) => setAiQuestion(e.target.value)}
+                placeholder="Ej: ¿Cómo quito una mancha de vino de un sofá de tela?"
+                className="w-full px-4 py-3 rounded-xl border border-ink-200 text-ink-900 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm resize-none mb-3"
+                rows={3}
+                autoFocus
+              />
+              {aiAnswer && (
+                <div className="bg-white rounded-xl p-4 border border-brand-200 mb-3 animate-slide-down">
+                  <p className="text-sm text-ink-700 leading-relaxed">{aiAnswer}</p>
+                </div>
+              )}
+              {aiError && (
+                <div className="bg-error-500/10 border border-error-500/30 rounded-xl px-4 py-3 mb-3">
+                  <p className="text-sm text-error-600">{aiError}</p>
+                </div>
+              )}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { setAskAiOpen(false); setAiQuestion(''); setAiAnswer(''); setAiError(''); }}
+                  className="flex-1 py-3 rounded-xl border border-ink-200 text-ink-600 font-medium text-sm hover:bg-ink-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleAskAi}
+                  disabled={aiLoading || !aiQuestion.trim()}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {aiLoading ? <Loader className="w-4 h-4 animate-spin" /> : <><Send className="w-4 h-4" /> Preguntar</>}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => setAskAiOpen(true)}
+              className="w-full flex items-center justify-center gap-2 text-brand-700 font-semibold text-sm"
+            >
+              <Sparkle className="w-5 h-5" />
+              Preguntar a la IA sobre cualquier mancha
+            </button>
+          )}
         </div>
 
         {/* Search */}
@@ -1001,12 +1292,12 @@ function LibraryView({ setView }: { setView: (v: View) => void }) {
           })}
         </div>
 
-        {/* Grid */}
+        {/* Product grid with Amazon links */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((product, i) => (
             <div
               key={product.name}
-              className="group bg-white rounded-2xl overflow-hidden border border-ink-200/60 shadow-sm hover:shadow-md transition-all hover:scale-[1.03] animate-fade-in-up"
+              className="group bg-white rounded-2xl overflow-hidden border border-ink-200/60 shadow-sm hover:shadow-md transition-all hover:scale-[1.03] animate-fade-in-up flex flex-col"
               style={{ animationDelay: `${Math.min(i * 0.04, 0.3)}s` }}
             >
               <div className="aspect-square bg-ink-100 overflow-hidden">
@@ -1017,7 +1308,7 @@ function LibraryView({ setView }: { setView: (v: View) => void }) {
                   loading="lazy"
                 />
               </div>
-              <div className="p-3">
+              <div className="p-3 flex-1 flex flex-col">
                 <div className="flex items-center gap-1.5 mb-1">
                   {product.category === 'Natural' && <Leaf className="w-3 h-3 text-brand-500" />}
                   {product.category === 'Químico' && <FlaskRound className="w-3 h-3 text-accent-500" />}
@@ -1026,7 +1317,18 @@ function LibraryView({ setView }: { setView: (v: View) => void }) {
                   <span className="text-[10px] font-semibold text-ink-400 uppercase tracking-wider">{product.category}</span>
                 </div>
                 <h3 className="font-semibold text-sm text-ink-900 mb-1 leading-tight">{product.name}</h3>
-                <p className="text-xs text-ink-500 leading-relaxed line-clamp-2">{product.description}</p>
+                <p className="text-xs text-ink-500 leading-relaxed line-clamp-2 mb-3">{product.description}</p>
+                {product.amazonUrl && (
+                  <a
+                    href={product.amazonUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-auto flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-accent-50 hover:bg-accent-100 text-accent-700 text-xs font-semibold transition-colors"
+                  >
+                    <ShoppingCart className="w-3.5 h-3.5" />
+                    Comprar en Amazon
+                  </a>
+                )}
               </div>
             </div>
           ))}
@@ -1038,70 +1340,8 @@ function LibraryView({ setView }: { setView: (v: View) => void }) {
           </div>
         )}
 
-        {/* Kit CTA */}
-        <div className="mt-12 bg-gradient-to-br from-brand-600 to-brand-800 rounded-3xl p-8 text-center">
-          <Backpack className="w-10 h-10 text-white mx-auto mb-3" />
-          <h2 className="text-xl font-bold text-white mb-2">¿Tu botiquín de limpieza?</h2>
-          <p className="text-brand-100 text-sm mb-5 max-w-md mx-auto">Descubre los 8 productos imprescindibles para resolver el 90% de las manchas del hogar.</p>
-          <button
-            onClick={() => setView('kit')}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-brand-700 font-semibold rounded-xl text-sm transition-all hover:scale-105 shadow-lg"
-          >
-            Ver botiquín esencial
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ============================================================
-   KIT VIEW
-   ============================================================ */
-
-function KitView({ setView }: { setView: (v: View) => void }) {
-  return (
-    <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Tu botiquín de limpieza</h1>
-          <p className="text-ink-500">Los 8 imprescindibles para resolver el 90% de las manchas</p>
-        </div>
-
-        <div className="bg-white rounded-3xl p-6 border border-ink-200/60 shadow-sm mb-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center">
-              <Backpack className="w-5 h-5 text-brand-600" />
-            </div>
-            <div>
-              <h2 className="font-semibold text-ink-900">Botiquín esencial</h2>
-              <p className="text-xs text-ink-500">Recomendado por snapcleAIn</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {KIT_ESSENTIALS.map((item, i) => (
-              <div
-                key={item.name}
-                className="text-center animate-fade-in-up"
-                style={{ animationDelay: `${i * 0.06}s` }}
-              >
-                <div className="aspect-square rounded-2xl bg-ink-100 overflow-hidden mb-2 group">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                </div>
-                <p className="text-xs font-medium text-ink-700">{item.name}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Tips */}
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="mt-12 grid sm:grid-cols-2 gap-4">
           {[
             { icon: Leaf, title: 'Empieza por lo natural', desc: 'Vinagre, bicarbonato y limón resuelven muchas manchas sin productos agresivos.' },
             { icon: AlertTriangle, title: 'Prueba antes en zona oculta', desc: 'Aplica el producto en una esquina discreta para comprobar que no daña el material.' },
@@ -1124,16 +1364,16 @@ function KitView({ setView }: { setView: (v: View) => void }) {
           ))}
         </div>
 
-        {/* Library CTA */}
-        <div className="mt-8 bg-white rounded-3xl p-8 border border-ink-200/60 shadow-sm text-center">
-          <BookOpen className="w-10 h-10 text-brand-600 mx-auto mb-3" />
-          <h2 className="text-xl font-bold text-ink-900 mb-2">Explora la biblioteca completa</h2>
-          <p className="text-ink-500 text-sm mb-5 max-w-md mx-auto">Más de 20 productos catalogados: naturales, químicos, quitamanchas y herramientas.</p>
+        {/* Scanner CTA */}
+        <div className="mt-8 bg-gradient-to-br from-brand-600 to-brand-800 rounded-3xl p-8 text-center">
+          <Scan className="w-10 h-10 text-white mx-auto mb-3" />
+          <h2 className="text-xl font-bold text-white mb-2">¿No sabes qué producto usar?</h2>
+          <p className="text-brand-100 text-sm mb-5 max-w-md mx-auto">Escanea tu mancha con la IA y recibe la recomendación exacta en segundos.</p>
           <button
-            onClick={() => setView('library')}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-sm transition-all hover:scale-105 shadow-lg"
+            onClick={() => setView('scanner')}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-brand-700 font-semibold rounded-xl text-sm transition-all hover:scale-105 shadow-lg"
           >
-            Ver biblioteca
+            Escanear mancha
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
