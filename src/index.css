@@ -147,26 +147,3 @@
     linear-gradient(to bottom, rgba(37, 99, 235, 0.05) 1px, transparent 1px);
   background-size: 40px 40px;
 }
-
-.force-mobile .md\:pt-16, .force-mobile .md\:pt-20, .force-mobile .md\:pt-24 { padding-top: 0 !important; }
-.force-mobile .md\:pb-0 { padding-bottom: 0 !important; }
-.force-mobile .md\:pb-32 { padding-bottom: 6rem !important; }
-.force-mobile .md\:grid-cols-3 { grid-template-columns: 1fr !important; }
-.force-mobile .md\:grid-cols-2 { grid-template-columns: 1fr !important; }
-.force-mobile .md\:flex { display: flex !important; flex-direction: column !important; }
-.force-mobile .md\:hidden { display: flex !important; }
-.force-mobile .hidden.md\:flex { display: none !important; }
-.force-mobile .md\:text-6xl { font-size: 2.25rem !important; }
-.force-mobile .md\:text-5xl { font-size: 2rem !important; }
-.force-mobile .md\:text-4xl { font-size: 1.875rem !important; }
-.force-mobile .md\:text-3xl { font-size: 1.5rem !important; }
-.force-mobile .md\:p-16 { padding: 2.5rem !important; }
-.force-mobile .md\:pb-32 { padding-bottom: 6rem !important; }
-.force-mobile .sm\:grid-cols-2 { grid-template-columns: 1fr !important; }
-.force-mobile .sm\:flex-row { flex-direction: column !important; }
-.force-mobile .sm\:w-auto { width: 100% !important; }
-.force-mobile .sm\:flex { flex-direction: column !important; }
-.force-mobile .sm\:px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
-.force-mobile .sm\:text-5xl { font-size: 2rem !important; }
-.force-mobile .lg\:grid-cols-4 { grid-template-columns: 1fr !important; }
-.force-mobile .md\:gap-6 { gap: 1.5rem !important; }
