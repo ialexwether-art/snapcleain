@@ -317,7 +317,7 @@ export default function App() {
 
   return (
     <div className={previewMode === 'mobile' ? 'min-h-screen bg-ink-200 flex justify-center' : 'min-h-screen bg-ink-50'}>
-      <div className={previewMode === 'mobile' ? 'w-[390px] min-h-screen bg-ink-50 relative shadow-2xl' : 'w-full min-h-screen bg-ink-50 relative'}>
+      <div className={previewMode === 'mobile' ? 'w-[390px] min-h-screen bg-ink-50 relative shadow-2xl mobile-preview' : 'w-full min-h-screen bg-ink-50 relative'}>
         <Header
           user={user}
           view={view}
