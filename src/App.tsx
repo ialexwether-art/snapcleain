@@ -10,6 +10,7 @@ import {
   Zap, Heart, Star, ArrowRight, CircleCheck, Clock, TrendingUp,
   MessageCircle, Send, Plus, RefreshCw, HelpCircle,
   Image as ImageIcon, ShoppingCart, Sparkle, Menu, History, Info, PlayCircle,
+  Smartphone, Monitor,
 } from 'lucide-react';
 
 /* ============================================================
@@ -265,6 +266,7 @@ export default function App() {
   const [subscriptionActive, setSubscriptionActive] = useState(false);
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
   const [checkoutMsg, setCheckoutMsg] = useState('');
+  const [mobileMode, setMobileMode] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('snapcleain_history');
@@ -314,7 +316,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-ink-50">
+    <div className={mobileMode ? 'min-h-screen bg-gray-300 flex justify-center' : 'min-h-screen bg-ink-50'}>
+      <div className={mobileMode ? 'w-full max-w-[430px] bg-ink-50 min-h-screen shadow-2xl overflow-x-hidden relative' : 'w-full'}>
       <Header
         user={user}
         view={view}
@@ -324,6 +327,7 @@ export default function App() {
         onSignOut={signOut}
         onSignIn={() => setShowAuthModal(true)}
         scanHistory={scanHistory}
+        mobileMode={mobileMode}
       />
 
       <main className="pb-16 md:pb-0">
@@ -374,6 +378,16 @@ export default function App() {
         )}
 
         <Footer />
+      </div>
+
+      <button
+        onClick={() => setMobileMode(!mobileMode)}
+        className="fixed bottom-6 right-6 z-[200] w-14 h-14 rounded-full bg-white border-2 border-brand-600 text-brand-600 shadow-2xl hover:bg-brand-50 flex items-center justify-center transition-all hover:scale-110"
+        title={mobileMode ? 'Ver en escritorio' : 'Ver en móvil'}
+        aria-label="Cambiar vista móvil"
+      >
+        {mobileMode ? <Monitor className="w-6 h-6" /> : <Smartphone className="w-6 h-6" />}
+      </button>
     </div>
   );
 }
@@ -383,7 +397,7 @@ export default function App() {
    ============================================================ */
 
 function Header({
-  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn, scanHistory,
+  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn, scanHistory, mobileMode,
 }: {
   user: User | null;
   view: View;
@@ -393,6 +407,7 @@ function Header({
   onSignOut: () => void;
   onSignIn: () => void;
   scanHistory: ScanResult[];
+  mobileMode: boolean;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const navItems: { id: View; label: string; icon: any }[] = [
@@ -412,9 +427,19 @@ function Header({
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-white border-b border-ink-200/60 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <button onClick={() => setView('home')} className="flex items-center group">
-          <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-12 w-auto group-hover:scale-105 transition-transform" />
-        </button>
+        <div className="flex items-center gap-3">
+          {/* Hamburger menu button - left side */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="w-10 h-10 rounded-lg flex items-center justify-center text-ink-700 hover:bg-ink-100 transition-colors flex-shrink-0"
+            aria-label="Menú"
+          >
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+          <button onClick={() => setView('home')} className="flex items-center group">
+            <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-12 w-auto group-hover:scale-105 transition-transform" />
+          </button>
+        </div>
 
         <nav className="hidden md:flex items-center gap-1">
           {navItems.map((item) => (
@@ -465,20 +490,11 @@ function Header({
               Iniciar sesión
             </button>
           )}
-
-          {/* Hamburger menu button - always visible */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="w-10 h-10 rounded-lg flex items-center justify-center text-ink-700 hover:bg-ink-100 transition-colors"
-            aria-label="Menú"
-          >
-            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
         </div>
       </div>
 
       {/* Mobile bottom nav */}
-      <nav className="flex md:hidden items-center justify-around border-t border-ink-200/60 px-2 h-14">
+      <nav className={`${mobileMode ? 'flex' : 'flex md:hidden'} items-center justify-around border-t border-ink-200/60 px-2 h-14`}>
         {navItems.map((item) => (
           <button
             key={item.id}
@@ -497,15 +513,15 @@ function Header({
         ))}
       </nav>
 
-      {/* Dropdown menu */}
+      {/* Dropdown menu - left aligned */}
       {menuOpen && (
-        <div className="absolute top-16 right-0 w-64 bg-white shadow-2xl rounded-bl-2xl border-l border-b border-ink-200/60 animate-slide-down z-50">
-          <nav className="flex flex-col gap-1 p-4">
+        <div className="absolute top-16 left-0 w-64 bg-white shadow-2xl rounded-br-2xl border-r border-b border-ink-200/60 animate-slide-down z-50">
+          <nav className="flex flex-col gap-2 p-4">
             {menuItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => { setView(item.id); setMenuOpen(false); }}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-colors ${
                   view === item.id
                     ? 'bg-brand-50 text-brand-700'
                     : 'text-ink-600 hover:text-ink-900 hover:bg-ink-100'
@@ -523,7 +539,7 @@ function Header({
                 </div>
                 <button
                   onClick={() => { onSignOut(); setMenuOpen(false); }}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-ink-600 hover:text-ink-900 hover:bg-ink-100 transition-colors"
+                  className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium text-ink-600 hover:text-ink-900 hover:bg-ink-100 transition-colors"
                 >
                   <LogOut className="w-5 h-5" />
                   Cerrar sesión
@@ -532,7 +548,7 @@ function Header({
             ) : (
               <button
                 onClick={() => { onSignIn(); setMenuOpen(false); }}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-brand-700 bg-brand-50 hover:bg-brand-100 transition-colors"
+                className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium text-brand-700 bg-brand-50 hover:bg-brand-100 transition-colors"
               >
                 <LogOut className="w-5 h-5 rotate-180" />
                 Iniciar sesión
@@ -1645,13 +1661,13 @@ function HistoryView({ setView }: { setView: (v: View) => void }) {
         ) : (
           <div className="space-y-4">
             {history.map((result, i) => (
-              <div key={i} className="bg-white rounded-2xl overflow-hidden border border-ink-200/60 shadow-sm flex">
-                <img src={result.imageUrl} alt="Mancha" className="w-24 h-24 object-cover flex-shrink-0" />
-                <div className="p-4 flex-1">
-                  <h3 className="font-semibold text-ink-900 text-sm">{result.stainType}</h3>
-                  <p className="text-xs text-ink-500 mb-2">{result.surface}</p>
-                  <p className="text-xs text-brand-600 font-medium">{result.product}</p>
-                  <p className="text-[10px] text-ink-400 mt-1">
+              <div key={i} className="bg-white rounded-2xl overflow-hidden border border-ink-200/60 shadow-sm">
+                <img src={result.imageUrl} alt="Mancha" className="w-full h-48 object-cover" />
+                <div className="p-5">
+                  <h3 className="font-semibold text-ink-900">{result.stainType}</h3>
+                  <p className="text-sm text-ink-500 mb-2">{result.surface}</p>
+                  <p className="text-sm text-brand-600 font-medium">{result.product}</p>
+                  <p className="text-xs text-ink-400 mt-2">
                     {new Date(result.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
