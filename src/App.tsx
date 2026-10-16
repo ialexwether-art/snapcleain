@@ -10,7 +10,6 @@ import {
   Zap, Heart, Star, ArrowRight, CircleCheck, Clock, TrendingUp,
   MessageCircle, Send, Plus, RefreshCw, HelpCircle,
   Image as ImageIcon, ShoppingCart, Sparkle, Menu, History, Info, PlayCircle,
-  Smartphone, Monitor,
 } from 'lucide-react';
 
 /* ============================================================
@@ -266,7 +265,6 @@ export default function App() {
   const [subscriptionActive, setSubscriptionActive] = useState(false);
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
   const [checkoutMsg, setCheckoutMsg] = useState('');
-  const [mobileMode, setMobileMode] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('snapcleain_history');
@@ -316,8 +314,7 @@ export default function App() {
   };
 
   return (
-    <div className={mobileMode ? 'min-h-screen bg-gray-300 flex justify-center' : 'min-h-screen bg-ink-50'}>
-      <div className={mobileMode ? 'w-full max-w-[430px] bg-ink-50 min-h-screen shadow-2xl overflow-x-hidden relative' : 'w-full'}>
+    <div className="min-h-screen bg-ink-50">
       <Header
         user={user}
         view={view}
@@ -327,7 +324,6 @@ export default function App() {
         onSignOut={signOut}
         onSignIn={() => setShowAuthModal(true)}
         scanHistory={scanHistory}
-        mobileMode={mobileMode}
       />
 
       <main className="pb-16 md:pb-0">
@@ -378,16 +374,6 @@ export default function App() {
         )}
 
         <Footer />
-      </div>
-
-      <button
-        onClick={() => setMobileMode(!mobileMode)}
-        className="fixed bottom-6 right-6 z-[200] w-14 h-14 rounded-full bg-white border-2 border-brand-600 text-brand-600 shadow-2xl hover:bg-brand-50 flex items-center justify-center transition-all hover:scale-110"
-        title={mobileMode ? 'Ver en escritorio' : 'Ver en móvil'}
-        aria-label="Cambiar vista móvil"
-      >
-        {mobileMode ? <Monitor className="w-6 h-6" /> : <Smartphone className="w-6 h-6" />}
-      </button>
     </div>
   );
 }
@@ -397,7 +383,7 @@ export default function App() {
    ============================================================ */
 
 function Header({
-  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn, scanHistory, mobileMode,
+  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn, scanHistory,
 }: {
   user: User | null;
   view: View;
@@ -407,7 +393,6 @@ function Header({
   onSignOut: () => void;
   onSignIn: () => void;
   scanHistory: ScanResult[];
-  mobileMode: boolean;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const navItems: { id: View; label: string; icon: any }[] = [
@@ -426,22 +411,46 @@ function Header({
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-white border-b border-ink-200/60 shadow-sm">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          {/* Hamburger menu button - left side */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="w-10 h-10 rounded-lg flex items-center justify-center text-ink-700 hover:bg-ink-100 transition-colors flex-shrink-0"
-            aria-label="Menú"
-          >
-            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-          <button onClick={() => setView('home')} className="flex items-center group">
-            <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-12 w-auto group-hover:scale-105 transition-transform" />
-          </button>
+      {/* ===== MOBILE HEADER (below md) ===== */}
+      <div className="md:hidden h-14 flex items-center justify-between px-4">
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="w-9 h-9 rounded-lg flex items-center justify-center text-ink-700 hover:bg-ink-100 transition-colors flex-shrink-0"
+          aria-label="Menú"
+        >
+          {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+        <button onClick={() => setView('home')} className="absolute left-1/2 -translate-x-1/2">
+          <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-9 w-auto" />
+        </button>
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {user && !subscriptionActive && (
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-accent-50 border border-accent-200">
+              <Zap className="w-3 h-3 text-accent-600" />
+              <span className="text-xs font-semibold text-accent-700">{tokens}</span>
+            </div>
+          )}
+          {user && subscriptionActive && (
+            <Crown className="w-5 h-5 text-brand-600" />
+          )}
+          {!user && (
+            <button
+              onClick={onSignIn}
+              className="text-xs font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors px-3 py-1.5 rounded-lg whitespace-nowrap"
+            >
+              Entrar
+            </button>
+          )}
         </div>
+      </div>
 
-        <nav className="hidden md:flex items-center gap-1">
+      {/* ===== DESKTOP HEADER (md and up) ===== */}
+      <div className="hidden md:flex max-w-6xl mx-auto px-6 h-16 items-center justify-between">
+        <button onClick={() => setView('home')} className="flex items-center group">
+          <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-12 w-auto group-hover:scale-105 transition-transform" />
+        </button>
+
+        <nav className="flex items-center gap-1">
           {navItems.map((item) => (
             <button
               key={item.id}
@@ -462,14 +471,14 @@ function Header({
 
         <div className="flex items-center gap-2">
           {user && !subscriptionActive && (
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-50 border border-accent-200">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-50 border border-accent-200">
               <Zap className="w-3.5 h-3.5 text-accent-600" />
               <span className="text-sm font-semibold text-accent-700">{tokens}</span>
               <span className="text-xs text-accent-600">tokens</span>
             </div>
           )}
           {user && subscriptionActive && (
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200">
               <Crown className="w-3.5 h-3.5 text-brand-600" />
               <span className="text-sm font-semibold text-brand-700">Premium</span>
             </div>
@@ -477,7 +486,7 @@ function Header({
           {user ? (
             <button
               onClick={onSignOut}
-              className="hidden md:flex items-center gap-1.5 text-sm text-ink-600 hover:text-ink-900 transition-colors px-3 py-2 rounded-lg hover:bg-ink-100"
+              className="flex items-center gap-1.5 text-sm text-ink-600 hover:text-ink-900 transition-colors px-3 py-2 rounded-lg hover:bg-ink-100"
             >
               <LogOut className="w-4 h-4" />
               <span>Salir</span>
@@ -485,7 +494,7 @@ function Header({
           ) : (
             <button
               onClick={onSignIn}
-              className="hidden md:inline-flex items-center text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors px-4 py-2 rounded-lg shadow-sm whitespace-nowrap"
+              className="text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors px-4 py-2 rounded-lg shadow-sm whitespace-nowrap"
             >
               Iniciar sesión
             </button>
@@ -493,8 +502,8 @@ function Header({
         </div>
       </div>
 
-      {/* Mobile bottom nav */}
-      <nav className={`${mobileMode ? 'flex' : 'flex md:hidden'} items-center justify-around border-t border-ink-200/60 px-2 h-14`}>
+      {/* ===== MOBILE BOTTOM NAV ===== */}
+      <nav className="md:hidden flex items-center justify-around border-t border-ink-200/60 px-2 h-14">
         {navItems.map((item) => (
           <button
             key={item.id}
@@ -513,10 +522,10 @@ function Header({
         ))}
       </nav>
 
-      {/* Dropdown menu - left aligned */}
+      {/* ===== MOBILE DROPDOWN MENU ===== */}
       {menuOpen && (
-        <div className="absolute top-16 left-0 w-64 bg-white shadow-2xl rounded-br-2xl border-r border-b border-ink-200/60 animate-slide-down z-50">
-          <nav className="flex flex-col gap-2 p-4">
+        <div className="md:hidden absolute top-[112px] left-0 right-0 bg-white shadow-2xl border-b border-ink-200/60 animate-slide-down z-50">
+          <nav className="flex flex-col gap-1 p-4">
             {menuItems.map((item) => (
               <button
                 key={item.id}
