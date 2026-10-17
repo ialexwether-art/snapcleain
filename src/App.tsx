@@ -477,6 +477,7 @@ export default function App() {
               subscriptionActive={subscriptionActive}
               onSelect={handlePricingSelect}
               checkoutMsg={checkoutMsg}
+              onSignIn={() => setShowAuthModal(true)}
             />
           )}
           {view === 'history' && <HistoryView setView={setView} />}
@@ -917,12 +918,19 @@ function ScannerView({
     setError('');
   };
 
+  const handleAnalyzeOrRedirect = () => {
+    if (!canAnalyze) {
+      onShowPlans();
+      return;
+    }
+    handleAnalyze();
+  };
+
   return (
     <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Escáner de manchas</h1>
-          <p className="text-ink-500">Sube una foto y recibe tu solución personalizada</p>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold text-ink-900 tracking-tight mb-1">Escáner de manchas</h1>
         </div>
 
         {!subscriptionActive && (
@@ -946,43 +954,61 @@ function ScannerView({
 
         {!selectedFile && !result && (
           <div className="space-y-4">
-            <div
-              onDrop={handleDrop}
-              onDragOver={(e) => e.preventDefault()}
-              className="border-2 border-dashed border-brand-300 rounded-3xl p-12 text-center bg-white hover:border-brand-500 hover:bg-brand-50/30 transition-all cursor-pointer animate-fade-in"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <div className="w-20 h-20 rounded-full bg-brand-50 flex items-center justify-center mx-auto mb-5 animate-pulse-ring">
-                <Camera className="w-10 h-10 text-brand-500" />
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div
+                onDrop={handleDrop}
+                onDragOver={(e) => e.preventDefault()}
+                className="flex-1 border-2 border-dashed border-brand-300 rounded-3xl p-10 text-center bg-white hover:border-brand-500 hover:bg-brand-50/30 transition-all cursor-pointer animate-fade-in"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <div className="w-16 h-16 rounded-full bg-brand-50 flex items-center justify-center mx-auto mb-4 animate-pulse-ring">
+                  <Camera className="w-8 h-8 text-brand-500" />
+                </div>
+                <h3 className="text-base font-semibold text-ink-900 mb-1">Analizar mancha</h3>
+                <p className="text-xs text-ink-500">Haz clic para hacer una foto</p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+                />
               </div>
-              <h3 className="text-lg font-semibold text-ink-900 mb-2">Analizar mancha</h3>
-              <p className="text-sm text-ink-500 mb-4">Arrastra una imagen o haz clic para hacer una foto</p>
-              <p className="text-xs text-ink-400">JPG, PNG, WEBP · Máx 10MB</p>
+
+              <button
+                onClick={() => galleryInputRef.current?.click()}
+                className="flex-1 flex flex-col items-center justify-center gap-3 px-6 py-10 bg-white border-2 border-brand-200 hover:border-brand-400 hover:bg-brand-50/50 text-brand-700 font-semibold rounded-3xl text-base transition-all"
+              >
+                <ImageIcon className="w-8 h-8 text-brand-500" />
+                <span className="text-base">Subir de galería</span>
+              </button>
               <input
-                ref={fileInputRef}
+                ref={galleryInputRef}
                 type="file"
                 accept="image/*"
-                capture="environment"
                 className="hidden"
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
               />
             </div>
 
             <button
-              onClick={() => galleryInputRef.current?.click()}
-              className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white border-2 border-brand-200 hover:border-brand-400 hover:bg-brand-50/50 text-brand-700 font-semibold rounded-2xl text-base transition-all"
+              onClick={handleAnalyzeOrRedirect}
+              disabled={analyzing}
+              className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <ImageIcon className="w-5 h-5" />
-              Subir de galería
+              {analyzing ? (
+                <>
+                  <Loader className="w-5 h-5 animate-spin" />
+                  Analizando tu mancha...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-5 h-5" />
+                  Analizar mancha
+                </>
+              )}
             </button>
-            <input
-              ref={galleryInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
-            />
-
           </div>
         )}
 
@@ -1010,40 +1036,22 @@ function ScannerView({
               />
             </div>
             <button
-              onClick={handleAnalyze}
-              disabled={analyzing || !canAnalyze}
-              className={`w-full flex items-center justify-center gap-2 px-6 py-3.5 font-semibold rounded-xl transition-all shadow-sm disabled:cursor-not-allowed ${
-                canAnalyze
-                  ? 'bg-brand-600 hover:bg-brand-700 text-white hover:shadow-md disabled:opacity-60'
-                  : 'bg-ink-200 text-ink-400'
-              }`}
+              onClick={handleAnalyzeOrRedirect}
+              disabled={analyzing}
+              className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {analyzing ? (
                 <>
                   <Loader className="w-5 h-5 animate-spin" />
                   Analizando tu mancha...
                 </>
-              ) : !canAnalyze ? (
-                <>
-                  <AlertTriangle className="w-5 h-5" />
-                  Sin escaneos disponibles
-                </>
               ) : (
                 <>
                   <Sparkles className="w-5 h-5" />
-                  Analizar con IA
+                  Analizar mancha
                 </>
               )}
             </button>
-            {!canAnalyze && (
-              <button
-                onClick={onShowPlans}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-accent-50 hover:bg-accent-100 border border-accent-200 text-accent-700 font-semibold rounded-xl text-sm transition-all"
-              >
-                <Zap className="w-4 h-4" />
-                Ver anuncios para recargar escaneos
-              </button>
-            )}
           </div>
         )}
 
@@ -1248,7 +1256,7 @@ function LibraryView({ setView }: { setView: (v: View) => void }) {
           <p className="text-sm text-ink-500">Toca una mancha para ver la guía paso a paso</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="flex flex-col gap-3 mb-6">
           {STAIN_CATEGORIES.map((stain, i) => {
             const Icon = stain.icon;
             const active = selectedStain === stain.name;
@@ -1578,12 +1586,13 @@ function KitView({ setView }: { setView: (v: View) => void }) {
    ============================================================ */
 
 function PricingView({
-  user, subscriptionActive, onSelect, checkoutMsg,
+  user, subscriptionActive, onSelect, checkoutMsg, onSignIn,
 }: {
   user: User | null;
   subscriptionActive: boolean;
   onSelect: (p: StripeProduct) => void;
   checkoutMsg: string;
+  onSignIn: () => void;
 }) {
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
 
@@ -1636,6 +1645,7 @@ function PricingView({
               loading={loadingPriceId === product.priceId}
               onSelect={handleSelect}
               disabled={!user}
+              onSignIn={onSignIn}
             />
           ))}
         </div>
@@ -1668,12 +1678,13 @@ function PricingView({
 }
 
 function PricingCardView({
-  product, loading, onSelect, disabled,
+  product, loading, onSelect, disabled, onSignIn,
 }: {
   product: StripeProduct;
   loading: boolean;
   onSelect: (p: StripeProduct) => void;
   disabled: boolean;
+  onSignIn: () => void;
 }) {
   const highlighted = product.highlighted;
 
@@ -1719,9 +1730,9 @@ function PricingCardView({
       </ul>
 
       <button
-        onClick={() => onSelect(product)}
-        disabled={loading || disabled}
-        className={`w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed ${
+        onClick={() => disabled ? onSignIn() : onSelect(product)}
+        disabled={loading}
+        className={`w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-150 ${
           highlighted
             ? 'bg-white text-brand-700 hover:bg-brand-50 shadow-sm'
             : 'bg-brand-600 text-white hover:bg-brand-700 shadow-sm'
