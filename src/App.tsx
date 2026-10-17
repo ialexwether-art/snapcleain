@@ -437,7 +437,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-ink-50">
      <div className={mobileView ? 'flex justify-center bg-ink-200 min-h-screen' : ''}>
-      <div className={mobileView ? 'w-[390px] min-h-screen bg-ink-50 relative overflow-x-hidden mobile-frame rounded-[2.5rem] shadow-2xl border-[10px] border-ink-900' : 'w-full relative'}>
+      <div className={mobileView ? 'w-[390px] min-h-screen bg-ink-50 relative overflow-x-hidden mobile-frame rounded-[2rem] shadow-xl' : 'w-full relative'}>
         <Header
           user={user}
           view={view}
@@ -499,6 +499,8 @@ export default function App() {
         )}
 
         <Footer />
+
+        {mobileView && <MobileBottomNav view={view} setView={setView} mobileFrame={mobileView} />}
       </div>
      </div>
 
@@ -649,26 +651,6 @@ function Header({
         </div>
       </div>
 
-      {/* ===== MOBILE BOTTOM NAV ===== */}
-      <nav className={`md:hidden flex items-center justify-around px-2 h-14 bg-white border-t border-ink-200/60 ${bottomNavClass}`}>
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setView(item.id)}
-            className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors ${
-              item.id === 'scanner'
-                ? 'bg-brand-600 text-white rounded-full -mt-4 -mb-1 shadow-lg px-3'
-                : view === item.id
-                  ? 'text-brand-600'
-                  : 'text-ink-400'
-            }`}
-          >
-            <item.icon className="w-5 h-5" />
-            <span className="text-[10px] font-medium">{item.label}</span>
-          </button>
-        ))}
-      </nav>
-
       {/* ===== MOBILE DROPDOWN MENU ===== */}
       {menuOpen && (
         <div className="md:hidden absolute top-14 left-0 right-0 bg-white shadow-2xl border-b border-ink-200/60 animate-slide-down z-50 rounded-b-2xl">
@@ -729,6 +711,36 @@ function Header({
         </div>
       )}
     </header>
+  );
+}
+
+function MobileBottomNav({ view, setView, mobileFrame }: { view: View; setView: (v: View) => void; mobileFrame: boolean }) {
+  const navItems: { id: View; label: string; icon: any }[] = [
+    { id: 'home', label: 'Inicio', icon: HomeIcon },
+    { id: 'library', label: 'Biblioteca', icon: BookOpen },
+    { id: 'scanner', label: 'Escáner', icon: Camera },
+    { id: 'kit', label: 'Botiquín', icon: Backpack },
+    { id: 'pricing', label: 'Planes', icon: CreditCard },
+  ];
+  return (
+    <nav className={`md:hidden flex items-center justify-around px-2 h-14 bg-white border-t border-ink-200/60 ${mobileFrame ? 'mobile-bottom-nav' : ''}`}>
+      {navItems.map((item) => (
+        <button
+          key={item.id}
+          onClick={() => setView(item.id)}
+          className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors ${
+            item.id === 'scanner'
+              ? 'bg-brand-600 text-white rounded-full -mt-4 -mb-1 shadow-lg px-3'
+              : view === item.id
+                ? 'text-brand-600'
+                : 'text-ink-400'
+          }`}
+        >
+          <item.icon className="w-5 h-5" />
+          <span className="text-[10px] font-medium">{item.label}</span>
+        </button>
+      ))}
+    </nav>
   );
 }
 
