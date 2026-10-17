@@ -425,7 +425,8 @@ function Header({
     { id: 'about', label: 'Sobre nosotros', icon: Info },
   ];
 
-  const headerClass = mobileFrame ? 'absolute top-0 left-0 right-0 z-50 bg-white border-b border-ink-200/60 shadow-sm' : 'fixed top-0 inset-x-0 z-50 bg-white border-b border-ink-200/60 shadow-sm';
+  const headerClass = mobileFrame ? 'mobile-header-top absolute top-0 left-0 right-0 z-50 bg-white border-b border-ink-200/60 shadow-sm' : 'fixed top-0 inset-x-0 z-50 bg-white border-b border-ink-200/60 shadow-sm';
+  const bottomNavClass = mobileFrame ? 'mobile-bottom-nav absolute bottom-0 left-0 right-0 z-50' : '';
 
   return (
     <header className={headerClass}>
@@ -521,7 +522,7 @@ function Header({
       </div>
 
       {/* ===== MOBILE BOTTOM NAV ===== */}
-      <nav className="md:hidden flex items-center justify-around border-t border-ink-200/60 px-2 h-14">
+      <nav className={`md:hidden flex items-center justify-around border-t border-ink-200/60 px-2 h-14 bg-white ${bottomNavClass}`}>
         {navItems.map((item) => (
           <button
             key={item.id}
