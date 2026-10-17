@@ -173,4 +173,7 @@
 .mobile-bottom-nav {
   position: absolute;
   bottom: 0;
+  border-bottom-left-radius: 1.75rem;
+  border-bottom-right-radius: 1.75rem;
+  overflow: hidden;
 }

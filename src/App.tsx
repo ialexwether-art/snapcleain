@@ -437,7 +437,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-ink-50">
      <div className={mobileView ? 'flex justify-center bg-ink-200 min-h-screen' : ''}>
-      <div className={mobileView ? 'w-[390px] min-h-screen bg-ink-50 relative overflow-x-hidden mobile-frame' : 'w-full relative'}>
+      <div className={mobileView ? 'w-[390px] min-h-screen bg-ink-50 relative overflow-x-hidden mobile-frame rounded-[2.5rem] shadow-2xl border-[10px] border-ink-900' : 'w-full relative'}>
         <Header
           user={user}
           view={view}
@@ -545,39 +545,47 @@ function Header({
     { id: 'about', label: 'Sobre nosotros', icon: Info },
   ];
 
-  const headerClass = mobileFrame ? 'mobile-header-top absolute top-0 left-0 right-0 z-50 bg-white border-b border-ink-200/60 shadow-sm' : 'fixed top-0 inset-x-0 z-50 bg-white border-b border-ink-200/60 shadow-sm';
+  const headerClass = mobileFrame ? 'mobile-header-top absolute top-0 left-0 right-0 z-50 bg-gradient-to-r from-brand-600 to-brand-700 shadow-md' : 'fixed top-0 inset-x-0 z-50 bg-white border-b border-ink-200/60 shadow-sm';
   const bottomNavClass = mobileFrame ? 'mobile-bottom-nav absolute bottom-0 left-0 right-0 z-50' : '';
 
   return (
     <header className={headerClass}>
       {/* ===== MOBILE HEADER (below md) ===== */}
-      <div className="md:hidden h-14 flex items-center justify-between px-4">
+      <div className="md:hidden h-14 flex items-center justify-between px-3">
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="w-9 h-9 rounded-lg flex items-center justify-center text-ink-700 hover:bg-ink-100 transition-colors flex-shrink-0"
+          className="w-9 h-9 rounded-lg flex items-center justify-center text-white hover:bg-white/15 transition-colors flex-shrink-0"
           aria-label="Menú"
         >
           {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
         <button onClick={() => setView('home')} className="absolute left-1/2 -translate-x-1/2">
-          <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-9 w-auto" />
+          <img src="/logo_snapcleAIn_positivo.png" alt="snapcleAIn" className="h-8 w-auto" />
         </button>
         <div className="flex items-center gap-1.5 flex-shrink-0">
           {user && !subscriptionActive && (
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-accent-50 border border-accent-200">
-              <Zap className="w-3 h-3 text-accent-600" />
-              <span className="text-xs font-semibold text-accent-700">{tokens}</span>
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/15 border border-white/20">
+              <Zap className="w-3 h-3 text-accent-300" />
+              <span className="text-xs font-semibold text-white">{tokens}</span>
             </div>
           )}
           {user && subscriptionActive && (
-            <Crown className="w-5 h-5 text-brand-600" />
+            <Crown className="w-5 h-5 text-accent-300" />
           )}
           {!user && (
             <button
               onClick={onSignIn}
-              className="text-xs font-medium text-white bg-brand-600 hover:bg-brand-700 transition-colors px-3 py-1.5 rounded-lg whitespace-nowrap"
+              className="text-xs font-medium text-brand-700 bg-white hover:bg-brand-50 transition-colors px-3 py-1.5 rounded-lg whitespace-nowrap font-semibold"
             >
-              Entrar
+              Iniciar sesión
+            </button>
+          )}
+          {user && (
+            <button
+              onClick={onSignIn}
+              className="text-xs font-medium text-white bg-white/15 hover:bg-white/25 transition-colors px-3 py-1.5 rounded-lg whitespace-nowrap"
+            >
+              Cuenta
             </button>
           )}
         </div>
@@ -642,7 +650,7 @@ function Header({
       </div>
 
       {/* ===== MOBILE BOTTOM NAV ===== */}
-      <nav className={`md:hidden flex items-center justify-around border-t border-ink-200/60 px-2 h-14 bg-white ${bottomNavClass}`}>
+      <nav className={`md:hidden flex items-center justify-around px-2 h-14 bg-white border-t border-ink-200/60 ${bottomNavClass}`}>
         {navItems.map((item) => (
           <button
             key={item.id}
@@ -663,8 +671,23 @@ function Header({
 
       {/* ===== MOBILE DROPDOWN MENU ===== */}
       {menuOpen && (
-        <div className="md:hidden absolute top-[112px] left-0 right-0 bg-white shadow-2xl border-b border-ink-200/60 animate-slide-down z-50">
+        <div className="md:hidden absolute top-14 left-0 right-0 bg-white shadow-2xl border-b border-ink-200/60 animate-slide-down z-50 rounded-b-2xl">
           <nav className="flex flex-col gap-1 p-4">
+            <div className="px-4 py-2 flex items-center gap-2">
+              {user && !subscriptionActive && (
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-50 border border-accent-200">
+                  <Zap className="w-3.5 h-3.5 text-accent-600" />
+                  <span className="text-sm font-semibold text-accent-700">{tokens} tokens</span>
+                </div>
+              )}
+              {user && subscriptionActive && (
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200">
+                  <Crown className="w-3.5 h-3.5 text-brand-600" />
+                  <span className="text-sm font-semibold text-brand-700">Premium</span>
+                </div>
+              )}
+            </div>
+            <div className="border-t border-ink-200/60 my-1" />
             {menuItems.map((item) => (
               <button
                 key={item.id}
@@ -696,7 +719,7 @@ function Header({
             ) : (
               <button
                 onClick={() => { onSignIn(); setMenuOpen(false); }}
-                className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium text-brand-700 bg-brand-50 hover:bg-brand-100 transition-colors"
+                className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 transition-colors"
               >
                 <LogOut className="w-5 h-5 rotate-180" />
                 Iniciar sesión
