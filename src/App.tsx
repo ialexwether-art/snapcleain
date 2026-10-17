@@ -10,7 +10,7 @@ import {
   Zap, Heart, Star, ArrowRight, CircleCheck, Clock, TrendingUp,
   MessageCircle, Send, Plus, RefreshCw, HelpCircle,
   Image as ImageIcon, ShoppingCart, Sparkle, Menu, History, Info, PlayCircle,
-  Smartphone,
+  Smartphone, Monitor,
 } from 'lucide-react';
 
 /* ============================================================
@@ -266,6 +266,7 @@ export default function App() {
   const [subscriptionActive, setSubscriptionActive] = useState(false);
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([]);
   const [checkoutMsg, setCheckoutMsg] = useState('');
+  const [mobileView, setMobileView] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('snapcleain_history');
@@ -316,16 +317,19 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-ink-50">
-      <Header
-        user={user}
-        view={view}
-        setView={setView}
-        tokens={tokens}
-        subscriptionActive={subscriptionActive}
-        onSignOut={signOut}
-        onSignIn={() => setShowAuthModal(true)}
-        scanHistory={scanHistory}
-      />
+     <div className={mobileView ? 'flex justify-center bg-ink-200 min-h-screen' : ''}>
+      <div className={mobileView ? 'w-[390px] min-h-screen bg-ink-50 relative overflow-x-hidden mobile-frame' : 'w-full relative'}>
+        <Header
+          user={user}
+          view={view}
+          setView={setView}
+          tokens={tokens}
+          subscriptionActive={subscriptionActive}
+          onSignOut={signOut}
+          onSignIn={() => setShowAuthModal(true)}
+          scanHistory={scanHistory}
+          mobileFrame={mobileView}
+        />
 
       <main className="pb-16 md:pb-0">
           {view === 'home' && (
@@ -375,20 +379,15 @@ export default function App() {
         )}
 
         <Footer />
+      </div>
+     </div>
 
       <button
-        onClick={() => {
-          const w = 390;
-          const h = 844;
-          const left = window.screen.width / 2 - w / 2;
-          const top = window.screen.height / 2 - h / 2;
-          window.open(window.location.href, 'snapcleain_mobile', `width=${w},height=${h},left=${left},top=${top}`);
-        }}
+        onClick={() => setMobileView(!mobileView)}
         className="fixed bottom-6 right-6 z-[300] flex items-center gap-2 px-5 py-3 rounded-full bg-brand-600 text-white font-semibold text-sm shadow-2xl hover:bg-brand-700 transition-all hover:scale-105"
-        title="Abrir vista móvil"
+        title={mobileView ? 'Ver en PC' : 'Ver en móvil'}
       >
-        <Smartphone className="w-5 h-5" />
-        Vista móvil
+        {mobileView ? <><Monitor className="w-5 h-5" /> Vista PC</> : <><Smartphone className="w-5 h-5" /> Vista móvil</>}
       </button>
     </div>
   );
@@ -399,7 +398,7 @@ export default function App() {
    ============================================================ */
 
 function Header({
-  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn, scanHistory,
+  user, view, setView, tokens, subscriptionActive, onSignOut, onSignIn, scanHistory, mobileFrame,
 }: {
   user: User | null;
   view: View;
@@ -409,6 +408,7 @@ function Header({
   onSignOut: () => void;
   onSignIn: () => void;
   scanHistory: ScanResult[];
+  mobileFrame: boolean;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const navItems: { id: View; label: string; icon: any }[] = [
@@ -425,8 +425,10 @@ function Header({
     { id: 'about', label: 'Sobre nosotros', icon: Info },
   ];
 
+  const headerClass = mobileFrame ? 'absolute top-0 left-0 right-0 z-50 bg-white border-b border-ink-200/60 shadow-sm' : 'fixed top-0 inset-x-0 z-50 bg-white border-b border-ink-200/60 shadow-sm';
+
   return (
-    <header className="fixed top-0 inset-x-0 z-50 bg-white border-b border-ink-200/60 shadow-sm">
+    <header className={headerClass}>
       {/* ===== MOBILE HEADER (below md) ===== */}
       <div className="md:hidden h-14 flex items-center justify-between px-4">
         <button
