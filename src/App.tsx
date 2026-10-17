@@ -105,6 +105,125 @@ const STAIN_CATEGORIES: StainCategory[] = [
   { name: 'Polvo', icon: Wind, color: 'gray' },
 ];
 
+type StainGuide = {
+  product: string;
+  steps: { emoji: string; text: string }[];
+  warning: string;
+};
+
+const STAIN_GUIDES: Record<string, StainGuide> = {
+  'Café': {
+    product: 'Agua fría + jabón de platos',
+    steps: [
+      { emoji: '❄️', text: 'Aclara la mancha con agua fría lo antes posible. Nunca uses agua caliente porque fija la mancha.' },
+      { emoji: '🧼', text: 'Aplica unas gotas de jabón de platos sobre la zona y frota suavemente con los dedos.' },
+      { emoji: '💧', text: 'Deja actuar 5 minutos y aclara con abundante agua fría.' },
+      { emoji: '🔄', text: 'Si persiste, mezcla bicarbonato con agua hasta formar una pasta, aplícala y deja 15 minutos.' },
+      { emoji: '🧺', text: 'Lava la prenda como de costumbre. Comprueba que la mancha ha desaparecido antes de secar.' },
+    ],
+    warning: 'No uses agua caliente en ningún momento del proceso: fijará la mancha de café permanentemente.',
+  },
+  'Vino': {
+    product: 'Sal + agua oxigenada',
+    steps: [
+      { emoji: '🧂', text: 'Cubre la mancha con sal gorda inmediatamente para absorber el líquido. Deja actuar 5 minutos.' },
+      { emoji: '💧', text: 'Aclara con agua fría para eliminar la sal y el vino absorbido.' },
+      { emoji: '🧴', text: 'Aplica agua oxigenada sobre la mancha (solo en tejidos blancos o resistentes al color).' },
+      { emoji: '⏳', text: 'Deja actuar 10 minutos y frota suavemente con un cepillo de cerdas suaves.' },
+      { emoji: '🧺', text: 'Lava la prenda en frío. No seques hasta confirmar que la mancha ha salido.' },
+    ],
+    warning: 'El agua oxigenada puede decolorar tejidos oscuros. Prueba primero en una zona oculta.',
+  },
+  'Ropa': {
+    product: 'Detergente líquido + bicarbonato',
+    steps: [
+      { emoji: '🧴', text: 'Aplica detergente líquido directamente sobre la mancha y frota suavemente.' },
+      { emoji: '⏳', text: 'Deja actuar 10 minutos antes de aclarar.' },
+      { emoji: '🧂', text: 'Si persiste, espolvorea bicarbonato y añade un poco de vinagre blanco.' },
+      { emoji: '💧', text: 'Frota con cepillo suave y aclara con agua tibia.' },
+      { emoji: '🧺', text: 'Lava la prenda siguiendo las indicaciones de la etiqueta.' },
+    ],
+    warning: 'Revisa siempre la etiqueta de cuidado de la prenda antes de aplicar cualquier producto.',
+  },
+  'Cocina': {
+    product: 'KH-7 o vinagre + bicarbonato',
+    steps: [
+      { emoji: '🧴', text: 'Aplica desengrasante (KH-7 o similar) sobre la superficie con grasa incrustada.' },
+      { emoji: '⏳', text: 'Deja actuar 3-5 minutos para que disuelva la grasa.' },
+      { emoji: '🧽', text: 'Frota con un estropajo o cepillo según la dureza de la superficie.' },
+      { emoji: '💧', text: 'Aclara con agua tibia y seca con un paño de microfibra.' },
+      { emoji: '✨', text: 'Para abrillantar, frota con una mezcla de vinagre y bicarbonato.' },
+    ],
+    warning: 'No uses productos abrasivos en superficies de acero inoxidable: pueden rayarlas.',
+  },
+  'Coche': {
+    product: 'Alcohol + paño de microfibra',
+    steps: [
+      { emoji: '🧴', text: 'Humedece un paño de microfibra con alcohol y aplica sobre la mancha.' },
+      { emoji: '🔄', text: 'Frota en movimientos circulares suaves sin presionar demasiado.' },
+      { emoji: '⏳', text: 'Deja evaporar el alcohol y comprueba si la mancha ha salido.' },
+      { emoji: '💧', text: 'Si persiste, mezcla agua tibia con jabón de platos y frota suavemente.' },
+      { emoji: '✨', text: 'Seca con un paño limpio de microfibra para evitar marcas.' },
+    ],
+    warning: 'No uses disolventes fuertes en plásticos o cuero del habitáculo: pueden dañarlos irreversiblemente.',
+  },
+  'Grasa': {
+    product: 'Jabón de platos + bicarbonato',
+    steps: [
+      { emoji: '🧼', text: 'Aplica jabón de platos directamente sobre la mancha de grasa.' },
+      { emoji: '🔄', text: 'Frota con los dedos o un cepillo suave para emulsionar la grasa.' },
+      { emoji: '⏳', text: 'Deja actuar 10 minutos para que el jabón disuelva la grasa.' },
+      { emoji: '💧', text: 'Aclara con agua tibia (nunca hirviendo) y repite si es necesario.' },
+      { emoji: '🧂', text: 'Para grasa muy incrustada, añade bicarbonato como abrasivo suave.' },
+    ],
+    warning: 'El agua muy caliente puede fijar ciertos tipos de grasa en tejidos. Usa agua tibia.',
+  },
+  'Tinta': {
+    product: 'Alcohol o acetona',
+    steps: [
+      { emoji: '🧴', text: 'Coloca un paño absorbente debajo de la mancha para no extenderla.' },
+      { emoji: '💧', text: 'Humedece un algodón con alcohol y aplica desde el borde hacia el centro.' },
+      { emoji: '🔄', text: 'Cambia el algodón frecuentemente para no redistribuir la tinta.' },
+      { emoji: '⏳', text: 'Repite hasta que no salga más color al algodón.' },
+      { emoji: '🧺', text: 'Lava la prenda en frío. Para superficies duras, usa acetona con precaución.' },
+    ],
+    warning: 'La acetona daña tejidos sintéticos y plásticos. Verifica el material antes de usarla.',
+  },
+  'Sangre': {
+    product: 'Agua fría + agua oxigenada',
+    steps: [
+      { emoji: '❄️', text: 'Aclara inmediatamente con agua fría. El agua caliente fija la sangre permanentemente.' },
+      { emoji: '🧼', text: 'Frota con jabón de platos o detergente líquido suavemente.' },
+      { emoji: '🧴', text: 'Si persiste, aplica agua oxigenada sobre la mancha. Verás que burbujea.' },
+      { emoji: '⏳', text: 'Deja actuar 5 minutos y aclara con agua fría.' },
+      { emoji: '🧺', text: 'Lava en frío. Comprueba antes de secar para no fijar restos.' },
+    ],
+    warning: 'NUNCA uses agua caliente con manchas de sangre: la proteína se coagula y fija la mancha para siempre.',
+  },
+  'Moho': {
+    product: 'Vinagre blanco + bicarbonato',
+    steps: [
+      { emoji: '🧴', text: 'Rocía vinagre blanco puro sobre la zona con moho sin diluir.' },
+      { emoji: '⏳', text: 'Deja actuar 1 hora para que el ácido acético elimine el moho.' },
+      { emoji: '🧽', text: 'Frota con un cepillo o estropajo para eliminar los restos.' },
+      { emoji: '🧂', text: 'Aplica una pasta de bicarbonato y agua para neutralizar el olor.' },
+      { emoji: '💧', text: 'Aclara y seca completamente. La humedad es la causa del moho: ventila bien.' },
+    ],
+    warning: 'Usa guantes y mascarilla al limpar moho. Las esporas pueden ser perjudiciales si se inhalan.',
+  },
+  'Polvo': {
+    product: 'Paño de microfibra húmedo',
+    steps: [
+      { emoji: '🧹', text: 'Aspira o cepilla primero el polvo suelto para eliminar lo superficial.' },
+      { emoji: '💧', text: 'Pasa un paño de microfibra ligeramente húmedo para atrapar el polvo restante.' },
+      { emoji: '✨', text: 'Para superficies brillantes, usa un paño seco de microfibra al final.' },
+      { emoji: '🔄', text: 'En rincones difíciles, usa un pincel o cepillo suave seco.' },
+      { emoji: '🪟', text: 'Para cristales con polvo, limpia con vinagre diluido en agua.' },
+    ],
+    warning: 'No uses paños saturados de agua sobre polvo seco: lo convertirás en barro y será más difícil de quitar.',
+  },
+};
+
 /* ============================================================
    AUTH
    ============================================================ */
@@ -761,8 +880,11 @@ function ScannerView({
     if (file && file.type.startsWith('image/')) handleFile(file);
   };
 
+  const canAnalyze = subscriptionActive || tokens > 0;
+
   const handleAnalyze = async () => {
     if (!selectedFile) return;
+    if (!canAnalyze) return;
     setAnalyzing(true);
     setError('');
 
@@ -861,7 +983,6 @@ function ScannerView({
               onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
             />
 
-            <p className="text-center text-xs text-ink-400">Echa mancha</p>
           </div>
         )}
 
@@ -890,13 +1011,22 @@ function ScannerView({
             </div>
             <button
               onClick={handleAnalyze}
-              disabled={analyzing}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+              disabled={analyzing || !canAnalyze}
+              className={`w-full flex items-center justify-center gap-2 px-6 py-3.5 font-semibold rounded-xl transition-all shadow-sm disabled:cursor-not-allowed ${
+                canAnalyze
+                  ? 'bg-brand-600 hover:bg-brand-700 text-white hover:shadow-md disabled:opacity-60'
+                  : 'bg-ink-200 text-ink-400'
+              }`}
             >
               {analyzing ? (
                 <>
                   <Loader className="w-5 h-5 animate-spin" />
                   Analizando tu mancha...
+                </>
+              ) : !canAnalyze ? (
+                <>
+                  <AlertTriangle className="w-5 h-5" />
+                  Sin escaneos disponibles
                 </>
               ) : (
                 <>
@@ -905,6 +1035,15 @@ function ScannerView({
                 </>
               )}
             </button>
+            {!canAnalyze && (
+              <button
+                onClick={onShowPlans}
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-accent-50 hover:bg-accent-100 border border-accent-200 text-accent-700 font-semibold rounded-xl text-sm transition-all"
+              >
+                <Zap className="w-4 h-4" />
+                Ver anuncios para recargar escaneos
+              </button>
+            )}
           </div>
         )}
 
@@ -1099,16 +1238,17 @@ function ScanResultCard({ result, onReset, selectedFile }: { result: ScanResult;
 function LibraryView({ setView }: { setView: (v: View) => void }) {
   const [selectedStain, setSelectedStain] = useState<string | null>(null);
 
+  const guide = selectedStain ? STAIN_GUIDES[selectedStain] : null;
+
   return (
     <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Biblioteca de manchas</h1>
-          <p className="text-ink-500">Selecciona el tipo de mancha para ver la solución</p>
+      <div className="max-w-2xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold text-ink-900 tracking-tight mb-1">Biblioteca de manchas</h1>
+          <p className="text-sm text-ink-500">Toca una mancha para ver la guía paso a paso</p>
         </div>
 
-        {/* 10 stain category buttons */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-3 mb-6">
           {STAIN_CATEGORIES.map((stain, i) => {
             const Icon = stain.icon;
             const active = selectedStain === stain.name;
@@ -1116,15 +1256,15 @@ function LibraryView({ setView }: { setView: (v: View) => void }) {
               <button
                 key={stain.name}
                 onClick={() => setSelectedStain(active ? null : stain.name)}
-                className={`flex flex-col items-center gap-3 p-6 rounded-2xl border-2 transition-all animate-fade-in-up hover:scale-[1.03] ${
+                className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all animate-fade-in-up ${
                   active
                     ? 'border-brand-500 bg-brand-50 shadow-md'
                     : 'border-ink-200 bg-white hover:border-brand-300 shadow-sm'
                 }`}
-                style={{ animationDelay: `${i * 0.05}s` }}
+                style={{ animationDelay: `${i * 0.04}s` }}
               >
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${active ? 'bg-brand-600' : 'bg-ink-100'}`}>
-                  <Icon className={`w-6 h-6 ${active ? 'text-white' : 'text-ink-600'}`} />
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${active ? 'bg-brand-600' : 'bg-ink-100'}`}>
+                  <Icon className={`w-5 h-5 ${active ? 'text-white' : 'text-ink-600'}`} />
                 </div>
                 <span className={`text-sm font-semibold ${active ? 'text-brand-700' : 'text-ink-700'}`}>{stain.name}</span>
               </button>
@@ -1132,47 +1272,74 @@ function LibraryView({ setView }: { setView: (v: View) => void }) {
           })}
         </div>
 
-        {selectedStain && (
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-brand-200 shadow-sm animate-zoom-in mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center">
+        {selectedStain && guide && (
+          <div className="bg-white rounded-3xl border border-brand-200 shadow-sm animate-zoom-in mb-6 overflow-hidden">
+            <div className="bg-gradient-to-br from-brand-600 to-brand-800 p-5">
+              <div className="flex items-center gap-3 mb-2">
                 {(() => {
                   const Icon = STAIN_CATEGORIES.find(s => s.name === selectedStain)?.icon;
-                  return Icon ? <Icon className="w-5 h-5 text-brand-600" /> : null;
+                  return Icon ? <div className="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center"><Icon className="w-5 h-5 text-white" /></div> : null;
                 })()}
+                <h2 className="text-lg font-bold text-white">Mancha de {selectedStain}</h2>
               </div>
-              <h2 className="text-xl font-bold text-ink-900">Mancha de {selectedStain}</h2>
+              <div className="flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2">
+                <Droplet className="w-4 h-4 text-brand-200 flex-shrink-0" />
+                <p className="text-sm text-white"><span className="font-semibold">Producto:</span> {guide.product}</p>
+              </div>
             </div>
-            <p className="text-sm text-ink-600 leading-relaxed mb-5">
-              Para eliminar una mancha de {selectedStain.toLowerCase()}, te recomendamos usar los productos disponibles en tu botiquín. Escanea la mancha con la IA para recibir instrucciones paso a paso personalizadas.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={() => setView('scanner')}
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-sm transition-all shadow-sm"
-              >
-                <Camera className="w-4 h-4" />
-                Escanear mancha
-              </button>
-              <button
-                onClick={() => setView('kit')}
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-white border border-ink-200 hover:border-brand-300 text-ink-700 font-semibold rounded-xl text-sm transition-all"
-              >
-                <Backpack className="w-4 h-4" />
-                Ver productos en botiquín
-              </button>
+
+            <div className="p-5">
+              <h3 className="font-semibold text-ink-900 mb-3 flex items-center gap-2 text-sm">
+                <Brush className="w-4 h-4 text-brand-600" />
+                Paso a paso
+              </h3>
+              <div className="space-y-3">
+                {guide.steps.map((step, i) => (
+                  <div key={i} className="flex gap-3 p-3 rounded-xl bg-ink-50 border border-ink-200/50">
+                    <div className="text-xl flex-shrink-0">{step.emoji}</div>
+                    <div className="flex-1">
+                      <span className="text-[10px] font-bold text-brand-600 uppercase tracking-wider">Paso {i + 1}</span>
+                      <p className="text-sm text-ink-700 leading-relaxed mt-0.5">{step.text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 flex items-start gap-3 bg-error-500/5 border border-error-500/20 rounded-2xl p-4">
+                <AlertTriangle className="w-5 h-5 text-error-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-semibold text-error-600 mb-1">Advertencia</h4>
+                  <p className="text-xs text-error-600/80 leading-relaxed">{guide.warning}</p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-col sm:flex-row gap-2">
+                <button
+                  onClick={() => setView('scanner')}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-sm transition-all shadow-sm"
+                >
+                  <Camera className="w-4 h-4" />
+                  Escanear mi mancha
+                </button>
+                <button
+                  onClick={() => setView('kit')}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white border border-ink-200 hover:border-brand-300 text-ink-700 font-semibold rounded-xl text-sm transition-all"
+                >
+                  <Backpack className="w-4 h-4" />
+                  Ver productos
+                </button>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Scanner CTA */}
-        <div className="bg-gradient-to-br from-brand-600 to-brand-800 rounded-3xl p-8 text-center">
-          <Scan className="w-10 h-10 text-white mx-auto mb-3" />
-          <h2 className="text-xl font-bold text-white mb-2">¿No sabes qué mancha es?</h2>
-          <p className="text-brand-100 text-sm mb-5 max-w-md mx-auto">Escanea con la IA y recibe la solución exacta para tu mancha en segundos.</p>
+        <div className="bg-gradient-to-br from-brand-600 to-brand-800 rounded-3xl p-6 text-center">
+          <Scan className="w-9 h-9 text-white mx-auto mb-2" />
+          <h2 className="text-lg font-bold text-white mb-1">¿No sabes qué mancha es?</h2>
+          <p className="text-brand-100 text-sm mb-4 max-w-md mx-auto">Escanea con la IA y recibe la solución exacta para tu mancha en segundos.</p>
           <button
             onClick={() => setView('scanner')}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-brand-700 font-semibold rounded-xl text-sm transition-all hover:scale-105 shadow-lg"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-brand-700 font-semibold rounded-xl text-sm transition-all hover:scale-105 shadow-lg"
           >
             Escanear ahora
             <ArrowRight className="w-4 h-4" />
@@ -1248,14 +1415,14 @@ function KitView({ setView }: { setView: (v: View) => void }) {
 
   return (
     <div className="pt-[120px] md:pt-20 min-h-screen pb-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-ink-900 tracking-tight mb-2">Tu botiquín de limpieza</h1>
-          <p className="text-ink-500">Productos recomendados para resolver cualquier mancha</p>
+      <div className="max-w-2xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-4">
+          <h1 className="text-2xl font-bold text-ink-900 tracking-tight mb-1">Productos recomendados para resolver cualquier mancha</h1>
+          <p className="text-sm text-ink-500">Tu botiquín de limpieza inteligente</p>
         </div>
 
         {/* Ask AI */}
-        <div className="bg-brand-50 border border-brand-200 rounded-2xl p-5 mb-8">
+        <div className="bg-brand-50 border border-brand-200 rounded-2xl p-4 mb-4">
           {askAiOpen ? (
             <div className="animate-zoom-in">
               <div className="flex items-center gap-2 mb-3">
@@ -1308,7 +1475,7 @@ function KitView({ setView }: { setView: (v: View) => void }) {
         </div>
 
         {/* Search */}
-        <div className="relative mb-6 max-w-md mx-auto">
+        <div className="relative mb-4">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-400" />
           <input
             type="text"
@@ -1320,14 +1487,14 @@ function KitView({ setView }: { setView: (v: View) => void }) {
         </div>
 
         {/* Categories */}
-        <div className="flex items-center justify-center gap-2 mb-8 flex-wrap">
+        <div className="flex items-center gap-2 mb-4 flex-wrap">
           {CATEGORIES.map((cat) => {
             const Icon = categoryIcons[cat] || BookOpen;
             return (
               <button
                 key={cat}
                 onClick={() => setCategory(cat)}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                   category === cat
                     ? 'bg-brand-600 text-white shadow-sm'
                     : 'bg-white border border-ink-200 text-ink-600 hover:border-brand-300 hover:text-brand-600'
@@ -1341,12 +1508,12 @@ function KitView({ setView }: { setView: (v: View) => void }) {
         </div>
 
         {/* Product grid with Amazon links */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           {filtered.map((product, i) => (
             <div
               key={product.name}
-              className="group bg-white rounded-2xl overflow-hidden border border-ink-200/60 shadow-sm hover:shadow-md transition-all hover:scale-[1.03] animate-fade-in-up flex flex-col"
-              style={{ animationDelay: `${Math.min(i * 0.04, 0.3)}s` }}
+              className="group bg-white rounded-2xl overflow-hidden border border-ink-200/60 shadow-sm hover:shadow-md transition-all animate-fade-in-up flex flex-col"
+              style={{ animationDelay: `${Math.min(i * 0.03, 0.2)}s` }}
             >
               <div className="aspect-square bg-ink-100 overflow-hidden">
                 <img
@@ -1356,25 +1523,25 @@ function KitView({ setView }: { setView: (v: View) => void }) {
                   loading="lazy"
                 />
               </div>
-              <div className="p-3 flex-1 flex flex-col">
-                <div className="flex items-center gap-1.5 mb-1">
+              <div className="p-2.5 flex-1 flex flex-col">
+                <div className="flex items-center gap-1 mb-1">
                   {product.category === 'Natural' && <Leaf className="w-3 h-3 text-brand-500" />}
                   {product.category === 'Químico' && <FlaskRound className="w-3 h-3 text-accent-500" />}
                   {product.category === 'Quitamanchas' && <Droplet className="w-3 h-3 text-brand-600" />}
                   {product.category === 'Herramienta' && <Hand className="w-3 h-3 text-ink-500" />}
-                  <span className="text-[10px] font-semibold text-ink-400 uppercase tracking-wider">{product.category}</span>
+                  <span className="text-[9px] font-semibold text-ink-400 uppercase tracking-wider">{product.category}</span>
                 </div>
-                <h3 className="font-semibold text-sm text-ink-900 mb-1 leading-tight">{product.name}</h3>
-                <p className="text-xs text-ink-500 leading-relaxed line-clamp-2 mb-3">{product.description}</p>
+                <h3 className="font-semibold text-xs text-ink-900 mb-1 leading-tight">{product.name}</h3>
+                <p className="text-[11px] text-ink-500 leading-relaxed line-clamp-2 mb-2">{product.description}</p>
                 {product.amazonUrl && (
                   <a
                     href={product.amazonUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-auto flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-accent-50 hover:bg-accent-100 text-accent-700 text-xs font-semibold transition-colors"
+                    className="mt-auto flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-accent-50 hover:bg-accent-100 text-accent-700 text-[11px] font-semibold transition-colors"
                   >
-                    <ShoppingCart className="w-3.5 h-3.5" />
-                    Comprar en Amazon
+                    <ShoppingCart className="w-3 h-3" />
+                    Amazon
                   </a>
                 )}
               </div>
@@ -1383,43 +1550,19 @@ function KitView({ setView }: { setView: (v: View) => void }) {
         </div>
 
         {filtered.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-ink-400">No se encontraron productos.</p>
+          <div className="text-center py-12">
+            <p className="text-ink-400 text-sm">No se encontraron productos.</p>
           </div>
         )}
 
-        {/* Tips */}
-        <div className="mt-12 grid sm:grid-cols-2 gap-4">
-          {[
-            { icon: Leaf, title: 'Empieza por lo natural', desc: 'Vinagre, bicarbonato y limón resuelven muchas manchas sin productos agresivos.' },
-            { icon: AlertTriangle, title: 'Prueba antes en zona oculta', desc: 'Aplica el producto en una esquina discreta para comprobar que no daña el material.' },
-            { icon: Droplet, title: 'Menos es más', desc: 'Usa la cantidad mínima necesaria. El exceso de producto puede dejar residuos.' },
-            { icon: Wind, title: 'Ventila siempre', desc: 'Al usar productos químicos, asegúrate de tener buena ventilación en la zona.' },
-          ].map((tip, i) => (
-            <div
-              key={i}
-              className="flex gap-3 p-5 bg-white rounded-2xl border border-ink-200/60 shadow-sm animate-fade-in-up"
-              style={{ animationDelay: `${i * 0.08}s` }}
-            >
-              <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
-                <tip.icon className="w-5 h-5 text-brand-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-sm text-ink-900 mb-1">{tip.title}</h3>
-                <p className="text-xs text-ink-500 leading-relaxed">{tip.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
         {/* Scanner CTA */}
-        <div className="mt-8 bg-gradient-to-br from-brand-600 to-brand-800 rounded-3xl p-8 text-center">
-          <Scan className="w-10 h-10 text-white mx-auto mb-3" />
-          <h2 className="text-xl font-bold text-white mb-2">¿No sabes qué producto usar?</h2>
-          <p className="text-brand-100 text-sm mb-5 max-w-md mx-auto">Escanea tu mancha con la IA y recibe la recomendación exacta en segundos.</p>
+        <div className="mt-6 bg-gradient-to-br from-brand-600 to-brand-800 rounded-3xl p-6 text-center">
+          <Scan className="w-9 h-9 text-white mx-auto mb-2" />
+          <h2 className="text-lg font-bold text-white mb-1">¿No sabes qué producto usar?</h2>
+          <p className="text-brand-100 text-sm mb-4 max-w-md mx-auto">Escanea tu mancha con la IA y recibe la recomendación exacta en segundos.</p>
           <button
             onClick={() => setView('scanner')}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-brand-700 font-semibold rounded-xl text-sm transition-all hover:scale-105 shadow-lg"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-brand-700 font-semibold rounded-xl text-sm transition-all hover:scale-105 shadow-lg"
           >
             Escanear mancha
             <ArrowRight className="w-4 h-4" />
@@ -1495,6 +1638,25 @@ function PricingView({
               disabled={!user}
             />
           ))}
+        </div>
+
+        {/* Free reload via ads */}
+        <div className="mt-8 max-w-2xl mx-auto">
+          <div className="bg-gradient-to-br from-accent-50 to-accent-100 border-2 border-accent-300 rounded-2xl p-6 text-center">
+            <div className="w-12 h-12 rounded-xl bg-accent-400 flex items-center justify-center mx-auto mb-3">
+              <Zap className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-lg font-bold text-accent-800 mb-2">¿Sin escaneos gratis?</h3>
+            <p className="text-sm text-accent-700 mb-4 max-w-md mx-auto">
+              Mira un breve anuncio y recarga tus escaneos gratis sin pagar nada. Disponible cuando agotes tus escaneos gratuitos.
+            </p>
+            <button
+              className="inline-flex items-center gap-2 px-6 py-3 bg-accent-500 hover:bg-accent-600 text-white font-semibold rounded-xl text-sm transition-all hover:scale-105 shadow-lg"
+            >
+              <PlayCircle className="w-5 h-5" />
+              Ver anuncios para recargar
+            </button>
+          </div>
         </div>
 
         <p className="text-center text-xs text-ink-400 mt-10">
