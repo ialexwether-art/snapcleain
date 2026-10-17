@@ -147,31 +147,3 @@
     linear-gradient(to bottom, rgba(37, 99, 235, 0.05) 1px, transparent 1px);
   background-size: 40px 40px;
 }
-
-.mobile-preview {
-  container-type: inline-size;
-  overflow-x: hidden;
-}
-
-@container (max-width: 768px) {
-  .md\:hidden { display: flex !important; }
-  .hidden.md\:flex { display: none !important; }
-  .hidden.md\:block { display: none !important; }
-  .md\:grid-cols-3 { grid-template-columns: 1fr !important; }
-  .sm\:grid-cols-2 { grid-template-columns: 1fr !important; }
-  .sm\:grid-cols-3 { grid-template-columns: 1fr !important; }
-  .sm\:grid-cols-5 { grid-template-columns: repeat(3, 1fr) !important; }
-  .lg\:grid-cols-4 { grid-template-columns: repeat(2, 1fr) !important; }
-  .sm\:flex-row { flex-direction: column !important; }
-  .sm\:text-5xl { font-size: 2.25rem !important; }
-  .md\:text-6xl { font-size: 2.25rem !important; }
-  .md\:text-4xl { font-size: 1.875rem !important; }
-  .md\:pt-16 { padding-top: 120px !important; }
-  .md\:pt-20 { padding-top: 120px !important; }
-  .md\:pt-24 { padding-top: 120px !important; }
-  .md\:pb-0 { padding-bottom: 4rem !important; }
-  .md\:pb-32 { padding-bottom: 6rem !important; }
-  .md\:p-16 { padding: 2.5rem !important; }
-  .sm\:px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
-  .sm\:w-auto { width: 100% !important; }
-}
