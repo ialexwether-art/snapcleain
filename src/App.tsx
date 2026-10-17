@@ -10,6 +10,7 @@ import {
   Zap, Heart, Star, ArrowRight, CircleCheck, Clock, TrendingUp,
   MessageCircle, Send, Plus, RefreshCw, HelpCircle,
   Image as ImageIcon, ShoppingCart, Sparkle, Menu, History, Info, PlayCircle,
+  Smartphone,
 } from 'lucide-react';
 
 /* ============================================================
@@ -374,6 +375,21 @@ export default function App() {
         )}
 
         <Footer />
+
+      <button
+        onClick={() => {
+          const w = 390;
+          const h = 844;
+          const left = window.screen.width / 2 - w / 2;
+          const top = window.screen.height / 2 - h / 2;
+          window.open(window.location.href, 'snapcleain_mobile', `width=${w},height=${h},left=${left},top=${top}`);
+        }}
+        className="fixed bottom-6 right-6 z-[300] flex items-center gap-2 px-5 py-3 rounded-full bg-brand-600 text-white font-semibold text-sm shadow-2xl hover:bg-brand-700 transition-all hover:scale-105"
+        title="Abrir vista móvil"
+      >
+        <Smartphone className="w-5 h-5" />
+        Vista móvil
+      </button>
     </div>
   );
 }
