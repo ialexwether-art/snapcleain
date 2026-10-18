@@ -32,6 +32,8 @@ import {
   Sparkles,
   Star,
   Store,
+  Smartphone,
+  Plus,
   Trash2,
   User,
   Wallet,
@@ -630,7 +632,7 @@ const SUBSCRIPTION_PLANS = [
   {
     name: "Aficionado",
     price: "3,99",
-    priceId: "price_...",
+    priceId: "price_1UQvmHLT5EHdVSzq9gWAPTo7",
     mode: "subscription" as const,
     icon: <Star className="h-5 w-5 text-blue-500" />,
     features: [
@@ -643,7 +645,7 @@ const SUBSCRIPTION_PLANS = [
   {
     name: "Limpieza Total",
     price: "7,99",
-    priceId: "price_...",
+    priceId: "price_1UQvqwLT5EHdVSzqKZdfoTdC",
     mode: "subscription" as const,
     icon: <Crown className="h-5 w-5 text-amber-500" />,
     features: [
@@ -844,10 +846,19 @@ type WalletShopCardProps = {
   userEmail: string | null;
   onClose: () => void;
   onWatchAd: () => void;
+  onRequireLogin: () => void;
 };
 
-function WalletShopCard({ balance, adLoading, userEmail, onClose, onWatchAd }: WalletShopCardProps) {
+function WalletShopCard({ balance, adLoading, userEmail, onClose, onWatchAd, onRequireLogin }: WalletShopCardProps) {
   const [checkoutPlan, setCheckoutPlan] = useState<{ name: string; price: string; priceId: string; mode: "payment" | "subscription" } | null>(null);
+
+  const handleSubscribe = (plan: { name: string; price: string; priceId: string; mode: "payment" | "subscription" }) => {
+    if (!userEmail) {
+      onRequireLogin();
+      return;
+    }
+    setCheckoutPlan(plan);
+  };
 
   return (
     <div
@@ -914,7 +925,7 @@ function WalletShopCard({ balance, adLoading, userEmail, onClose, onWatchAd }: W
               ) : (
                 <button
                   type="button"
-                  onClick={() => setCheckoutPlan({ name: plan.name, price: plan.price, priceId: plan.priceId, mode: plan.mode })}
+                  onClick={() => handleSubscribe({ name: plan.name, price: plan.price, priceId: plan.priceId, mode: plan.mode })}
                   className={`flex h-9 w-full items-center justify-center gap-1.5 rounded-xl text-xs font-bold uppercase tracking-wide transition-all active:scale-[0.98] ${
                     plan.highlight
                       ? "bg-amber-500 text-white hover:bg-amber-600"
@@ -1672,26 +1683,49 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         />
       </div>
 
-      {/* Bottom: Ver más + about button + CTA */}
+      {/* Bottom: Más expandable + CTA */}
       <div className="flex w-full flex-col items-center space-y-3 pb-2">
-        {/* Ver más expandable section */}
+        {/* Más expandable section */}
         <div className="w-full max-w-[420px] @lg:max-w-[520px]">
           <button
             type="button"
             onClick={() => setShowMore(!showMore)}
             className="flex w-full items-center justify-center gap-2 rounded-full border border-white/30 px-5 py-2 text-white/90 transition-colors hover:bg-white/10 active:scale-95"
           >
-            <span className="text-sm font-semibold">Ver más</span>
-            <ChevronRight className={`h-4 w-4 transition-transform duration-300 ${showMore ? "rotate-90" : ""}`} />
+            <Plus className={`h-4 w-4 transition-transform duration-300 ${showMore ? "rotate-45" : ""}`} />
+            <span className="text-sm font-semibold">Más</span>
           </button>
           {showMore && (
-            <div className="mt-3 space-y-3 rounded-2xl bg-white/5 p-4 animate-fade-in">
-              <p className="text-sm font-medium leading-relaxed text-white/85">
-                Soy snapcleAIn, tu IA experta en limpieza universal. Haz una foto a cualquier mancha y recibe el manual exacto, paso a paso, para eliminarla.
-              </p>
-              <p className="text-sm font-medium leading-relaxed text-white/70">
-                Funciono con tokens: cada análisis o pregunta cuesta 1 token. Empiezas con 3 tokens de regalo. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual.
-              </p>
+            <div className="mt-3 space-y-4 rounded-2xl bg-white/5 p-5 animate-fade-in text-left">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Cómo funciona</p>
+                <p className="text-sm font-medium leading-relaxed text-white/85">
+                  Haz una foto a cualquier mancha y la IA te dará el manual exacto, paso a paso, para eliminarla en cualquier superficie.
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Pasos de uso</p>
+                <ol className="space-y-1.5">
+                  <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">1</span>
+                    Pulsa ESCANEAR y haz una foto a la mancha.
+                  </li>
+                  <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">2</span>
+                    Opcionalmente, escribe qué tipo de mancha es para mayor precisión.
+                  </li>
+                  <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">3</span>
+                    Recibe la solución y haz preguntas de seguimiento si lo necesitas.
+                  </li>
+                </ol>
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Tokens</p>
+                <p className="text-sm font-medium leading-relaxed text-white/70">
+                  Cada análisis o pregunta cuesta 1 token. Empiezas con 3 tokens de regalo. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual.
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={onOpenAbout}
@@ -2330,10 +2364,19 @@ type PremiumPageProps = {
   adLoading: boolean;
   onWatchAd: () => void;
   userEmail: string | null;
+  onRequireLogin: () => void;
 };
 
-function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWatchAd, userEmail }: PremiumPageProps) {
+function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWatchAd, userEmail, onRequireLogin }: PremiumPageProps) {
   const [checkoutPlan, setCheckoutPlan] = useState<{ name: string; price: string; priceId: string; mode: "payment" | "subscription" } | null>(null);
+
+  const handleSubscribe = (plan: { name: string; price: string; priceId: string; mode: "payment" | "subscription" }) => {
+    if (!userEmail) {
+      onRequireLogin();
+      return;
+    }
+    setCheckoutPlan(plan);
+  };
 
   return (
     <section className="flex w-full flex-1 flex-col overflow-y-auto">
@@ -2391,7 +2434,7 @@ function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWa
             ) : (
               <button
                 type="button"
-                onClick={() => setCheckoutPlan({ name: plan.name, price: plan.price, priceId: plan.priceId, mode: plan.mode })}
+                onClick={() => handleSubscribe({ name: plan.name, price: plan.price, priceId: plan.priceId, mode: plan.mode })}
                 className={`mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-xl text-sm font-bold uppercase tracking-wide transition-all active:scale-[0.98] ${
                   plan.highlight
                     ? "bg-amber-500 text-white hover:bg-amber-600"
@@ -2498,37 +2541,13 @@ function DesktopTopBar({
 
   return (
     <header className="hidden @lg:flex items-center justify-between gap-2 border-b border-[#e5e7eb] bg-white px-4 py-2.5 shrink-0">
-      {/* Left: logo + wallet */}
-      <div className="flex items-center gap-3 min-w-0">
+      {/* Left: logo + hamburger + login (swapped: tokens moved right, hamburger moved left) */}
+      <div className="flex items-center gap-2 min-w-0">
         <img
           src="/logo_snapcleAIn_positivo.png"
           alt="snapcleAIn"
           className="h-9 w-auto object-contain shrink-0"
         />
-        <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
-      </div>
-
-      {/* Center: nav menu (Inicio, Biblioteca, ESCANEAR, Botiquín, Planes) */}
-      <nav className="flex items-center gap-1.5">
-        {leftItems.map(renderTab)}
-        <button
-          key="escanear"
-          type="button"
-          onClick={() => onTabChange("escanear")}
-          className={`flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-bold uppercase tracking-wide transition-all ${
-            activeTab === "escanear"
-              ? "bg-[#087ff5] text-white shadow-[0_4px_14px_rgba(8,127,245,0.4)] scale-105"
-              : "bg-[#087ff5] text-white hover:bg-[#0a6fd4] shadow-[0_2px_8px_rgba(8,127,245,0.35)] hover:scale-105"
-          }`}
-        >
-          <Camera className="h-4 w-4" />
-          ESCANEAR
-        </button>
-        {rightItems.map(renderTab)}
-      </nav>
-
-      {/* Right: hamburger (drawer) + login/profile */}
-      <div className="flex items-center gap-2 shrink-0">
         <button
           type="button"
           onClick={onOpenDrawer}
@@ -2548,6 +2567,32 @@ function DesktopTopBar({
             {isLoggedIn ? loggedInEmail : "Iniciar sesión"}
           </span>
         </button>
+      </div>
+
+      {/* Center: nav menu (Inicio, Biblioteca, ESCANEAR, Botiquín, Planes) */}
+      <nav className="flex items-center gap-1.5">
+        {leftItems.map(renderTab)}
+        <button
+          key="escanear"
+          type="button"
+          onClick={() => onTabChange("escanear")}
+          className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold transition-all ${
+            activeTab === "escanear"
+              ? "bg-blue-50 text-[#087ff5]"
+              : "text-gray-600 hover:bg-[#f3f4f6]"
+          }`}
+        >
+          <span className={activeTab === "escanear" ? "text-[#087ff5]" : "text-gray-400"}>
+            <Camera className="h-4 w-4" />
+          </span>
+          Escanear
+        </button>
+        {rightItems.map(renderTab)}
+      </nav>
+
+      {/* Right: wallet (tokens swapped from left) */}
+      <div className="flex items-center gap-2 shrink-0">
+        <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
       </div>
     </header>
   );
@@ -2642,6 +2687,7 @@ function App() {
   const [loggedInEmail, setLoggedInEmail] = useState("");
   const [showProfilePanel, setShowProfilePanel] = useState(false);
   const [registeredAccounts, setRegisteredAccounts] = useState<Account[]>(() => loadAccounts());
+  const [mobilePreview, setMobilePreview] = useState(false);
 
   useEffect(() => {
     if (tokenBalance < 1) {
@@ -2866,7 +2912,7 @@ function App() {
 
   return (
     <div className="flex min-h-[100dvh] items-center justify-center bg-[#f4f5f7] overflow-hidden py-4">
-      <div className={`max-w-[390px] w-full max-h-[844px] h-[100dvh] p-5 pb-20 lg:max-w-[1200px] lg:max-h-none lg:h-[min(100dvh-2rem,920px)] lg:p-6 lg:pb-6 lg:flex-col bg-white rounded-3xl shadow-xl flex flex-col mx-auto relative overflow-hidden @container`}>
+      <div className={`${mobilePreview ? "max-w-[390px] w-full max-h-[844px] h-[100dvh] p-5 pb-20 flex-col" : "max-w-[390px] w-full max-h-[844px] h-[100dvh] p-5 pb-20 lg:max-w-[1200px] lg:max-h-none lg:h-[min(100dvh-2rem,920px)] lg:p-6 lg:pb-6 lg:flex-col"} bg-white rounded-3xl shadow-xl flex flex-col mx-auto relative overflow-hidden @container`}>
         {/* Desktop top bar */}
         <DesktopTopBar
           activeTab={activeTab}
@@ -3000,6 +3046,7 @@ function App() {
               adLoading={adLoading}
               onWatchAd={watchAd}
               userEmail={isLoggedIn ? loggedInEmail : null}
+              onRequireLogin={() => setDrawerPanel("login")}
             />
           )}
         </div>
@@ -3008,6 +3055,17 @@ function App() {
         <div className="@lg:hidden">
           <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
+
+        {/* Mobile/desktop preview toggle - desktop only */}
+        <button
+          type="button"
+          onClick={() => setMobilePreview(!mobilePreview)}
+          className="hidden @lg:flex absolute bottom-3 right-3 z-50 items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-black shadow-lg border border-[#e5e7eb] transition-all hover:bg-[#f3f4f6] active:scale-95"
+          aria-label={mobilePreview ? "Vista ordenador" : "Vista móvil"}
+        >
+          <Smartphone className="h-3.5 w-3.5 text-[#087ff5]" />
+          {mobilePreview ? "Ordenador" : "Móvil"}
+        </button>
 
         {/* Hidden file inputs */}
         <input
@@ -3108,6 +3166,7 @@ function App() {
             userEmail={isLoggedIn ? loggedInEmail : null}
             onClose={closeDrawer}
             onWatchAd={watchAd}
+            onRequireLogin={() => { closeDrawer(); setDrawerPanel("login"); }}
           />
         )}
 
