@@ -1715,18 +1715,15 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         </button>
       </div>
 
-      <div className="flex w-full flex-1 items-center justify-center">
+      <div className="flex w-full flex-1 flex-col items-center justify-center">
         <img
           src="/logo_snapcleAIn_negativo_alta.jpg"
           alt="snapcleAIn"
           className="max-h-[62%] max-w-[88%] scale-[1.03] object-contain -translate-y-4 @lg:-translate-y-12 mix-blend-lighten"
         />
-      </div>
 
-      {/* Bottom: expandable details + CTA */}
-      <div className="flex w-full flex-col items-center space-y-3 pb-2 overflow-y-auto">
-        {/* DESKTOP: full-width "Más" button */}
-        <div className="hidden @lg:block w-full">
+        {/* DESKTOP: "Más" button right below the logo */}
+        <div className="hidden @lg:block w-full max-w-[520px] mt-4">
           <button
             type="button"
             onClick={() => setShowMore(!showMore)}
@@ -1737,7 +1734,10 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
           </button>
           {showMore && <div className="w-full">{detailsContent}</div>}
         </div>
+      </div>
 
+      {/* Bottom: CTA */}
+      <div className="flex w-full flex-col items-center space-y-3 pb-2">
         {/* MOBILE: "¿Qué hacer?" button (same width as CTA) */}
         <div className="@lg:hidden w-full max-w-[280px]">
           <button
@@ -1759,19 +1759,19 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         </button>
       </div>
 
-      {/* MOBILE: floating (+) button in bottom-right corner */}
+      {/* MOBILE: small floating (+) button in bottom-right corner */}
       <button
         type="button"
         onClick={() => setShowMore(!showMore)}
-        className="@lg:hidden absolute bottom-3 right-3 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm border border-white/30 transition-all hover:bg-white/25 active:scale-90"
+        className="@lg:hidden absolute bottom-3 right-3 z-50 flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm border border-white/30 transition-all hover:bg-white/25 active:scale-90"
         aria-label="Más opciones"
       >
-        <Plus className={`h-6 w-6 transition-transform duration-300 ${showMore ? "rotate-45" : ""}`} />
+        <Plus className={`h-5 w-5 transition-transform duration-300 ${showMore ? "rotate-45" : ""}`} />
       </button>
 
-      {/* MOBILE: expanded details panel from (+) button */}
+      {/* MOBILE: expanded details panel, drops downward from (+) button */}
       {showMore && (
-        <div className="@lg:hidden absolute bottom-16 right-3 z-50 w-[calc(100%-1.5rem)] max-w-[340px] max-h-[70%] overflow-y-auto rounded-2xl bg-[#000053]/95 backdrop-blur-md border border-white/20 p-4 animate-fade-in">
+        <div className="@lg:hidden absolute bottom-14 right-3 z-50 w-[calc(100%-1.5rem)] max-w-[340px] max-h-[70%] overflow-y-auto rounded-2xl bg-[#000053]/95 backdrop-blur-md border border-white/20 p-4 animate-fade-in">
           {detailsContent}
         </div>
       )}
