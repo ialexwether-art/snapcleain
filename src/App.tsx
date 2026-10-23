@@ -1684,7 +1684,7 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
 
   return (
     <div
-      className="flex h-full flex-col items-center justify-between rounded-2xl bg-[#000053] p-4 @lg:rounded-2xl @lg:p-10"
+      className="flex h-full flex-col items-center justify-between rounded-2xl bg-[#000053] p-4 @lg:rounded-2xl @lg:p-10 relative"
       style={splashContainerStyle}
     >
       {/* Top: menu + login (right, mobile only) */}
@@ -1750,19 +1750,6 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
           </button>
         </div>
 
-        {/* MOBILE: (+) expand button */}
-        <div className="@lg:hidden w-full max-w-[280px]">
-          <button
-            type="button"
-            onClick={() => setShowMore(!showMore)}
-            className="flex w-full items-center justify-center gap-2 rounded-full border border-white/30 px-5 py-2 text-white/90 transition-colors hover:bg-white/10 active:scale-95"
-          >
-            <Plus className={`h-4 w-4 transition-transform duration-300 ${showMore ? "rotate-45" : ""}`} />
-            <span className="text-sm font-semibold">Más</span>
-          </button>
-          {showMore && <div className="w-full">{detailsContent}</div>}
-        </div>
-
         <button
           type="button"
           onClick={onEnter}
@@ -1771,6 +1758,23 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
           ENTRAR A LA APP
         </button>
       </div>
+
+      {/* MOBILE: floating (+) button in bottom-right corner */}
+      <button
+        type="button"
+        onClick={() => setShowMore(!showMore)}
+        className="@lg:hidden absolute bottom-3 right-3 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm border border-white/30 transition-all hover:bg-white/25 active:scale-90"
+        aria-label="Más opciones"
+      >
+        <Plus className={`h-6 w-6 transition-transform duration-300 ${showMore ? "rotate-45" : ""}`} />
+      </button>
+
+      {/* MOBILE: expanded details panel from (+) button */}
+      {showMore && (
+        <div className="@lg:hidden absolute bottom-16 right-3 z-50 w-[calc(100%-1.5rem)] max-w-[340px] max-h-[70%] overflow-y-auto rounded-2xl bg-[#000053]/95 backdrop-blur-md border border-white/20 p-4 animate-fade-in">
+          {detailsContent}
+        </div>
+      )}
     </div>
   );
 }
@@ -3082,11 +3086,11 @@ function App() {
           <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
 
-        {/* Mobile/desktop preview toggle - desktop only */}
+        {/* Mobile/desktop view toggle - always visible */}
         <button
           type="button"
           onClick={() => setMobilePreview(!mobilePreview)}
-          className="hidden @lg:flex absolute bottom-3 right-3 z-50 items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-black shadow-lg border border-[#e5e7eb] transition-all hover:bg-[#f3f4f6] active:scale-95"
+          className="absolute bottom-3 left-3 z-50 flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-black shadow-lg border border-[#e5e7eb] transition-all hover:bg-[#f3f4f6] active:scale-95"
           aria-label={mobilePreview ? "Vista ordenador" : "Vista móvil"}
         >
           <Smartphone className="h-3.5 w-3.5 text-[#087ff5]" />
