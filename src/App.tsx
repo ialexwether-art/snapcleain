@@ -1642,12 +1642,52 @@ type InicioPageProps = {
 function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProfile, onOpenLogin }: InicioPageProps) {
   const [showMore, setShowMore] = useState(false);
 
+  const detailsContent = (
+    <div className="mt-3 space-y-4 rounded-2xl bg-white/5 p-5 animate-fade-in text-left">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Cómo funciona</p>
+        <p className="text-sm font-medium leading-relaxed text-white/85">
+          Haz una foto a cualquier mancha y la IA te dará el manual exacto, paso a paso, para eliminarla en cualquier superficie.
+        </p>
+      </div>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Pasos para escanear</p>
+        <ol className="space-y-1.5">
+          <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">1</span>
+            Pulsa ESCANEAR y haz una foto a la mancha.
+          </li>
+          <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">2</span>
+            Opcionalmente, escribe qué tipo de mancha es para mayor precisión.
+          </li>
+          <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">3</span>
+            Recibe la solución y haz preguntas de seguimiento si lo necesitas.
+          </li>
+        </ol>
+      </div>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">¿Qué hacer?</p>
+        <p className="text-sm font-medium leading-relaxed text-white/70">
+          Puedes escanear manchas, consultar la biblioteca de soluciones, preguntar a la IA sobre productos de limpieza y guardar tu historial. Cada análisis o pregunta cuesta 1 token.
+        </p>
+      </div>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Tokens</p>
+        <p className="text-sm font-medium leading-relaxed text-white/70">
+          Empiezas con 3 tokens de regalo. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual.
+        </p>
+      </div>
+    </div>
+  );
+
   return (
     <div
       className="flex h-full flex-col items-center justify-between rounded-2xl bg-[#000053] p-4 @lg:rounded-2xl @lg:p-10"
       style={splashContainerStyle}
     >
-      {/* Top: menu + login (right) */}
+      {/* Top: menu + login (right, mobile only) */}
       <div className="flex w-full items-center justify-between pt-2">
         <div className="flex items-center gap-2">
           <button
@@ -1683,10 +1723,35 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         />
       </div>
 
-      {/* Bottom: Más expandable + CTA */}
-      <div className="flex w-full flex-col items-center space-y-3 pb-2">
-        {/* Más expandable section */}
-        <div className="w-full max-w-[420px] @lg:max-w-[520px]">
+      {/* Bottom: expandable details + CTA */}
+      <div className="flex w-full flex-col items-center space-y-3 pb-2 overflow-y-auto">
+        {/* DESKTOP: full-width "Más" button */}
+        <div className="hidden @lg:block w-full">
+          <button
+            type="button"
+            onClick={() => setShowMore(!showMore)}
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-white/30 px-5 py-3 text-white/90 transition-colors hover:bg-white/10 active:scale-95"
+          >
+            <Plus className={`h-5 w-5 transition-transform duration-300 ${showMore ? "rotate-45" : ""}`} />
+            <span className="text-base font-semibold">Más</span>
+          </button>
+          {showMore && <div className="w-full">{detailsContent}</div>}
+        </div>
+
+        {/* MOBILE: "¿Qué hacer?" button (same width as CTA) */}
+        <div className="@lg:hidden w-full max-w-[280px]">
+          <button
+            type="button"
+            onClick={onOpenAbout}
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-white/60 px-5 py-3 text-white transition-colors hover:bg-white/15 active:scale-95"
+          >
+            <HelpCircle className="h-5 w-5" />
+            <span className="text-sm font-semibold">¿Qué hacer?</span>
+          </button>
+        </div>
+
+        {/* MOBILE: (+) expand button */}
+        <div className="@lg:hidden w-full max-w-[280px]">
           <button
             type="button"
             onClick={() => setShowMore(!showMore)}
@@ -1695,48 +1760,9 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
             <Plus className={`h-4 w-4 transition-transform duration-300 ${showMore ? "rotate-45" : ""}`} />
             <span className="text-sm font-semibold">Más</span>
           </button>
-          {showMore && (
-            <div className="mt-3 space-y-4 rounded-2xl bg-white/5 p-5 animate-fade-in text-left">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Cómo funciona</p>
-                <p className="text-sm font-medium leading-relaxed text-white/85">
-                  Haz una foto a cualquier mancha y la IA te dará el manual exacto, paso a paso, para eliminarla en cualquier superficie.
-                </p>
-              </div>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Pasos de uso</p>
-                <ol className="space-y-1.5">
-                  <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">1</span>
-                    Pulsa ESCANEAR y haz una foto a la mancha.
-                  </li>
-                  <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">2</span>
-                    Opcionalmente, escribe qué tipo de mancha es para mayor precisión.
-                  </li>
-                  <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">3</span>
-                    Recibe la solución y haz preguntas de seguimiento si lo necesitas.
-                  </li>
-                </ol>
-              </div>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Tokens</p>
-                <p className="text-sm font-medium leading-relaxed text-white/70">
-                  Cada análisis o pregunta cuesta 1 token. Empiezas con 3 tokens de regalo. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={onOpenAbout}
-                className="flex items-center gap-2 rounded-full border border-white/40 px-5 py-2 text-white transition-colors hover:bg-white/15 active:scale-95"
-              >
-                <HelpCircle className="h-4 w-4" />
-                <span className="text-sm font-semibold">¿Qué puedes hacer?</span>
-              </button>
-            </div>
-          )}
+          {showMore && <div className="w-full">{detailsContent}</div>}
         </div>
+
         <button
           type="button"
           onClick={onEnter}
@@ -2541,7 +2567,7 @@ function DesktopTopBar({
 
   return (
     <header className="hidden @lg:flex items-center justify-between gap-2 border-b border-[#e5e7eb] bg-white px-4 py-2.5 shrink-0">
-      {/* Left: logo + hamburger + login (swapped: tokens moved right, hamburger moved left) */}
+      {/* Left: logo + hamburger */}
       <div className="flex items-center gap-2 min-w-0">
         <img
           src="/logo_snapcleAIn_positivo.png"
@@ -2556,20 +2582,9 @@ function DesktopTopBar({
         >
           <Menu className="h-5 w-5" />
         </button>
-        <button
-          type="button"
-          onClick={() => (isLoggedIn ? onOpenProfile() : onOpenLogin())}
-          className="flex h-9 items-center gap-1.5 rounded-full border border-[#e5e7eb] px-3 text-sm font-semibold text-black transition-colors hover:bg-[#f3f4f6] active:scale-95"
-          aria-label={isLoggedIn ? "Perfil" : "Iniciar sesión"}
-        >
-          {isLoggedIn ? <User className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
-          <span className="max-w-[120px] truncate">
-            {isLoggedIn ? loggedInEmail : "Iniciar sesión"}
-          </span>
-        </button>
       </div>
 
-      {/* Center: nav menu (Inicio, Biblioteca, ESCANEAR, Botiquín, Planes) */}
+      {/* Center: nav menu (Inicio, Biblioteca, Escanear, Botiquín, Planes) */}
       <nav className="flex items-center gap-1.5">
         {leftItems.map(renderTab)}
         <button
@@ -2590,9 +2605,20 @@ function DesktopTopBar({
         {rightItems.map(renderTab)}
       </nav>
 
-      {/* Right: wallet (tokens swapped from left) */}
+      {/* Right: tokens (left) + login (right) */}
       <div className="flex items-center gap-2 shrink-0">
         <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
+        <button
+          type="button"
+          onClick={() => (isLoggedIn ? onOpenProfile() : onOpenLogin())}
+          className="flex h-9 items-center gap-1.5 rounded-full border border-[#e5e7eb] px-3 text-sm font-semibold text-black transition-colors hover:bg-[#f3f4f6] active:scale-95"
+          aria-label={isLoggedIn ? "Perfil" : "Iniciar sesión"}
+        >
+          {isLoggedIn ? <User className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
+          <span className="max-w-[120px] truncate">
+            {isLoggedIn ? loggedInEmail : "Iniciar sesión"}
+          </span>
+        </button>
       </div>
     </header>
   );
