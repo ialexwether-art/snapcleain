@@ -1641,6 +1641,18 @@ type InicioPageProps = {
 
 function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProfile, onOpenLogin }: InicioPageProps) {
   const [showMore, setShowMore] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const detailsRef = useRef<HTMLDivElement>(null);
+
+  const toggleMore = () => {
+    const next = !showMore;
+    setShowMore(next);
+    if (next) {
+      setTimeout(() => {
+        detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  };
 
   const detailsContent = (
     <div className="mt-3 space-y-4 rounded-2xl bg-white/5 p-5 animate-fade-in text-left">
@@ -1651,7 +1663,7 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         </p>
       </div>
       <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Pasos para escanear</p>
+        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Cómo escanear una mancha</p>
         <ol className="space-y-1.5">
           <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
             <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">1</span>
@@ -1668,27 +1680,73 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         </ol>
       </div>
       <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">¿Qué hacer?</p>
+        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">¿Qué puedes hacer?</p>
         <p className="text-sm font-medium leading-relaxed text-white/70">
           Puedes escanear manchas, consultar la biblioteca de soluciones, preguntar a la IA sobre productos de limpieza y guardar tu historial. Cada análisis o pregunta cuesta 1 token.
         </p>
       </div>
       <div>
+        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Biblioteca de manchas</p>
+        <p className="text-sm font-medium leading-relaxed text-white/70">
+          Consulta soluciones paso a paso para manchas comunes: café, vino, aceite, tinta, barro, sangre y muchas más, organizadas por tipo de superficie.
+        </p>
+      </div>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Botiquín de limpieza</p>
+        <p className="text-sm font-medium leading-relaxed text-white/70">
+          Guarda los productos de limpieza que tienes en casa. La IA tiene en cuenta tu botiquín para recomendarte soluciones con lo que ya tienes.
+        </p>
+      </div>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Historial</p>
+        <p className="text-sm font-medium leading-relaxed text-white/70">
+          Todos tus análisis se guardan automáticamente. Puedes volver a consultar cualquier mancha anterior cuando quieras.
+        </p>
+      </div>
+      <div>
         <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Tokens</p>
         <p className="text-sm font-medium leading-relaxed text-white/70">
-          Empiezas con 3 tokens de regalo. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual.
+          Empiezas con 3 tokens de regalo. Cada análisis o pregunta cuesta 1 token. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual.
         </p>
+      </div>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Planes de suscripción</p>
+        <p className="text-sm font-medium leading-relaxed text-white/70">
+          Si necesitas más análisis, puedes suscribirte a un plan mensual para recibir tokens cada semana sin tener que ver anuncios.
+        </p>
+      </div>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Consejos de buena foto</p>
+        <ul className="space-y-1.5">
+          <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/70">
+            <span className="text-white/40 mt-0.5">•</span>
+            Asegúrate de que haya buena luz al hacer la foto.
+          </li>
+          <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/70">
+            <span className="text-white/40 mt-0.5">•</span>
+            Acércate a la mancha para que se vea con detalle.
+          </li>
+          <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/70">
+            <span className="text-white/40 mt-0.5">•</span>
+            Enfoca bien la zona para que la IA pueda identificarla.
+          </li>
+          <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/70">
+            <span className="text-white/40 mt-0.5">•</span>
+            Si la mancha está en una superficie reflectante, evita que tu propio reflejo salga en la foto.
+          </li>
+        </ul>
       </div>
     </div>
   );
 
   return (
     <div
-      className="flex h-full flex-col items-center justify-between rounded-2xl bg-[#000053] p-4 @lg:rounded-2xl @lg:p-10 relative"
+      ref={scrollRef}
+      className="flex h-full flex-col items-center rounded-2xl bg-[#000053] p-4 @lg:rounded-2xl @lg:p-10 relative overflow-y-auto overflow-x-hidden"
       style={splashContainerStyle}
     >
       {/* Top: menu + login (right, mobile only) */}
-      <div className="flex w-full items-center justify-between pt-2">
+      <div className="flex w-full items-center justify-between pt-2 shrink-0">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -1715,29 +1773,17 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         </button>
       </div>
 
-      <div className="flex w-full flex-1 flex-col items-center justify-center">
+      {/* Logo */}
+      <div className="flex w-full flex-1 items-center justify-center py-4">
         <img
           src="/logo_snapcleAIn_negativo_alta.jpg"
           alt="snapcleAIn"
-          className="max-h-[62%] max-w-[88%] scale-[1.03] object-contain -translate-y-4 @lg:-translate-y-12 mix-blend-lighten"
+          className="max-h-[45%] max-w-[88%] scale-[1.03] object-contain @lg:-translate-y-4 mix-blend-lighten"
         />
-
-        {/* DESKTOP: "Más" button right below the logo */}
-        <div className="hidden @lg:block w-full max-w-[520px] mt-4">
-          <button
-            type="button"
-            onClick={() => setShowMore(!showMore)}
-            className="flex w-full items-center justify-center gap-2 rounded-full border border-white/30 px-5 py-3 text-white/90 transition-colors hover:bg-white/10 active:scale-95"
-          >
-            <Plus className={`h-5 w-5 transition-transform duration-300 ${showMore ? "rotate-45" : ""}`} />
-            <span className="text-base font-semibold">Más</span>
-          </button>
-          {showMore && <div className="w-full">{detailsContent}</div>}
-        </div>
       </div>
 
-      {/* Bottom: CTA */}
-      <div className="flex w-full flex-col items-center space-y-3 pb-2">
+      {/* CTA buttons */}
+      <div className="flex w-full flex-col items-center space-y-3 pb-2 shrink-0">
         {/* MOBILE: "¿Qué hacer?" button (same width as CTA) */}
         <div className="@lg:hidden w-full max-w-[280px]">
           <button
@@ -1759,22 +1805,37 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         </button>
       </div>
 
+      {/* DESKTOP: "Más" button below the CTA, details expand inline and scroll down */}
+      <div className="hidden @lg:block w-full max-w-[520px] mt-4 shrink-0">
+        <button
+          type="button"
+          onClick={toggleMore}
+          className="flex w-full items-center justify-center gap-2 rounded-full border border-white/30 px-5 py-3 text-white/90 transition-colors hover:bg-white/10 active:scale-95"
+        >
+          <Plus className={`h-5 w-5 transition-transform duration-300 ${showMore ? "rotate-45" : ""}`} />
+          <span className="text-base font-semibold">Más</span>
+        </button>
+        {showMore && (
+          <div ref={detailsRef} className="w-full">{detailsContent}</div>
+        )}
+      </div>
+
+      {/* MOBILE: details expand inline below the CTA when (+) is pressed */}
+      {showMore && (
+        <div className="@lg:hidden w-full max-w-[340px] mt-3 pb-8 shrink-0">
+          <div ref={detailsRef}>{detailsContent}</div>
+        </div>
+      )}
+
       {/* MOBILE: small floating (+) button in bottom-right corner */}
       <button
         type="button"
-        onClick={() => setShowMore(!showMore)}
-        className="@lg:hidden absolute bottom-3 right-3 z-50 flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm border border-white/30 transition-all hover:bg-white/25 active:scale-90"
+        onClick={toggleMore}
+        className="@lg:hidden sticky bottom-3 ml-auto z-50 flex h-9 w-9 shrink-0 items-center justify-center self-end rounded-full bg-white/15 text-white backdrop-blur-sm border border-white/30 transition-all hover:bg-white/25 active:scale-90 mr-1"
         aria-label="Más opciones"
       >
         <Plus className={`h-5 w-5 transition-transform duration-300 ${showMore ? "rotate-45" : ""}`} />
       </button>
-
-      {/* MOBILE: expanded details panel, drops downward from (+) button */}
-      {showMore && (
-        <div className="@lg:hidden absolute bottom-14 right-3 z-50 w-[calc(100%-1.5rem)] max-w-[340px] max-h-[70%] overflow-y-auto rounded-2xl bg-[#000053]/95 backdrop-blur-md border border-white/20 p-4 animate-fade-in">
-          {detailsContent}
-        </div>
-      )}
     </div>
   );
 }
