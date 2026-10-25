@@ -39,6 +39,8 @@ import {
   X,
 } from "lucide-react";
 import { analyzeWithGemini } from "@/lib/geminiAnalyzer";
+import { supabase } from "@/lib/supabaseClient";
+import { showRewardedAd } from "@/lib/admobRewarded";
 
 const splashContainerStyle: React.CSSProperties = {
   textRendering: "optimizeLegibility",
@@ -69,156 +71,7 @@ function isValidEmail(email: string): boolean {
   return EMAIL_REGEX.test(email);
 }
 
-const GOOGLE_CANCEL = "__use_another_account__";
 
-declare global {
-  interface Window {
-    google?: {
-      accounts?: {
-        id?: {
-          initialize: (config: {
-            client_id: string;
-            callback: (response: { credential: string; select_by: string }) => void;
-            auto_select?: boolean;
-            cancel_on_tap_outside?: boolean;
-          }) => void;
-          prompt: (listener?: (notification: { isNotDisplayed: () => boolean; isSkippedMoment: () => boolean; isDisplayed: () => boolean; getNotDisplayedReason: () => string; getSkippedReason: () => string }) => void) => void;
-          disableAutoSelect: () => void;
-        };
-      };
-    };
-    AppleID?: {
-      auth: {
-        init: (config: {
-          clientId: string;
-          scope?: string;
-          redirectURI?: string;
-          state?: string;
-          nonce?: string;
-          usePopup?: boolean;
-        }) => void;
-        signIn: (config?: { state?: string; nonce?: string }) => Promise<{
-          authorization?: { id_token?: string; code?: string; state?: string };
-          user?: { email?: string; name?: { firstName?: string; lastName?: string } };
-        }>;
-      };
-    };
-  }
-}
-
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
-const APPLE_CLIENT_ID = import.meta.env.VITE_APPLE_CLIENT_ID ?? "";
-
-function decodeJwtEmail(token: string): string | null {
-  try {
-    const payload = token.split(".")[1];
-    const decoded = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
-    return decoded?.email ?? null;
-  } catch {
-    return null;
-  }
-}
-
-let googleCredentialResolver: ((email: string | null) => void) | null = null;
-
-function onGoogleCredentialResponse(response: { credential: string }): void {
-  const email = decodeJwtEmail(response.credential);
-  if (googleCredentialResolver) googleCredentialResolver(email);
-}
-
-async function signInWithGoogle(): Promise<string | null> {
-  if (window.google?.accounts?.id && GOOGLE_CLIENT_ID) {
-    return new Promise<string | null>((resolve) => {
-      let settled = false;
-      const finish = (email: string | null) => {
-        if (settled) return;
-        settled = true;
-        googleCredentialResolver = null;
-        resolve(email);
-      };
-      googleCredentialResolver = finish;
-      window.google!.accounts!.id!.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: onGoogleCredentialResponse,
-        auto_select: false,
-        cancel_on_tap_outside: true,
-      });
-      window.google!.accounts!.id!.prompt((notif) => {
-        if (notif.isNotDisplayed() || notif.isSkippedMoment()) {
-          finish(null);
-        }
-      });
-      setTimeout(() => finish(null), 12000);
-    });
-  }
-  try {
-    if (navigator.credentials) {
-      const cred = await navigator.credentials.get({
-        password: true,
-        federated: { providers: ["https://accounts.google.com"] },
-        mediation: "required",
-      } as any);
-      if (cred && (cred as any).id) return (cred as any).id;
-    }
-  } catch (e) {
-    if (e instanceof DOMException && e.name === "AbortError") {
-      return GOOGLE_CANCEL;
-    }
-  }
-  return null;
-}
-
-async function signInWithApple(): Promise<string | null> {
-  if (window.AppleID?.auth && APPLE_CLIENT_ID) {
-    try {
-      window.AppleID.auth.init({
-        clientId: APPLE_CLIENT_ID,
-        scope: "name email",
-        redirectURI: window.location.origin,
-        usePopup: true,
-      });
-      const response = await window.AppleID.auth.signIn();
-      if (response.user?.email) return response.user.email;
-      if (response.authorization?.id_token) {
-        const email = decodeJwtEmail(response.authorization.id_token);
-        if (email) return email;
-      }
-      return null;
-    } catch {
-      return null;
-    }
-  }
-  try {
-    if (navigator.credentials) {
-      const cred = await navigator.credentials.get({
-        password: true,
-        federated: { providers: ["https://appleid.apple.com"] },
-        mediation: "required",
-      } as any);
-      if (cred && (cred as any).id) return (cred as any).id;
-    }
-  } catch {
-    // user cancelled or unavailable
-  }
-  return null;
-}
-
-async function saveProfileToSupabase(email: string, provider: string): Promise<void> {
-  try {
-    await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/profiles`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        Prefer: "resolution=merge-duplicates",
-      },
-      body: JSON.stringify({ email, provider }),
-    });
-  } catch {
-    // non-blocking: profile save is best-effort
-  }
-}
 
 const HISTORY_KEY = "snapcleain_history";
 const GUEST_TOKEN_BALANCE_KEY = "snapcleain_token_balance_guest";
@@ -298,28 +151,7 @@ function getStartOfCurrentSunday(): Date {
   return sunday;
 }
 
-const ACCOUNTS_KEY = "snapcleain_accounts";
 
-type Account = { email: string; password: string };
-
-function loadAccounts(): Account[] {
-  try {
-    const raw = localStorage.getItem(ACCOUNTS_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveAccounts(accounts: Account[]): void {
-  try {
-    localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
-  } catch {
-    // ignore
-  }
-}
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
@@ -979,11 +811,9 @@ function WalletShopCard({ balance, adLoading, userEmail, onClose, onWatchAd, onR
 type LoginCardProps = {
   onClose: () => void;
   onSuccess: (email: string) => void;
-  accounts: Account[];
-  onRegister: (account: Account) => void;
 };
 
-function LoginCard({ onClose, onSuccess, accounts, onRegister }: LoginCardProps) {
+function LoginCard({ onClose, onSuccess }: LoginCardProps) {
   const [email, setEmail] = useState("");
   const [emailFormatError, setEmailFormatError] = useState(false);
   const [socialPicker, setSocialPicker] = useState<"google" | "apple" | "phone" | null>(null);
@@ -1014,7 +844,7 @@ function LoginCard({ onClose, onSuccess, accounts, onRegister }: LoginCardProps)
     setTimeout(() => passwordRef.current?.focus(), 100);
   };
 
-  const handleContinuePassword = () => {
+  const handleContinuePassword = async () => {
     const e = email.trim();
     const pw = password;
     if (pw.length < 6) {
@@ -1023,20 +853,42 @@ function LoginCard({ onClose, onSuccess, accounts, onRegister }: LoginCardProps)
     }
     setPasswordError(false);
     setAuthLoading(true);
-    const existing = accounts.find((a) => a.email.toLowerCase() === e.toLowerCase());
-    if (existing) {
-      if (existing.password !== pw) {
+    try {
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: e,
+        password: pw,
+      });
+      if (signInError) {
+        if (signInError.message.toLowerCase().includes("invalid login credentials")) {
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email: e,
+            password: pw,
+          });
+          if (signUpError) {
+            setPasswordError(true);
+            setAuthLoading(false);
+            return;
+          }
+          if (signUpData.user) {
+            setAuthLoading(false);
+            onSuccess(e);
+            return;
+          }
+        } else {
+          setPasswordError(true);
+          setAuthLoading(false);
+          return;
+        }
+      } else if (signInData.user) {
         setAuthLoading(false);
-        setPasswordError(true);
+        onSuccess(e);
         return;
       }
-    } else {
-      onRegister({ email: e, password: pw });
-    }
-    setTimeout(() => {
       setAuthLoading(false);
-      onSuccess(e);
-    }, 300);
+    } catch {
+      setPasswordError(true);
+      setAuthLoading(false);
+    }
   };
 
   const handleBackToEmail = () => {
@@ -1047,26 +899,33 @@ function LoginCard({ onClose, onSuccess, accounts, onRegister }: LoginCardProps)
   };
 
   const handleGoogle = async () => {
+    setAuthLoading(true);
     try {
-      if (!navigator.credentials || typeof navigator.credentials.get !== "function") {
-        return;
-      }
-      const cred = await navigator.credentials.get({
-        password: true,
-        mediation: "required",
-      } as CredentialRequestOptions & { password: boolean });
-      if (cred) {
-        const email = cred.id;
-        const password = (cred as unknown as { password?: string }).password || "";
-        await saveProfileToSupabase(email, "google");
-        onRegister({ email, password: password || Math.random().toString(36).slice(2) });
-        onSuccess(email);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: window.location.origin },
+      });
+      if (error) {
+        setAuthLoading(false);
       }
     } catch {
-      // user cancelled or API unavailable — no fallback to fake picker
+      setAuthLoading(false);
     }
   };
-  const handleApple = () => setSocialPicker("apple");
+  const handleApple = async () => {
+    setAuthLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "apple",
+        options: { redirectTo: window.location.origin },
+      });
+      if (error) {
+        setAuthLoading(false);
+      }
+    } catch {
+      setAuthLoading(false);
+    }
+  };
   const handlePhone = () => setSocialPicker("phone");
 
   const handleSocialCredentialSubmit = async () => {
@@ -1081,22 +940,61 @@ function LoginCard({ onClose, onSuccess, accounts, onRegister }: LoginCardProps)
     }
     setSocialEmailError(false);
     setSocialError(false);
-    await saveProfileToSupabase(e, socialPicker!);
-    onRegister({ email: e, password: socialPassword });
-    setSocialPicker(null);
-    setSocialEmail("");
-    setSocialPassword("");
-    onSuccess(e);
+    setAuthLoading(true);
+    try {
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: e,
+        password: socialPassword,
+      });
+      if (signInError) {
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: e,
+          password: socialPassword,
+        });
+        if (signUpError) {
+          setSocialError(true);
+          setAuthLoading(false);
+          return;
+        }
+      }
+      setSocialPicker(null);
+      setSocialEmail("");
+      setSocialPassword("");
+      setAuthLoading(false);
+      onSuccess(e);
+    } catch {
+      setSocialError(true);
+      setAuthLoading(false);
+    }
   };
 
   const handlePhoneSubmit = async () => {
     const phone = phoneInput.trim();
     if (!phone) return;
     const emailFromPhone = `${phone}@phone.snapcleain.app`;
-    await saveProfileToSupabase(emailFromPhone, "phone");
-    onRegister({ email: emailFromPhone, password: Math.random().toString(36).slice(2) });
-    setSocialPicker(null);
-    onSuccess(emailFromPhone);
+    const randomPw = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    setAuthLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: emailFromPhone,
+        password: randomPw,
+      });
+      if (error) {
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: emailFromPhone,
+          password: randomPw,
+        });
+        if (signInError) {
+          setAuthLoading(false);
+          return;
+        }
+      }
+      setSocialPicker(null);
+      setAuthLoading(false);
+      onSuccess(emailFromPhone);
+    } catch {
+      setAuthLoading(false);
+    }
   };
 
   return (
@@ -1245,7 +1143,7 @@ function LoginCard({ onClose, onSuccess, accounts, onRegister }: LoginCardProps)
               className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#087ff5] py-4 text-base font-bold text-white shadow-[0_4px_14px_rgba(8,127,245,0.4)] transition-all hover:bg-[#0a6fd4] active:scale-[0.98] disabled:opacity-50"
             >
               {authLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Lock className="h-5 w-5" />}
-              {accounts.find((a) => a.email.toLowerCase() === email.trim().toLowerCase()) ? "Iniciar sesión" : "Crear cuenta"}
+              {authLoading ? "Cargando..." : "Continuar"}
             </button>
           </div>
         )}
@@ -2499,7 +2397,7 @@ function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWa
             <Play className="h-5 w-5 text-amber-600" />
             <div>
               <p className="text-sm font-bold text-black">Ver Anuncio</p>
-              <p className="text-xs font-medium text-amber-600">Gana +0,25 créditos gratis (carga 3s)</p>
+              <p className="text-xs font-medium text-amber-600">Gana +0,25 créditos gratis viendo un anuncio</p>
             </div>
           </div>
           <button
@@ -2730,8 +2628,38 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loggedInEmail, setLoggedInEmail] = useState("");
   const [showProfilePanel, setShowProfilePanel] = useState(false);
-  const [registeredAccounts, setRegisteredAccounts] = useState<Account[]>(() => loadAccounts());
   const [mobilePreview, setMobilePreview] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
+      if (data.session?.user) {
+        const email = data.session.user.email ?? "";
+        setIsLoggedIn(true);
+        setLoggedInEmail(email);
+        setTokenBalance(loadTokenBalance(email));
+      }
+    });
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      (async () => {
+        if (session?.user) {
+          const email = session.user.email ?? "";
+          setIsLoggedIn(true);
+          setLoggedInEmail(email);
+          setTokenBalance(loadTokenBalance(email));
+        } else {
+          setIsLoggedIn(false);
+          setLoggedInEmail("");
+          setTokenBalance(loadTokenBalance(null));
+        }
+      })();
+    });
+    return () => {
+      mounted = false;
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     if (tokenBalance < 1) {
@@ -2937,16 +2865,17 @@ function App() {
   const openWallet = useCallback(() => setDrawerPanel("wallet"), []);
   const outOfTokens = useCallback(() => setShowOutOfTokens(true), []);
 
-  const watchAd = useCallback(() => {
+  const watchAd = useCallback(async () => {
     setAdLoading(true);
-    setTimeout(() => {
+    const rewarded = await showRewardedAd((loading) => setAdLoading(loading));
+    if (rewarded) {
       setTokenBalance((prev) => {
         const next = +(prev + 0.25).toFixed(2);
         saveTokenBalance(next, loggedInEmail || null);
         return next;
       });
-      setAdLoading(false);
-    }, 3000);
+    }
+    setAdLoading(false);
   }, [loggedInEmail]);
 
   const handleTabChange = useCallback((tab: Tab) => {
@@ -2980,7 +2909,8 @@ function App() {
           }}
           onOpenHistory={() => setDrawerPanel("history")}
           onOpenDrawer={openDrawer}
-          onLogout={() => {
+          onLogout={async () => {
+            await supabase.auth.signOut();
             setIsLoggedIn(false);
             setLoggedInEmail("");
             setTokenBalance(loadTokenBalance(null));
@@ -3177,12 +3107,6 @@ function App() {
           <LoginCard
             onClose={closeDrawer}
             onSuccess={(em) => { setIsLoggedIn(true); setLoggedInEmail(em); setTokenBalance(loadTokenBalance(em)); closeDrawer(); }}
-            accounts={registeredAccounts}
-            onRegister={(acc) => {
-              const updated = [...registeredAccounts, acc];
-              setRegisteredAccounts(updated);
-              saveAccounts(updated);
-            }}
           />
         )}
         {drawerPanel === "history" && (
@@ -3260,7 +3184,8 @@ function App() {
 
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
+                  await supabase.auth.signOut();
                   setIsLoggedIn(false);
                   setLoggedInEmail("");
                   setTokenBalance(loadTokenBalance(null));
