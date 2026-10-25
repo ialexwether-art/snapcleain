@@ -26,6 +26,7 @@ import {
   Package,
   Phone,
   Play,
+  RefreshCw,
   ScanLine,
   Share2,
   Shield,
@@ -445,11 +446,25 @@ function WalletBadge({ balance, onClick, compact = false }: WalletBadgeProps) {
 
 /* ---------- Subscription Plans ---------- */
 
-const SUBSCRIPTION_PLANS = [
+type SubscriptionPlan = {
+  name: string;
+  price: string;
+  priceId: string;
+  planKey: string;
+  mode: "payment" | "subscription";
+  icon: React.ReactNode;
+  features: string[];
+  accent: string;
+  highlight?: boolean;
+  isFree?: boolean;
+};
+
+const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     name: "Gratuito",
     price: "0",
     priceId: "",
+    planKey: "gratuito",
     mode: "subscription" as const,
     icon: <Sparkles className="h-5 w-5 text-blue-500" />,
     features: [
@@ -463,7 +478,8 @@ const SUBSCRIPTION_PLANS = [
   {
     name: "Aficionado",
     price: "3,99",
-    priceId: "price_1UQvmHLT5EHdVSzq9gWAPTo7",
+    priceId: "",
+    planKey: "aficionado",
     mode: "subscription" as const,
     icon: <Star className="h-5 w-5 text-blue-500" />,
     features: [
@@ -476,7 +492,8 @@ const SUBSCRIPTION_PLANS = [
   {
     name: "Limpieza Total",
     price: "7,99",
-    priceId: "price_1UQvqwLT5EHdVSzqKZdfoTdC",
+    priceId: "",
+    planKey: "limpieza_total",
     mode: "subscription" as const,
     icon: <Crown className="h-5 w-5 text-amber-500" />,
     features: [
@@ -489,6 +506,53 @@ const SUBSCRIPTION_PLANS = [
     highlight: true,
   },
 ];
+
+type PriceMap = Record<string, string>;
+
+type StripePrice = {
+  id: string;
+  product_id: string;
+  product_name: string | null;
+  unit_amount: number | null;
+  currency: string;
+  interval: string | null;
+  interval_count: number | null;
+  active: boolean;
+};
+
+async function fetchStripePriceMap(): Promise<PriceMap> {
+  try {
+    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-prices-sync`;
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      },
+    });
+    if (!res.ok) return {};
+    const data = await res.json();
+    return (data?.mapping ?? {}) as PriceMap;
+  } catch {
+    return {};
+  }
+}
+
+function useStripePriceMap(): { priceMap: PriceMap; loading: boolean; refresh: () => Promise<void> } {
+  const [priceMap, setPriceMap] = useState<PriceMap>({});
+  const [loading, setLoading] = useState(true);
+
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    const map = await fetchStripePriceMap();
+    setPriceMap(map);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return { priceMap, loading, refresh };
+}
 
 /* ---------- Stripe Checkout Card ---------- */
 
@@ -675,20 +739,27 @@ type WalletShopCardProps = {
   balance: number;
   adLoading: boolean;
   userEmail: string | null;
+  priceMap: PriceMap;
   onClose: () => void;
   onWatchAd: () => void;
   onRequireLogin: () => void;
+  onOpenSync: () => void;
 };
 
-function WalletShopCard({ balance, adLoading, userEmail, onClose, onWatchAd, onRequireLogin }: WalletShopCardProps) {
+function WalletShopCard({ balance, adLoading, userEmail, priceMap, onClose, onWatchAd, onRequireLogin, onOpenSync }: WalletShopCardProps) {
   const [checkoutPlan, setCheckoutPlan] = useState<{ name: string; price: string; priceId: string; mode: "payment" | "subscription" } | null>(null);
 
-  const handleSubscribe = (plan: { name: string; price: string; priceId: string; mode: "payment" | "subscription" }) => {
+  const handleSubscribe = (plan: SubscriptionPlan) => {
     if (!userEmail) {
       onRequireLogin();
       return;
     }
-    setCheckoutPlan(plan);
+    const resolvedPriceId = plan.planKey ? (priceMap[plan.planKey] ?? "") : plan.priceId;
+    if (!resolvedPriceId) {
+      onOpenSync();
+      return;
+    }
+    setCheckoutPlan({ name: plan.name, price: plan.price, priceId: resolvedPriceId, mode: plan.mode });
   };
 
   return (
@@ -756,7 +827,7 @@ function WalletShopCard({ balance, adLoading, userEmail, onClose, onWatchAd, onR
               ) : (
                 <button
                   type="button"
-                  onClick={() => handleSubscribe({ name: plan.name, price: plan.price, priceId: plan.priceId, mode: plan.mode })}
+                  onClick={() => handleSubscribe(plan)}
                   className={`flex h-9 w-full items-center justify-center gap-1.5 rounded-xl text-xs font-bold uppercase tracking-wide transition-all active:scale-[0.98] ${
                     plan.highlight
                       ? "bg-amber-500 text-white hover:bg-amber-600"
@@ -764,7 +835,7 @@ function WalletShopCard({ balance, adLoading, userEmail, onClose, onWatchAd, onR
                   }`}
                 >
                   <CreditCard className="h-3.5 w-3.5" />
-                  Suscribirme ahora
+                  {priceMap[plan.planKey] ? "Suscribirme ahora" : "Configurar precio"}
                 </button>
               )}
             </div>
@@ -2054,6 +2125,200 @@ function BotiquinPage({ onOpenDrawer, onOpenWallet, onAskAI, tokenBalance }: Bot
   );
 }
 
+/* ---------- Stripe Price Sync Panel ---------- */
+
+type StripeSyncPanelProps = {
+  priceMap: PriceMap;
+  onClose: () => void;
+  onSaved: () => void;
+};
+
+function formatAmount(p: { unit_amount: number | null; currency: string }): string {
+  if (p.unit_amount == null) return "—";
+  const value = p.unit_amount / 100;
+  const formatted = value.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return `${formatted} ${p.currency.toUpperCase()}`;
+}
+
+function StripeSyncPanel({ priceMap, onClose, onSaved }: StripeSyncPanelProps) {
+  const [prices, setPrices] = useState<StripePrice[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [savingKey, setSavingKey] = useState<string | null>(null);
+  const [localMap, setLocalMap] = useState<PriceMap>(priceMap);
+
+  useEffect(() => {
+    setLocalMap(priceMap);
+  }, [priceMap]);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-prices-sync`;
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? "No se pudieron cargar los precios.");
+      setPrices(data.prices ?? []);
+      setLocalMap(data.mapping ?? {});
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al cargar los precios de Stripe.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const assignPrice = useCallback(async (planKey: string, priceId: string) => {
+    setSavingKey(planKey);
+    setError(null);
+    try {
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-prices-sync`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ plan_key: planKey, price_id: priceId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? "No se pudo guardar la asignación.");
+      setLocalMap((prev) => ({ ...prev, [planKey]: priceId }));
+      onSaved();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al guardar la asignación.");
+    } finally {
+      setSavingKey(null);
+    }
+  }, [onSaved]);
+
+  const paidPlans = SUBSCRIPTION_PLANS.filter((p) => !p.isFree);
+
+  return (
+    <div
+      className="absolute inset-0 z-[85] flex items-center justify-center bg-black/50 px-6 animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-[440px] max-h-[90%] overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl animate-pop-in"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#635bff]">
+              <RefreshCw className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-black">Sincronizar precios</h3>
+              <p className="text-xs font-medium text-gray-500">Asigna cada plan a un precio de Stripe</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f3f4f6] text-black transition-colors hover:bg-[#e5e7eb]"
+            aria-label="Cerrar"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {error && (
+          <div className="mb-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700 animate-fade-in">
+            {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex h-32 items-center justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-[#635bff]" />
+          </div>
+        ) : prices.length === 0 ? (
+          <div className="rounded-xl border border-[#e5e7eb] bg-[#f9fafb] p-4 text-center text-sm font-medium text-gray-600">
+            No se encontraron precios de suscripción activos en tu cuenta de Stripe. Crea primero los productos en el panel de Stripe y vuelve a pulsar el botón de refrescar.
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {paidPlans.map((plan) => {
+              const assigned = localMap[plan.planKey];
+              return (
+                <div key={plan.planKey} className="rounded-2xl border border-[#e5e7eb] bg-white p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      {plan.icon}
+                      <div>
+                        <p className="text-sm font-bold text-black">{plan.name}</p>
+                        <p className="text-xs font-medium text-gray-500">{plan.price}€/mes</p>
+                      </div>
+                    </div>
+                    {assigned && (
+                      <span className="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold uppercase text-green-700">
+                        Asignado
+                      </span>
+                    )}
+                  </div>
+                  <select
+                    value={assigned ?? ""}
+                    onChange={(e) => e.target.value && assignPrice(plan.planKey, e.target.value)}
+                    disabled={savingKey === plan.planKey}
+                    className="h-10 w-full rounded-xl border border-[#e5e7eb] bg-white px-3 text-sm font-medium text-black outline-none transition-colors focus:border-[#635bff] disabled:opacity-50"
+                  >
+                    <option value="">— Selecciona un precio —</option>
+                    {prices.map((p) => {
+                      const label = `${formatAmount(p)} · ${p.interval ?? "puntual"}${p.product_name ? ` · ${p.product_name}` : ""} · ${p.id}`;
+                      return (
+                        <option key={p.id} value={p.id}>
+                          {label}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  {savingKey === plan.planKey && (
+                    <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-[#635bff]">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Guardando...
+                    </p>
+                  )}
+                  {assigned && savingKey !== plan.planKey && (
+                    <p className="mt-1.5 text-[11px] font-medium text-gray-400">
+                      Precio activo: {assigned}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="mt-4 flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={load}
+            disabled={loading}
+            className="flex h-10 items-center justify-center gap-1.5 rounded-xl border border-[#e5e7eb] bg-white px-4 text-xs font-bold uppercase tracking-wide text-black transition-all hover:bg-[#f3f4f6] active:scale-95 disabled:opacity-50"
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            Refrescar
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-10 items-center justify-center rounded-xl bg-[#635bff] px-5 text-xs font-bold uppercase tracking-wide text-white transition-all hover:bg-[#5851eb] active:scale-95"
+          >
+            Hecho
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ---------- Premium Page (subscription shop) ---------- */
 
 type PremiumPageProps = {
@@ -2063,18 +2328,25 @@ type PremiumPageProps = {
   adLoading: boolean;
   onWatchAd: () => void;
   userEmail: string | null;
+  priceMap: PriceMap;
   onRequireLogin: () => void;
+  onOpenSync: () => void;
 };
 
-function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWatchAd, userEmail, onRequireLogin }: PremiumPageProps) {
+function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWatchAd, userEmail, priceMap, onRequireLogin, onOpenSync }: PremiumPageProps) {
   const [checkoutPlan, setCheckoutPlan] = useState<{ name: string; price: string; priceId: string; mode: "payment" | "subscription" } | null>(null);
 
-  const handleSubscribe = (plan: { name: string; price: string; priceId: string; mode: "payment" | "subscription" }) => {
+  const handleSubscribe = (plan: SubscriptionPlan) => {
     if (!userEmail) {
       onRequireLogin();
       return;
     }
-    setCheckoutPlan(plan);
+    const resolvedPriceId = plan.planKey ? (priceMap[plan.planKey] ?? "") : plan.priceId;
+    if (!resolvedPriceId) {
+      onOpenSync();
+      return;
+    }
+    setCheckoutPlan({ name: plan.name, price: plan.price, priceId: resolvedPriceId, mode: plan.mode });
   };
 
   return (
@@ -2093,6 +2365,14 @@ function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWa
         </div>
         <h1 className="text-xl @lg:text-3xl font-bold tracking-[-0.5px] text-black">Planes</h1>
         <div className="flex items-center gap-2 mr-1 @lg:hidden">
+          <button
+            type="button"
+            onClick={onOpenSync}
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#e5e7eb] text-black transition-colors hover:bg-[#f3f4f6] active:scale-90"
+            aria-label="Sincronizar precios de Stripe"
+          >
+            <RefreshCw className="h-4 w-4" />
+          </button>
           <WalletBadge balance={tokenBalance} onClick={onOpenWallet} />
         </div>
       </div>
@@ -2133,7 +2413,7 @@ function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWa
             ) : (
               <button
                 type="button"
-                onClick={() => handleSubscribe({ name: plan.name, price: plan.price, priceId: plan.priceId, mode: plan.mode })}
+                onClick={() => handleSubscribe(plan)}
                 className={`mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-xl text-sm font-bold uppercase tracking-wide transition-all active:scale-[0.98] ${
                   plan.highlight
                     ? "bg-amber-500 text-white hover:bg-amber-600"
@@ -2141,7 +2421,7 @@ function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWa
                 }`}
               >
                 <CreditCard className="h-4 w-4" />
-                Suscribirme ahora
+                {priceMap[plan.planKey] ? "Suscribirme ahora" : "Configurar precio"}
               </button>
             )}
           </div>
@@ -2386,6 +2666,8 @@ function App() {
   const [loggedInEmail, setLoggedInEmail] = useState("");
   const [showProfilePanel, setShowProfilePanel] = useState(false);
   const [mobilePreview, setMobilePreview] = useState(false);
+  const [showStripeSync, setShowStripeSync] = useState(false);
+  const { priceMap, refresh: refreshPriceMap } = useStripePriceMap();
 
   useEffect(() => {
     let mounted = true;
@@ -2777,7 +3059,9 @@ function App() {
               adLoading={adLoading}
               onWatchAd={watchAd}
               userEmail={isLoggedIn ? loggedInEmail : null}
+              priceMap={priceMap}
               onRequireLogin={() => setDrawerPanel("login")}
+              onOpenSync={() => setShowStripeSync(true)}
             />
           )}
         </div>
@@ -2889,9 +3173,11 @@ function App() {
             balance={tokenBalance}
             adLoading={adLoading}
             userEmail={isLoggedIn ? loggedInEmail : null}
+            priceMap={priceMap}
             onClose={closeDrawer}
             onWatchAd={watchAd}
             onRequireLogin={() => { closeDrawer(); setDrawerPanel("login"); }}
+            onOpenSync={() => { closeDrawer(); setShowStripeSync(true); }}
           />
         )}
 
@@ -2955,6 +3241,14 @@ function App() {
               </button>
             </div>
           </div>
+        )}
+
+        {showStripeSync && (
+          <StripeSyncPanel
+            priceMap={priceMap}
+            onClose={() => setShowStripeSync(false)}
+            onSaved={refreshPriceMap}
+          />
         )}
 
         {showTokenToast && (

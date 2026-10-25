@@ -1,0 +1,21 @@
+{
+  "projectId": "69641673",
+  "functions": {
+    "gemini-proxy": {
+      "hasChanged": false,
+      "hash": "05c551e2be2fae8b5dcbe239fa62f1e31293d22ab03df644da3835d4a401e3c2"
+    },
+    "stripe-checkout": {
+      "hasChanged": false,
+      "hash": "3b73b10a26c227511b13834b2853f238e860daa9f26df71f0ed5058516a0b2af"
+    },
+    "stripe-webhook": {
+      "hasChanged": false,
+      "hash": "e680b8a20b9ba0f0c5bc0010ab34b271998220ffd1bbbf253d98e21a11dd875e"
+    },
+    "stripe-prices-sync": {
+      "hasChanged": false,
+      "hash": "c613648e8f7b80297134bd239fcd08d75d34ff46b610d02d0a01946f25b7aa3d"
+    }
+  }
+}

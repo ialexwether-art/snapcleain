@@ -9,3 +9,7 @@ entrypoint = "./functions/stripe-checkout/index.ts"
 [functions.stripe-webhook]
 verify_jwt = false
 entrypoint = "./functions/stripe-webhook/index.ts"
+
+[functions.stripe-prices-sync]
+verify_jwt = false
+entrypoint = "./functions/stripe-prices-sync/index.ts"
