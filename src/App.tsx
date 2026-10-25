@@ -816,18 +816,17 @@ type LoginCardProps = {
 function LoginCard({ onClose, onSuccess }: LoginCardProps) {
   const [email, setEmail] = useState("");
   const [emailFormatError, setEmailFormatError] = useState(false);
-  const [socialPicker, setSocialPicker] = useState<"google" | "apple" | "phone" | null>(null);
+  const [phonePanel, setPhonePanel] = useState<"phone" | "otp" | null>(null);
   const [phoneInput, setPhoneInput] = useState("");
+  const [otpInput, setOtpInput] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [otpError, setOtpError] = useState("");
   const [step, setStep] = useState<"email" | "password">("email");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
-  const [socialEmail, setSocialEmail] = useState("");
-  const [socialPassword, setSocialPassword] = useState("");
-  const [showSocialPassword, setShowSocialPassword] = useState(false);
-  const [socialError, setSocialError] = useState(false);
-  const [socialEmailError, setSocialEmailError] = useState(false);
+  const [authErrorMessage, setAuthErrorMessage] = useState("");
 
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -848,10 +847,11 @@ function LoginCard({ onClose, onSuccess }: LoginCardProps) {
     const e = email.trim();
     const pw = password;
     if (pw.length < 6) {
-      setPasswordError(true);
+      setPasswordError("La contraseña debe tener al menos 6 caracteres");
       return;
     }
-    setPasswordError(false);
+    setPasswordError("");
+    setAuthErrorMessage("");
     setAuthLoading(true);
     try {
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
@@ -865,7 +865,7 @@ function LoginCard({ onClose, onSuccess }: LoginCardProps) {
             password: pw,
           });
           if (signUpError) {
-            setPasswordError(true);
+            setPasswordError(signUpError.message);
             setAuthLoading(false);
             return;
           }
@@ -875,7 +875,7 @@ function LoginCard({ onClose, onSuccess }: LoginCardProps) {
             return;
           }
         } else {
-          setPasswordError(true);
+          setPasswordError(signInError.message);
           setAuthLoading(false);
           return;
         }
@@ -885,8 +885,8 @@ function LoginCard({ onClose, onSuccess }: LoginCardProps) {
         return;
       }
       setAuthLoading(false);
-    } catch {
-      setPasswordError(true);
+    } catch (err) {
+      setPasswordError(err instanceof Error ? err.message : "Error al iniciar sesión");
       setAuthLoading(false);
     }
   };
@@ -894,105 +894,106 @@ function LoginCard({ onClose, onSuccess }: LoginCardProps) {
   const handleBackToEmail = () => {
     setStep("email");
     setPassword("");
-    setPasswordError(false);
+    setPasswordError("");
     setTimeout(() => emailRef.current?.focus(), 100);
   };
 
   const handleGoogle = async () => {
     setAuthLoading(true);
+    setAuthErrorMessage("");
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { redirectTo: window.location.origin },
       });
       if (error) {
+        setAuthErrorMessage(error.message);
         setAuthLoading(false);
       }
-    } catch {
+    } catch (err) {
+      setAuthErrorMessage(err instanceof Error ? err.message : "Error con Google");
       setAuthLoading(false);
     }
   };
   const handleApple = async () => {
     setAuthLoading(true);
+    setAuthErrorMessage("");
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "apple",
         options: { redirectTo: window.location.origin },
       });
       if (error) {
+        setAuthErrorMessage(error.message);
         setAuthLoading(false);
       }
-    } catch {
+    } catch (err) {
+      setAuthErrorMessage(err instanceof Error ? err.message : "Error con Apple");
       setAuthLoading(false);
     }
   };
-  const handlePhone = () => setSocialPicker("phone");
-
-  const handleSocialCredentialSubmit = async () => {
-    const e = socialEmail.trim();
-    if (!isValidEmail(e)) {
-      setSocialEmailError(true);
-      return;
-    }
-    if (socialPassword.length < 6) {
-      setSocialError(true);
-      return;
-    }
-    setSocialEmailError(false);
-    setSocialError(false);
-    setAuthLoading(true);
-    try {
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email: e,
-        password: socialPassword,
-      });
-      if (signInError) {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email: e,
-          password: socialPassword,
-        });
-        if (signUpError) {
-          setSocialError(true);
-          setAuthLoading(false);
-          return;
-        }
-      }
-      setSocialPicker(null);
-      setSocialEmail("");
-      setSocialPassword("");
-      setAuthLoading(false);
-      onSuccess(e);
-    } catch {
-      setSocialError(true);
-      setAuthLoading(false);
-    }
+  const handlePhone = () => {
+    setPhonePanel("phone");
+    setPhoneError("");
+    setOtpError("");
+    setPhoneInput("");
+    setOtpInput("");
   };
 
-  const handlePhoneSubmit = async () => {
+  const handleSendOtp = async () => {
     const phone = phoneInput.trim();
-    if (!phone) return;
-    const emailFromPhone = `${phone}@phone.snapcleain.app`;
-    const randomPw = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    if (!phone) {
+      setPhoneError("Introduce tu número de teléfono");
+      return;
+    }
+    setPhoneError("");
     setAuthLoading(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: emailFromPhone,
-        password: randomPw,
+      const { error } = await supabase.auth.signInWithOtp({
+        phone,
+        options: { channel: "sms" },
       });
       if (error) {
-        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          email: emailFromPhone,
-          password: randomPw,
-        });
-        if (signInError) {
-          setAuthLoading(false);
-          return;
-        }
+        setPhoneError(error.message);
+        setAuthLoading(false);
+        return;
       }
-      setSocialPicker(null);
+      setPhonePanel("otp");
       setAuthLoading(false);
-      onSuccess(emailFromPhone);
-    } catch {
+    } catch (err) {
+      setPhoneError(err instanceof Error ? err.message : "Error al enviar el código");
+      setAuthLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    const phone = phoneInput.trim();
+    const code = otpInput.trim();
+    if (!code) {
+      setOtpError("Introduce el código recibido por SMS");
+      return;
+    }
+    setOtpError("");
+    setAuthLoading(true);
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        phone,
+        token: code,
+        type: "sms",
+      });
+      if (error) {
+        setOtpError(error.message);
+        setAuthLoading(false);
+        return;
+      }
+      if (data.user) {
+        setPhonePanel(null);
+        setAuthLoading(false);
+        onSuccess(phone);
+      }
+      setAuthLoading(false);
+    } catch (err) {
+      setOtpError(err instanceof Error ? err.message : "Error al verificar el código");
       setAuthLoading(false);
     }
   };
@@ -1027,7 +1028,7 @@ function LoginCard({ onClose, onSuccess }: LoginCardProps) {
           <button
             type="button"
             onClick={handleGoogle}
-            disabled={socialPicker !== null}
+            disabled={phonePanel !== null || authLoading}
             className="flex h-13 w-full items-center justify-center gap-3 rounded-full border border-[#e5e7eb] bg-white py-3.5 text-sm font-semibold text-black transition-all hover:bg-[#f7f7f8] active:scale-[0.98] disabled:opacity-50"
           >
             <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
@@ -1042,7 +1043,7 @@ function LoginCard({ onClose, onSuccess }: LoginCardProps) {
           <button
             type="button"
             onClick={handleApple}
-            disabled={socialPicker !== null}
+            disabled={phonePanel !== null || authLoading}
             className="flex h-13 w-full items-center justify-center gap-3 rounded-full border border-[#e5e7eb] bg-white py-3.5 text-sm font-semibold text-black transition-all hover:bg-[#f7f7f8] active:scale-[0.98] disabled:opacity-50"
           >
             <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -1054,7 +1055,7 @@ function LoginCard({ onClose, onSuccess }: LoginCardProps) {
           <button
             type="button"
             onClick={handlePhone}
-            disabled={socialPicker !== null}
+            disabled={phonePanel !== null || authLoading}
             className="flex h-13 w-full items-center justify-center gap-3 rounded-full border border-[#e5e7eb] bg-white py-3.5 text-sm font-semibold text-black transition-all hover:bg-[#f7f7f8] active:scale-[0.98] disabled:opacity-50"
           >
             <Phone className="h-5 w-5 shrink-0 text-gray-700" />
@@ -1087,7 +1088,7 @@ function LoginCard({ onClose, onSuccess }: LoginCardProps) {
             <button
               type="button"
               onClick={handleContinueEmail}
-              disabled={socialPicker !== null}
+              disabled={phonePanel !== null || authLoading}
               className="mt-4 flex h-14 w-full items-center justify-center rounded-xl bg-[#087ff5] py-4 text-base font-bold text-white shadow-[0_4px_14px_rgba(8,127,245,0.4)] transition-all hover:bg-[#0a6fd4] active:scale-[0.98] disabled:opacity-50"
             >
               Continuar
@@ -1117,7 +1118,7 @@ function LoginCard({ onClose, onSuccess }: LoginCardProps) {
                 ref={passwordRef}
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => { setPassword(e.target.value); setPasswordError(false); }}
+                onChange={(e) => { setPassword(e.target.value); setPasswordError(""); }}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleContinuePassword(); } }}
                 placeholder="Contraseña (mínimo 6 caracteres)"
                 className={`h-13 w-full rounded-lg border bg-white pl-11 pr-11 py-3.5 text-sm font-medium text-black outline-none transition-colors placeholder:text-gray-400 focus:border-[#087ff5] ${passwordError ? "border-red-400" : "border-[#e5e7eb]"}`}
@@ -1133,13 +1134,13 @@ function LoginCard({ onClose, onSuccess }: LoginCardProps) {
             </div>
             {passwordError && (
               <p className="mt-2 text-xs font-medium text-red-500">
-                {password.length < 6 ? "La contraseña debe tener al menos 6 caracteres" : "Contraseña incorrecta"}
+                {passwordError}
               </p>
             )}
             <button
               type="button"
               onClick={handleContinuePassword}
-              disabled={socialPicker !== null || authLoading}
+              disabled={phonePanel !== null || authLoading}
               className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#087ff5] py-4 text-base font-bold text-white shadow-[0_4px_14px_rgba(8,127,245,0.4)] transition-all hover:bg-[#0a6fd4] active:scale-[0.98] disabled:opacity-50"
             >
               {authLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Lock className="h-5 w-5" />}
@@ -1152,10 +1153,17 @@ function LoginCard({ onClose, onSuccess }: LoginCardProps) {
           Al continuar, aceptas nuestros Términos de Uso y reconoces haber leído nuestra Política de Privacidad.
         </p>
 
-        {socialPicker && (
+        {authErrorMessage && (
+          <div className="mt-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+            <p>{authErrorMessage}</p>
+          </div>
+        )}
+
+        {phonePanel && (
           <div
             className="absolute inset-0 z-[10] flex items-center justify-center rounded-3xl bg-black/40 animate-fade-in"
-            onClick={() => setSocialPicker(null)}
+            onClick={() => setPhonePanel(null)}
           >
             <div
               className="w-full max-w-[300px] rounded-2xl bg-white p-5 shadow-2xl animate-pop-in"
@@ -1163,11 +1171,11 @@ function LoginCard({ onClose, onSuccess }: LoginCardProps) {
             >
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-sm font-bold text-black">
-                  {socialPicker === "google" ? "Elige cuenta de Google" : socialPicker === "apple" ? "Elige cuenta de Apple" : "Acceso por teléfono"}
+                  {phonePanel === "phone" ? "Acceso por teléfono" : "Verificar código"}
                 </h3>
                 <button
                   type="button"
-                  onClick={() => setSocialPicker(null)}
+                  onClick={() => setPhonePanel(null)}
                   className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f3f4f6] text-black transition-colors hover:bg-[#e5e7eb]"
                   aria-label="Cerrar"
                 >
@@ -1175,77 +1183,64 @@ function LoginCard({ onClose, onSuccess }: LoginCardProps) {
                 </button>
               </div>
 
-              {socialPicker === "phone" ? (
+              {phonePanel === "phone" ? (
                 <div className="space-y-3">
                   <input
                     type="tel"
                     value={phoneInput}
-                    onChange={(e) => setPhoneInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handlePhoneSubmit(); } }}
-                    placeholder="Introduce tu número"
-                    className="h-12 w-full rounded-lg border border-[#e5e7eb] bg-white px-4 text-sm font-medium text-black outline-none focus:border-[#087ff5]"
+                    onChange={(e) => { setPhoneInput(e.target.value); setPhoneError(""); }}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleSendOtp(); } }}
+                    placeholder="+34 600 000 000"
+                    className={`h-12 w-full rounded-lg border bg-white px-4 text-sm font-medium text-black outline-none focus:border-[#087ff5] ${phoneError ? "border-red-400" : "border-[#e5e7eb]"}`}
                     autoFocus
                   />
+                  {phoneError && (
+                    <p className="text-xs font-medium text-red-500">{phoneError}</p>
+                  )}
                   <button
                     type="button"
-                    onClick={handlePhoneSubmit}
-                    disabled={!phoneInput.trim()}
-                    className="flex h-12 w-full items-center justify-center rounded-xl bg-[#087ff5] text-sm font-bold text-white transition-all hover:bg-[#0a6fd4] active:scale-[0.98] disabled:opacity-50"
+                    onClick={handleSendOtp}
+                    disabled={!phoneInput.trim() || authLoading}
+                    className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#087ff5] text-sm font-bold text-white transition-all hover:bg-[#0a6fd4] active:scale-[0.98] disabled:opacity-50"
                   >
-                    Continuar
+                    {authLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                    Enviar código
                   </button>
                 </div>
               ) : (
                 <div className="space-y-3">
+                  <p className="text-xs font-medium text-gray-500">
+                    Hemos enviado un código por SMS a {phoneInput}
+                  </p>
                   <input
-                    type="email"
-                    value={socialEmail}
-                    onChange={(e) => { setSocialEmail(e.target.value); setSocialEmailError(false); setSocialError(false); }}
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (!isValidEmail(e.currentTarget.value.trim())) { setSocialEmailError(true); return; } (document.getElementById("social-pw") as HTMLInputElement)?.focus(); } }}
-                    placeholder="Correo electrónico"
-                    className={`h-12 w-full rounded-lg border bg-white px-4 text-sm font-medium text-black outline-none focus:border-[#087ff5] ${socialEmailError ? "border-red-400" : "border-[#e5e7eb]"}`}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={6}
+                    value={otpInput}
+                    onChange={(e) => { setOtpInput(e.target.value.replace(/\D/g, "")); setOtpError(""); }}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleVerifyOtp(); } }}
+                    placeholder="Código de 6 dígitos"
+                    className={`h-12 w-full rounded-lg border bg-white px-4 text-center text-lg font-bold tracking-widest text-black outline-none focus:border-[#087ff5] ${otpError ? "border-red-400" : "border-[#e5e7eb]"}`}
                     autoFocus
                   />
-                  {socialEmailError && (
-                    <p className="text-xs font-medium text-red-500">Este correo electrónico no es válido</p>
-                  )}
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <input
-                      id="social-pw"
-                      type={showSocialPassword ? "text" : "password"}
-                      value={socialPassword}
-                      onChange={(e) => { setSocialPassword(e.target.value); setSocialError(false); }}
-                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleSocialCredentialSubmit(); } }}
-                      placeholder="Contraseña (mínimo 6 caracteres)"
-                      className="h-12 w-full rounded-lg border border-[#e5e7eb] bg-white pl-10 pr-10 text-sm font-medium text-black outline-none focus:border-[#087ff5]"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowSocialPassword(!showSocialPassword)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full text-gray-400 hover:bg-[#f3f4f6]"
-                      aria-label={showSocialPassword ? "Ocultar" : "Mostrar"}
-                    >
-                      {showSocialPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                  {socialError && (
-                    <p className="text-xs font-medium text-red-500">
-                      La contraseña debe tener al menos 6 caracteres.
-                    </p>
+                  {otpError && (
+                    <p className="text-xs font-medium text-red-500">{otpError}</p>
                   )}
                   <button
                     type="button"
-                    onClick={handleSocialCredentialSubmit}
-                    disabled={!socialEmail.trim() || socialPassword.length < 6}
+                    onClick={handleVerifyOtp}
+                    disabled={otpInput.length < 4 || authLoading}
                     className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#087ff5] text-sm font-bold text-white transition-all hover:bg-[#0a6fd4] active:scale-[0.98] disabled:opacity-50"
                   >
-                    {socialPicker === "google" ? (
-                      <svg className="h-4 w-4" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                    ) : (
-                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C5.22 15.6 4.91 8.5 8.25 6.1c1.35-.96 2.5-.85 3.48-.5.9.32 1.5.5 2.5.5 1 0 1.6-.18 2.5-.5.98-.35 2.13-.46 3.48.5 3.34 2.4 3.03 9.5-1.16 14.18zM12 5.5c-.1-2.2 1.8-4 3.8-4.2.3 2.5-2.1 4.3-3.8 4.2z"/></svg>
-                    )}
-                    Continuar
+                    {authLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                    Verificar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setPhonePanel("phone"); setOtpInput(""); setOtpError(""); }}
+                    className="flex h-9 w-full items-center justify-center text-xs font-medium text-gray-500 hover:text-gray-700"
+                  >
+                    Cambiar número
                   </button>
                 </div>
               )}
