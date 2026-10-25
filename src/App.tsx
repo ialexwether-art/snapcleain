@@ -33,7 +33,6 @@ import {
   Star,
   Store,
   Smartphone,
-  Plus,
   Trash2,
   User,
   Wallet,
@@ -1640,108 +1639,8 @@ type InicioPageProps = {
 };
 
 function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProfile, onOpenLogin }: InicioPageProps) {
-  const [showMore, setShowMore] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const detailsRef = useRef<HTMLDivElement>(null);
-
-  const toggleMore = () => {
-    const next = !showMore;
-    setShowMore(next);
-    if (next) {
-      setTimeout(() => {
-        detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-    }
-  };
-
-  const detailsContent = (
-    <div className="mt-3 space-y-4 rounded-2xl bg-white/5 p-5 animate-fade-in text-left">
-      <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Cómo funciona</p>
-        <p className="text-sm font-medium leading-relaxed text-white/85">
-          Haz una foto a cualquier mancha y la IA te dará el manual exacto, paso a paso, para eliminarla en cualquier superficie.
-        </p>
-      </div>
-      <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Cómo escanear una mancha</p>
-        <ol className="space-y-1.5">
-          <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">1</span>
-            Pulsa ESCANEAR y haz una foto a la mancha.
-          </li>
-          <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">2</span>
-            Opcionalmente, escribe qué tipo de mancha es para mayor precisión.
-          </li>
-          <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">3</span>
-            Recibe la solución y haz preguntas de seguimiento si lo necesitas.
-          </li>
-        </ol>
-      </div>
-      <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">¿Qué puedes hacer?</p>
-        <p className="text-sm font-medium leading-relaxed text-white/70">
-          Puedes escanear manchas, consultar la biblioteca de soluciones, preguntar a la IA sobre productos de limpieza y guardar tu historial. Cada análisis o pregunta cuesta 1 token.
-        </p>
-      </div>
-      <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Biblioteca de manchas</p>
-        <p className="text-sm font-medium leading-relaxed text-white/70">
-          Consulta soluciones paso a paso para manchas comunes: café, vino, aceite, tinta, barro, sangre y muchas más, organizadas por tipo de superficie.
-        </p>
-      </div>
-      <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Botiquín de limpieza</p>
-        <p className="text-sm font-medium leading-relaxed text-white/70">
-          Guarda los productos de limpieza que tienes en casa. La IA tiene en cuenta tu botiquín para recomendarte soluciones con lo que ya tienes.
-        </p>
-      </div>
-      <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Historial</p>
-        <p className="text-sm font-medium leading-relaxed text-white/70">
-          Todos tus análisis se guardan automáticamente. Puedes volver a consultar cualquier mancha anterior cuando quieras.
-        </p>
-      </div>
-      <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Tokens</p>
-        <p className="text-sm font-medium leading-relaxed text-white/70">
-          Empiezas con 3 tokens de regalo. Cada análisis o pregunta cuesta 1 token. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual.
-        </p>
-      </div>
-      <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Planes de suscripción</p>
-        <p className="text-sm font-medium leading-relaxed text-white/70">
-          Si necesitas más análisis, puedes suscribirte a un plan mensual para recibir tokens cada semana sin tener que ver anuncios.
-        </p>
-      </div>
-      <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Consejos de buena foto</p>
-        <ul className="space-y-1.5">
-          <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/70">
-            <span className="text-white/40 mt-0.5">•</span>
-            Asegúrate de que haya buena luz al hacer la foto.
-          </li>
-          <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/70">
-            <span className="text-white/40 mt-0.5">•</span>
-            Acércate a la mancha para que se vea con detalle.
-          </li>
-          <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/70">
-            <span className="text-white/40 mt-0.5">•</span>
-            Enfoca bien la zona para que la IA pueda identificarla.
-          </li>
-          <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/70">
-            <span className="text-white/40 mt-0.5">•</span>
-            Si la mancha está en una superficie reflectante, evita que tu propio reflejo salga en la foto.
-          </li>
-        </ul>
-      </div>
-    </div>
-  );
-
   return (
     <div
-      ref={scrollRef}
       className="flex h-full flex-col items-center rounded-2xl bg-[#000053] p-4 @lg:rounded-2xl @lg:p-10 relative overflow-y-auto overflow-x-hidden"
       style={splashContainerStyle}
     >
@@ -1805,37 +1704,91 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
         </button>
       </div>
 
-      {/* DESKTOP: "Más" button below the CTA, details expand inline and scroll down */}
-      <div className="hidden @lg:block w-full max-w-[520px] mt-4 shrink-0">
-        <button
-          type="button"
-          onClick={toggleMore}
-          className="flex w-full items-center justify-center gap-2 rounded-full border border-white/30 px-5 py-3 text-white/90 transition-colors hover:bg-white/10 active:scale-95"
-        >
-          <Plus className={`h-5 w-5 transition-transform duration-300 ${showMore ? "rotate-45" : ""}`} />
-          <span className="text-base font-semibold">Más</span>
-        </button>
-        {showMore && (
-          <div ref={detailsRef} className="w-full">{detailsContent}</div>
-        )}
-      </div>
-
-      {/* MOBILE: details expand inline below the CTA when (+) is pressed */}
-      {showMore && (
-        <div className="@lg:hidden w-full max-w-[340px] mt-3 pb-8 shrink-0">
-          <div ref={detailsRef}>{detailsContent}</div>
+      {/* Details integrated directly in the page, scrollable */}
+      <div className="w-full max-w-[520px] mt-4 pb-8 shrink-0">
+        <div className="space-y-4 rounded-2xl bg-white/5 p-5 text-left">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Cómo funciona</p>
+            <p className="text-sm font-medium leading-relaxed text-white/85">
+              Haz una foto a cualquier mancha y la IA te dará el manual exacto, paso a paso, para eliminarla en cualquier superficie.
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Cómo escanear una mancha</p>
+            <ol className="space-y-1.5">
+              <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">1</span>
+                Pulsa ESCANEAR y haz una foto a la mancha.
+              </li>
+              <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">2</span>
+                Opcionalmente, escribe qué tipo de mancha es para mayor precisión.
+              </li>
+              <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/80">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">3</span>
+                Recibe la solución y haz preguntas de seguimiento si lo necesitas.
+              </li>
+            </ol>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">¿Qué puedes hacer?</p>
+            <p className="text-sm font-medium leading-relaxed text-white/70">
+              Puedes escanear manchas, consultar la biblioteca de soluciones, preguntar a la IA sobre productos de limpieza y guardar tu historial. Cada análisis o pregunta cuesta 1 token.
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Biblioteca de manchas</p>
+            <p className="text-sm font-medium leading-relaxed text-white/70">
+              Consulta soluciones paso a paso para manchas comunes: café, vino, aceite, tinta, barro, sangre y muchas más, organizadas por tipo de superficie.
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Botiquín de limpieza</p>
+            <p className="text-sm font-medium leading-relaxed text-white/70">
+              Guarda los productos de limpieza que tienes en casa. La IA tiene en cuenta tu botiquín para recomendarte soluciones con lo que ya tienes.
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Historial</p>
+            <p className="text-sm font-medium leading-relaxed text-white/70">
+              Todos tus análisis se guardan automáticamente. Puedes volver a consultar cualquier mancha anterior cuando quieras.
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Tokens</p>
+            <p className="text-sm font-medium leading-relaxed text-white/70">
+              Empiezas con 3 tokens de regalo. Cada análisis o pregunta cuesta 1 token. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual.
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Planes de suscripción</p>
+            <p className="text-sm font-medium leading-relaxed text-white/70">
+              Si necesitas más análisis, puedes suscribirte a un plan mensual para recibir tokens cada semana sin tener que ver anuncios.
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Consejos de buena foto</p>
+            <ul className="space-y-1.5">
+              <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/70">
+                <span className="text-white/40 mt-0.5">•</span>
+                Asegúrate de que haya buena luz al hacer la foto.
+              </li>
+              <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/70">
+                <span className="text-white/40 mt-0.5">•</span>
+                Acércate a la mancha para que se vea con detalle.
+              </li>
+              <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/70">
+                <span className="text-white/40 mt-0.5">•</span>
+                Enfoca bien la zona para que la IA pueda identificarla.
+              </li>
+              <li className="flex items-start gap-2 text-sm font-medium leading-relaxed text-white/70">
+                <span className="text-white/40 mt-0.5">•</span>
+                Si la mancha está en una superficie reflectante, evita que tu propio reflejo salga en la foto.
+              </li>
+            </ul>
+          </div>
         </div>
-      )}
-
-      {/* MOBILE: small floating (+) button in bottom-right corner */}
-      <button
-        type="button"
-        onClick={toggleMore}
-        className="@lg:hidden sticky bottom-3 ml-auto z-50 flex h-9 w-9 shrink-0 items-center justify-center self-end rounded-full bg-white/15 text-white backdrop-blur-sm border border-white/30 transition-all hover:bg-white/25 active:scale-90 mr-1"
-        aria-label="Más opciones"
-      >
-        <Plus className={`h-5 w-5 transition-transform duration-300 ${showMore ? "rotate-45" : ""}`} />
-      </button>
+      </div>
     </div>
   );
 }
