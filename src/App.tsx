@@ -409,7 +409,7 @@ const PRODUCT_CATEGORIES: { id: ProductCategory; label: string }[] = [
 
 const PRODUCTS: Product[] = [
   { id: "vanish-oxi-action", name: "Vanish Oxi Action", category: "basicos", material: "Tejidos", description: "Quitamanchas en polvo con oxígeno activo para ropa blanca y de color.", amazonUrl: "https://www.amazon.es/s?k=vanish+oxi+action", imageUrl: "/vanish-oxi-action.webp" },
-  { id: "kh-7-professional", name: "KH-7 Profesional", category: "basicos", material: "Multisuperficie", description: "Quitamanchas y desengrasante multiusos profesional.", amazonUrl: "https://www.amazon.es/s?k=kh+7+profesional", imageUrl: "/kh-7-professional.webp" },
+  { id: "kh-7-professional", name: "KH-7 Profesional", category: "basicos", material: "Multisuperficie", description: "Quitamanchas y desengrasante multiusos profesional.", amazonUrl: "https://link.amazon/B00FDeUAe", imageUrl: "/kh-7-professional.webp" },
   { id: "fairy-ultra", name: "Fairy Ultra", category: "basicos", material: "Multisuperficie", description: "Jabón de platos concentrado ultradesengrasante.", amazonUrl: "https://www.amazon.es/s?k=fairy+ultra", imageUrl: "/fairy-ultra.webp" },
   { id: "limon-natural", name: "Limón natural", category: "ecologicos", material: "Multisuperficie", description: "Ácido natural que desengrasa, blanquea y elimina olores.", amazonUrl: "https://www.amazon.es/s?k=limon+limpieza+natural", imageUrl: "/limon-natural.webp" },
   { id: "escamas-jabon", name: "Escamas de jabón", category: "ecologicos", material: "Tejidos", description: "Jabón natural en escamas para ropa delicada y limpia.", amazonUrl: "https://www.amazon.es/s?k=escamas+jabon+natural", imageUrl: "/escamas-jabon.webp" },
