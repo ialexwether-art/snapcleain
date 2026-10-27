@@ -219,10 +219,14 @@ async function askFollowUp(
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
+    if (errText.includes("OVERLOADED") || res.status === 503) {
+      throw new Error("OVERLOADED");
+    }
     throw new Error(`Gemini respondió con error ${res.status}. ${errText.slice(0, 200)}`);
   }
 
   const data = await res.json();
+  if (data?.error === "OVERLOADED") throw new Error("OVERLOADED");
   if (data?.error) throw new Error(data.error);
   const text: string =
     data?.candidates?.[0]?.content?.parts?.[0]?.text ??
@@ -258,10 +262,14 @@ async function askAbout(history: ChatMessage[], question: string): Promise<strin
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
+    if (errText.includes("OVERLOADED") || res.status === 503) {
+      throw new Error("OVERLOADED");
+    }
     throw new Error(`Gemini respondió con error ${res.status}. ${errText.slice(0, 200)}`);
   }
 
   const data = await res.json();
+  if (data?.error === "OVERLOADED") throw new Error("OVERLOADED");
   if (data?.error) throw new Error(data.error);
   const text: string =
     data?.candidates?.[0]?.content?.parts?.[0]?.text ??
@@ -672,6 +680,43 @@ function StripeCheckoutCard({ planName, planPrice, priceId, mode, userEmail, onC
             Pago seguro cifrado con Stripe
           </p>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Overloaded Alert ---------- */
+
+type OverloadedAlertProps = {
+  onClose: () => void;
+  onRetry: () => void;
+};
+
+function OverloadedAlert({ onClose, onRetry }: OverloadedAlertProps) {
+  return (
+    <div
+      className="absolute inset-0 z-[76] flex items-center justify-center bg-black/50 px-6 animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-[300px] rounded-3xl bg-white p-6 shadow-2xl animate-pop-in"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-5 flex flex-col items-center text-center">
+          <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
+            <Loader2 className="h-8 w-8 text-blue-500" />
+          </div>
+          <h3 className="text-base font-bold text-black">El servicio está muy ocupado</h3>
+          <p className="mt-1 text-sm font-medium text-gray-500">Inténtalo de nuevo en unos segundos.</p>
+        </div>
+        <button
+          type="button"
+          onClick={onRetry}
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#087ff5] text-sm font-bold uppercase tracking-wide text-white shadow-md transition-all hover:bg-[#0a6fd4] active:scale-[0.98]"
+        >
+          <RefreshCw className="h-5 w-5" />
+          Reintentar
+        </button>
       </div>
     </div>
   );
@@ -2657,6 +2702,8 @@ function App() {
   const [tokenBalance, setTokenBalance] = useState<number>(() => loadTokenBalance());
   const [adLoading, setAdLoading] = useState(false);
   const [showOutOfTokens, setShowOutOfTokens] = useState(false);
+  const [showOverloaded, setShowOverloaded] = useState(false);
+  const [overloadedRetry, setOverloadedRetry] = useState<() => void>(() => () => {});
   const [showTokenToast, setShowTokenToast] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loggedInEmail, setLoggedInEmail] = useState("");
@@ -2808,7 +2855,13 @@ function App() {
       setView("result");
       setFromHistory(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo analizar la imagen.");
+      const msg = err instanceof Error ? err.message : "No se pudo analizar la imagen.";
+      if (msg.includes("OVERLOADED")) {
+        setShowOverloaded(true);
+        setOverloadedRetry(() => () => runAnalysis());
+      } else {
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }
@@ -2830,7 +2883,13 @@ function App() {
       const answer = await askFollowUp(analysis, [...chatHistory, userMsg], question, photo ?? undefined);
       setChatHistory((prev) => [...prev, { role: "model", text: answer }]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo enviar la pregunta.");
+      const msg = err instanceof Error ? err.message : "No se pudo enviar la pregunta.";
+      if (msg.includes("OVERLOADED")) {
+        setShowOverloaded(true);
+        setOverloadedRetry(() => () => sendChat());
+      } else {
+        setError(msg);
+      }
     } finally {
       setChatLoading(false);
       requestAnimationFrame(() => {
@@ -2883,8 +2942,14 @@ function App() {
     try {
       const answer = await askAbout([...aboutMessages, userMsg], question);
       setAboutMessages((prev) => [...prev, { role: "model", text: answer }]);
-    } catch {
-      setAboutMessages((prev) => [...prev, { role: "model", text: "Lo siento, no pude responder en este momento. Inténtalo de nuevo en unos segundos." }]);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      if (msg.includes("OVERLOADED")) {
+        setShowOverloaded(true);
+        setOverloadedRetry(() => () => sendAbout());
+      } else {
+        setAboutMessages((prev) => [...prev, { role: "model", text: "Lo siento, no pude responder en este momento. Inténtalo de nuevo en unos segundos." }]);
+      }
     } finally {
       setAboutLoading(false);
     }
@@ -3106,6 +3171,16 @@ function App() {
         )}
 
         {/* Overlays */}
+        {showOverloaded && (
+          <OverloadedAlert
+            onClose={() => setShowOverloaded(false)}
+            onRetry={() => {
+              setShowOverloaded(false);
+              overloadedRetry();
+            }}
+          />
+        )}
+
         {showOutOfTokens && (
           <OutOfTokensAlert
             adLoading={adLoading}

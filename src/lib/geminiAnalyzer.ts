@@ -82,10 +82,14 @@ export async function analyzeWithGemini(
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
+    if (errText.includes("OVERLOADED") || res.status === 503) {
+      throw new Error("OVERLOADED");
+    }
     throw new Error(`Gemini respondió con error ${res.status}. ${errText.slice(0, 200)}`);
   }
 
   const data = await res.json();
+  if (data?.error === "OVERLOADED") throw new Error("OVERLOADED");
   if (data?.error) {
     throw new Error(data.error);
   }
