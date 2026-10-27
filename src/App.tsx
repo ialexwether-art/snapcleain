@@ -1459,7 +1459,7 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">¿Qué puedes hacer?</p>
             <p className="text-sm font-medium leading-relaxed text-white/70">
-              Puedes escanear manchas, consultar la biblioteca de soluciones, preguntar a la IA sobre productos de limpieza y guardar tu historial. Cada análisis o pregunta cuesta 1 token.
+              Puedes escanear manchas, consultar la biblioteca de soluciones, preguntar a la IA sobre productos de limpieza y guardar tu historial. Cada análisis cuesta 1 token; las preguntas de seguimiento son gratis.
             </p>
           </div>
           <div>
@@ -1483,7 +1483,7 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Tokens</p>
             <p className="text-sm font-medium leading-relaxed text-white/70">
-              Empiezas con 3 tokens de regalo. Cada análisis o pregunta cuesta 1 token. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual.
+              Empiezas con 3 tokens de regalo. Cada análisis cuesta 1 token; las preguntas de seguimiento son gratis. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual.
             </p>
           </div>
           <div>
@@ -1848,7 +1848,6 @@ type ResultPageProps = {
   onReset: () => void;
   onOpenDrawer: () => void;
   onOpenWallet: () => void;
-  onOutOfTokens: () => void;
   isLoggedIn: boolean;
   onOpenProfile: () => void;
 };
@@ -1869,7 +1868,6 @@ function ResultPage({
   onReset,
   onOpenDrawer,
   onOpenWallet,
-  onOutOfTokens,
   isLoggedIn,
   onOpenProfile,
 }: ResultPageProps) {
@@ -1972,7 +1970,6 @@ function ResultPage({
             onKeyDown={(event) => {
               if (event.key === "Enter") {
                 event.preventDefault();
-                if (tokenBalance < 1) { onOutOfTokens(); return; }
                 onSendChat();
               }
             }}
@@ -1982,10 +1979,9 @@ function ResultPage({
           <button
             type="button"
             onClick={() => {
-              if (tokenBalance < 1) { onOutOfTokens(); return; }
               onSendChat();
             }}
-            disabled={tokenBalance >= 1 && (chatLoading || (!chatInput.trim() && !chatPhotoPreview))}
+            disabled={chatLoading || (!chatInput.trim() && !chatPhotoPreview)}
             aria-label="Enviar mensaje"
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white shadow-[0_4px_14px_rgba(8,127,245,0.4)] transition-all active:scale-[0.9] bg-[#087ff5] hover:bg-[#0a6fd4] disabled:opacity-40"
           >
@@ -2833,11 +2829,6 @@ function App() {
     try {
       const answer = await askFollowUp(analysis, [...chatHistory, userMsg], question, photo ?? undefined);
       setChatHistory((prev) => [...prev, { role: "model", text: answer }]);
-      setTokenBalance((prev) => {
-        const next = Math.max(0, +(prev - 1.0).toFixed(1));
-        saveTokenBalance(next, loggedInEmail || null);
-        return next;
-      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo enviar la pregunta.");
     } finally {
@@ -2846,7 +2837,7 @@ function App() {
         chatScrollRef.current?.scrollTo({ top: chatScrollRef.current.scrollHeight, behavior: "smooth" });
       });
     }
-  }, [chatInput, chatPhoto, analysis, chatLoading, chatHistory, removeChatPhoto, loggedInEmail]);
+  }, [chatInput, chatPhoto, analysis, chatLoading, chatHistory, removeChatPhoto]);
 
   const resetAll = useCallback(() => {
     setView("scan");
@@ -2940,7 +2931,7 @@ function App() {
               setAboutMessages([
                 {
                   role: "model",
-                  text: "¡Hola! Soy snapcleAIn, tu Inteligencia Artificial experta en limpieza. Mi funcion es simple: haces una foto a cualquier mancha y yo te doy el manual exacto, paso a paso, para eliminarla.\n\nFunciono con tokens: cada analisis o pregunta cuesta 1 token entero. Empiezas con 3 tokens de regalo. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual con tokens automaticos.\n\nPuedes preguntarme cualquier cosa sobre limpieza, manchas o productos. Estoy aqui para ayudarte.",
+                  text: "¡Hola! Soy snapcleAIn, tu Inteligencia Artificial experta en limpieza. Mi funcion es simple: haces una foto a cualquier mancha y yo te doy el manual exacto, paso a paso, para eliminarla.\n\nFunciono con tokens: cada analisis cuesta 1 token entero. Las preguntas de seguimiento sobre tu mancha son gratis. Empiezas con 3 tokens de regalo. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual con tokens automaticos.\n\nPuedes preguntarme cualquier cosa sobre limpieza, manchas o productos. Estoy aqui para ayudarte.",
                 },
               ]);
             }
@@ -2967,7 +2958,7 @@ function App() {
                   setAboutMessages([
                     {
                       role: "model",
-                      text: "¡Hola! Soy snapcleAIn, tu Inteligencia Artificial experta en limpieza. Mi funcion es simple: haces una foto a cualquier mancha y yo te doy el manual exacto, paso a paso, para eliminarla.\n\nFunciono con tokens: cada analisis o pregunta cuesta 1 token entero. Empiezas con 3 tokens de regalo. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual con tokens automaticos.\n\nPuedes preguntarme cualquier cosa sobre limpieza, manchas o productos. Estoy aqui para ayudarte.",
+                      text: "¡Hola! Soy snapcleAIn, tu Inteligencia Artificial experta en limpieza. Mi funcion es simple: haces una foto a cualquier mancha y yo te doy el manual exacto, paso a paso, para eliminarla.\n\nFunciono con tokens: cada analisis cuesta 1 token entero. Las preguntas de seguimiento sobre tu mancha son gratis. Empiezas con 3 tokens de regalo. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual con tokens automaticos.\n\nPuedes preguntarme cualquier cosa sobre limpieza, manchas o productos. Estoy aqui para ayudarte.",
                     },
                   ]);
                 }
@@ -3025,7 +3016,6 @@ function App() {
               onReset={resetAll}
               onOpenDrawer={openDrawer}
               onOpenWallet={openWallet}
-              onOutOfTokens={outOfTokens}
               isLoggedIn={isLoggedIn}
               onOpenProfile={() => setShowProfilePanel(true)}
             />
