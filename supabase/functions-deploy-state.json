@@ -3,7 +3,7 @@
   "functions": {
     "gemini-proxy": {
       "hasChanged": false,
-      "hash": "b919552f43046a610caf3609fc8f844f40819e125bf5de9646b35c47f2ab914e"
+      "hash": "584f95e05aaaa8843474e8b0d39217102f09794fd4e9f92e791d42862c1491d1"
     },
     "stripe-checkout": {
       "hasChanged": false,
