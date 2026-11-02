@@ -1,5 +1,5 @@
 const PRIMARY_MODEL = "gemini-3.6-flash";
-const FALLBACK_MODEL = "gemini-2.0-flash";
+const FALLBACK_MODEL = "gemini-2.5-flash";
 const GEMINI_API_KEY = "AQ.Ab8RN6Jk4b25WPbbRS1SshFDtdW428Y9S1g8m1NauLyxyI_3dA";
 
 const corsHeaders = {
@@ -90,25 +90,22 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // Both failed with retryable errors -> friendly overload message
-    const retryablePrimary = RETRYABLE_STATUS.has(primary.lastStatus) || primary.lastStatus === 0;
-    const retryableFallback = RETRYABLE_STATUS.has(fallback.lastStatus) || fallback.lastStatus === 0;
-    if (retryablePrimary && retryableFallback) {
+    const overloaded = RETRYABLE_STATUS.has(primary.lastStatus) && RETRYABLE_STATUS.has(fallback.lastStatus);
+    if (overloaded) {
       return new Response(
         JSON.stringify({ error: "OVERLOADED", message: "El servicio está muy ocupado, inténtalo de nuevo en unos segundos." }),
         { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    // Non-retryable error from either model
     return new Response(
-      JSON.stringify({ error: "OVERLOADED", message: "El servicio está muy ocupado, inténtalo de nuevo en unos segundos." }),
-      { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      JSON.stringify({ error: "GEMINI_ERROR", message: "La IA no pudo responder. Inténtalo de nuevo más tarde." }),
+      { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
-  } catch (err) {
+  } catch {
     return new Response(
-      JSON.stringify({ error: "OVERLOADED", message: "El servicio está muy ocupado, inténtalo de nuevo en unos segundos." }),
-      { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      JSON.stringify({ error: "GEMINI_ERROR", message: "La IA no pudo responder. Inténtalo de nuevo más tarde." }),
+      { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });
