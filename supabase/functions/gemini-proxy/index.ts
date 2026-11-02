@@ -1,6 +1,6 @@
 const PRIMARY_MODEL = "gemini-3.6-flash";
 const FALLBACK_MODEL = "gemini-2.5-flash";
-const GEMINI_API_KEY = "AQ.Ab8RN6Jk4b25WPbbRS1SshFDtdW428Y9S1g8m1NauLyxyI_3dA";
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") ?? "";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
