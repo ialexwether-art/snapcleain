@@ -33,7 +33,6 @@ import {
   Sparkles,
   Star,
   Store,
-  Smartphone,
   Trash2,
   User,
   Wallet,
@@ -2710,7 +2709,6 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loggedInEmail, setLoggedInEmail] = useState("");
   const [showProfilePanel, setShowProfilePanel] = useState(false);
-  const [mobilePreview, setMobilePreview] = useState(false);
   const [showStripeSync, setShowStripeSync] = useState(false);
   const { priceMap, refresh: refreshPriceMap } = useStripePriceMap();
 
@@ -2981,8 +2979,8 @@ function App() {
   }, []);
 
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-[#f4f5f7] overflow-hidden py-4">
-      <div className={`${mobilePreview ? "max-w-[390px] w-full max-h-[844px] h-[100dvh] p-5 pb-20 flex-col" : "max-w-[390px] w-full max-h-[844px] h-[100dvh] p-5 pb-20 lg:max-w-[1200px] lg:max-h-none lg:h-[min(100dvh-2rem,920px)] lg:p-6 lg:pb-6 lg:flex-col"} bg-white rounded-3xl shadow-xl flex flex-col mx-auto relative overflow-hidden @container`}>
+    <div className="flex h-[100dvh] w-full overflow-hidden bg-white">
+      <div className="flex h-full w-full flex-col p-5 pb-20 lg:p-6 lg:pb-6 relative overflow-hidden @container">
         {/* Desktop top bar */}
         <DesktopTopBar
           activeTab={activeTab}
@@ -3127,17 +3125,6 @@ function App() {
         <div className="@lg:hidden">
           <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
-
-        {/* Mobile/desktop view toggle - always visible */}
-        <button
-          type="button"
-          onClick={() => setMobilePreview(!mobilePreview)}
-          className="absolute bottom-3 left-3 z-50 flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-black shadow-lg border border-[#e5e7eb] transition-all hover:bg-[#f3f4f6] active:scale-95"
-          aria-label={mobilePreview ? "Vista ordenador" : "Vista móvil"}
-        >
-          <Smartphone className="h-3.5 w-3.5 text-[#087ff5]" />
-          {mobilePreview ? "Ordenador" : "Móvil"}
-        </button>
 
         {/* Hidden file inputs */}
         <input
