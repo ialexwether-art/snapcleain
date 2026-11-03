@@ -1,3 +1,5 @@
+import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "@/lib/supabaseConfig";
+
 const SYSTEM_PROMPT = `Eres una IA universal experta en eliminación de manchas de TODO tipo en CUALQUIER superficie: ropa, tejidos, alfombras, moquetas, suelos (cerámica, mármol, madera, parqué, vinilo), paredes (pintura, papel pintado, yeso), muebles de madera, cuero, metal, cristal, plástico, piedra, hormigón, encimera, tapicería de coche, calzado, etc.
 
 Analiza la FOTO de la mancha que te envía. Además, si el usuario incluye texto adicional con pistas (tipo de tela o superficie, productos que ya ha usado, cuántos días lleva la mancha, temperatura del agua, etc.), DEBES leer y usar obligatoriamente esa información para dar una solución mucho más específica, exacta y concreta.
@@ -69,13 +71,13 @@ export async function analyzeWithGemini(
     },
   };
 
-  const proxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gemini-proxy`;
+  const proxyUrl = `${SUPABASE_URL}/functions/v1/gemini-proxy`;
 
   const res = await fetch(proxyUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
     },
     body: JSON.stringify(body),
   });

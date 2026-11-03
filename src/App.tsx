@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { analyzeWithGemini } from "@/lib/geminiAnalyzer";
 import { supabase } from "@/lib/supabaseClient";
+import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "@/lib/supabaseConfig";
 import { showRewardedAd } from "@/lib/admobRewarded";
 
 const splashContainerStyle: React.CSSProperties = {
@@ -206,12 +207,12 @@ async function askFollowUp(
     generationConfig: { temperature: 0.5 },
   };
 
-  const proxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gemini-proxy`;
+  const proxyUrl = `${SUPABASE_URL}/functions/v1/gemini-proxy`;
   const res = await fetch(proxyUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
     },
     body: JSON.stringify(body),
   });
@@ -249,12 +250,12 @@ async function askAbout(history: ChatMessage[], question: string): Promise<strin
     generationConfig: { temperature: 0.6 },
   };
 
-  const proxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gemini-proxy`;
+  const proxyUrl = `${SUPABASE_URL}/functions/v1/gemini-proxy`;
   const res = await fetch(proxyUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
     },
     body: JSON.stringify(body),
   });
@@ -531,10 +532,10 @@ type StripePrice = {
 
 async function fetchStripePriceMap(): Promise<PriceMap> {
   try {
-    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-prices-sync`;
+    const url = `${SUPABASE_URL}/functions/v1/stripe-prices-sync`;
     const res = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
       },
     });
     if (!res.ok) return {};
@@ -586,12 +587,12 @@ function StripeCheckoutCard({ planName, planPrice, priceId, mode, userEmail, onC
     setLoading(true);
     setError(null);
     try {
-      const checkoutUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-checkout`;
+      const checkoutUrl = `${SUPABASE_URL}/functions/v1/stripe-checkout`;
       const res = await fetch(checkoutUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
           price_id: priceId,
@@ -2196,9 +2197,9 @@ function StripeSyncPanel({ priceMap, onClose, onSaved }: StripeSyncPanelProps) {
     setLoading(true);
     setError(null);
     try {
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-prices-sync`;
+      const url = `${SUPABASE_URL}/functions/v1/stripe-prices-sync`;
       const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` },
+        headers: { Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}` },
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? "No se pudieron cargar los precios.");
@@ -2219,12 +2220,12 @@ function StripeSyncPanel({ priceMap, onClose, onSaved }: StripeSyncPanelProps) {
     setSavingKey(planKey);
     setError(null);
     try {
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-prices-sync`;
+      const url = `${SUPABASE_URL}/functions/v1/stripe-prices-sync`;
       const res = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({ plan_key: planKey, price_id: priceId }),
       });
