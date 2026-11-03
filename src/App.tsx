@@ -1455,8 +1455,7 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
 
       {/* CTA buttons */}
       <div className="flex w-full flex-col items-center space-y-3 pb-2 shrink-0">
-        {/* MOBILE: "¿Qué hacer?" button (same width as CTA) */}
-        <div className="@lg:hidden w-full max-w-[280px]">
+        <div className="w-full max-w-[280px]">
           <button
             type="button"
             onClick={onOpenAbout}
