@@ -18,6 +18,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Client-Info, Apikey',
 };
 
+const AUTO_PLAN_AMOUNTS: Record<string, number> = {
+  aficionado: 399,
+  limpieza_total: 799,
+};
+
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -31,24 +36,12 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // GET: list active Stripe prices + current saved mapping
     if (req.method === 'GET') {
       const prices = await stripe.prices.list({
         active: true,
         limit: 100,
         expand: ['data.product'],
       });
-
-      const { data: mapping, error: mapError } = await supabase
-        .from('stripe_price_map')
-        .select('plan_key, price_id');
-
-      if (mapError) {
-        console.error('Failed to read price map', mapError);
-        return jsonResponse({ error: 'Failed to read current price mapping' }, 500);
-      }
-
-      const mapped = new Map((mapping ?? []).map((row) => [row.plan_key, row.price_id]));
 
       const formatted = prices.data
         .filter((p) => p.recurring !== null && p.recurring !== undefined)
@@ -69,16 +62,39 @@ Deno.serve(async (req) => {
           };
         });
 
+      const { data: mapping, error: mapError } = await supabase
+        .from('stripe_price_map')
+        .select('plan_key, price_id');
+
+      if (mapError) {
+        console.error('Failed to read price map', mapError);
+        return jsonResponse({ error: 'Failed to read current price mapping' }, 500);
+      }
+
+      const mapped = new Map((mapping ?? []).map((row) => [row.plan_key, row.price_id]));
+
+      for (const [planKey, amount] of Object.entries(AUTO_PLAN_AMOUNTS)) {
+        if (mapped.has(planKey)) continue;
+        const match = formatted.find(
+          (p) => p.unit_amount === amount && p.interval === 'month' && p.currency === 'eur',
+        );
+        if (!match) continue;
+        const { error: upsertError } = await supabase
+          .from('stripe_price_map')
+          .upsert({ plan_key: planKey, price_id: match.id, updated_at: new Date().toISOString() }, { onConflict: 'plan_key' });
+        if (upsertError) {
+          console.error('Failed to auto-assign price', upsertError);
+          continue;
+        }
+        mapped.set(planKey, match.id);
+      }
+
       return jsonResponse({
         prices: formatted,
-        mapping: (mapping ?? []).reduce<Record<string, string>>((acc, row) => {
-          acc[row.plan_key] = row.price_id;
-          return acc;
-        }, {}),
+        mapping: Object.fromEntries(mapped),
       });
     }
 
-    // POST: assign a price_id to a plan_key
     if (req.method === 'POST') {
       const { plan_key, price_id } = await req.json();
 
