@@ -25,7 +25,6 @@ import {
   MessageCircle,
   Package,
   Phone,
-  Play,
   RefreshCw,
   ScanLine,
   Share2,
@@ -41,7 +40,6 @@ import {
 import { analyzeWithGemini } from "@/lib/geminiAnalyzer";
 import { supabase } from "@/lib/supabaseClient";
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "@/lib/supabaseConfig";
-import { showRewardedAd } from "@/lib/admobRewarded";
 
 const splashContainerStyle: React.CSSProperties = {
   textRendering: "optimizeLegibility",
@@ -480,7 +478,6 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     features: [
       "3 tokens iniciales de regalo",
       "1 token de recarga cada semana",
-      "Ver anuncios voluntarios por +0,25 créditos",
     ],
     accent: "border-blue-200 bg-blue-50",
     isFree: true,
@@ -495,7 +492,6 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     features: [
       "5 escaneos semanales",
       "Acceso completo al historial de manchas guardadas",
-      "Soporte inteligente con anuncios activos",
     ],
     accent: "border-blue-200 bg-blue-50",
   },
@@ -510,7 +506,6 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "Escaneos de manchas 100% ilimitados",
       "Acceso completo al historial de manchas",
       "Trucos de lavado avanzados",
-      "Sin anuncios",
     ],
     accent: "border-amber-200 bg-amber-50",
     highlight: true,
@@ -727,13 +722,11 @@ function OverloadedAlert({ onClose, onRetry }: OverloadedAlertProps) {
 /* ---------- Out of Tokens Alert ---------- */
 
 type OutOfTokensAlertProps = {
-  adLoading: boolean;
   onClose: () => void;
-  onWatchAd: () => void;
   onOpenPlans: () => void;
 };
 
-function OutOfTokensAlert({ adLoading, onClose, onWatchAd, onOpenPlans }: OutOfTokensAlertProps) {
+function OutOfTokensAlert({ onClose, onOpenPlans }: OutOfTokensAlertProps) {
   return (
     <div
       className="absolute inset-0 z-[75] flex items-center justify-center bg-black/50 px-6 animate-fade-in"
@@ -748,24 +741,9 @@ function OutOfTokensAlert({ adLoading, onClose, onWatchAd, onOpenPlans }: OutOfT
             <AlertTriangle className="h-8 w-8 text-amber-600" />
           </div>
           <h3 className="text-base font-bold text-black">Te has quedado sin tokens</h3>
-          <p className="mt-1 text-sm font-medium text-gray-500">Ve un anuncio por +0,25 o hazte premium.</p>
+          <p className="mt-1 text-sm font-medium text-gray-500">Suscríbete a un plan para seguir escaneando.</p>
         </div>
         <div className="space-y-2.5">
-          <button
-            type="button"
-            onClick={onWatchAd}
-            disabled={adLoading}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-amber-500 text-sm font-bold uppercase tracking-wide text-white shadow-md transition-all hover:bg-amber-600 active:scale-[0.98] disabled:opacity-50"
-          >
-            {adLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <>
-                <Play className="h-5 w-5" />
-                Ver Anuncio (+0,25)
-              </>
-            )}
-          </button>
           <button
             type="button"
             onClick={onOpenPlans}
@@ -784,16 +762,14 @@ function OutOfTokensAlert({ adLoading, onClose, onWatchAd, onOpenPlans }: OutOfT
 
 type WalletShopCardProps = {
   balance: number;
-  adLoading: boolean;
   userEmail: string | null;
   priceMap: PriceMap;
   onClose: () => void;
-  onWatchAd: () => void;
   onRequireLogin: () => void;
   onOpenSync: () => void;
 };
 
-function WalletShopCard({ balance, adLoading, userEmail, priceMap, onClose, onWatchAd, onRequireLogin, onOpenSync }: WalletShopCardProps) {
+function WalletShopCard({ balance, userEmail, priceMap, onClose, onRequireLogin, onOpenSync }: WalletShopCardProps) {
   const [checkoutPlan, setCheckoutPlan] = useState<{ name: string; price: string; priceId: string; mode: "payment" | "subscription" } | null>(null);
 
   const handleSubscribe = (plan: SubscriptionPlan) => {
@@ -887,26 +863,6 @@ function WalletShopCard({ balance, adLoading, userEmail, priceMap, onClose, onWa
               )}
             </div>
           ))}
-        </div>
-
-        <div className="mt-3 rounded-2xl border-2 border-dashed border-amber-300 bg-amber-50 p-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Play className="h-5 w-5 text-amber-600" />
-              <div>
-                <p className="text-sm font-bold text-black">Ver Anuncio</p>
-                <p className="text-xs font-medium text-amber-600">Gana +0,25 créditos gratis</p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={onWatchAd}
-              disabled={adLoading}
-              className="flex h-9 items-center justify-center rounded-xl bg-amber-500 px-4 text-xs font-bold uppercase text-white transition-all hover:bg-amber-600 active:scale-95 disabled:opacity-50"
-            >
-              {adLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ver"}
-            </button>
-          </div>
         </div>
       </div>
 
@@ -1529,13 +1485,13 @@ function InicioPage({ onEnter, onOpenAbout, onOpenDrawer, isLoggedIn, onOpenProf
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Tokens</p>
             <p className="text-sm font-medium leading-relaxed text-white/70">
-              Empiezas con 3 tokens de regalo. Cada análisis cuesta 1 token; las preguntas de seguimiento son gratis. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual.
+              Empiezas con 3 tokens de regalo. Cada análisis cuesta 1 token; las preguntas de seguimiento son gratis. Cuando te quedes sin tokens, puedes suscribirte a un plan mensual.
             </p>
           </div>
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-white/50 mb-1">Planes de suscripción</p>
             <p className="text-sm font-medium leading-relaxed text-white/70">
-              Si necesitas más análisis, puedes suscribirte a un plan mensual para recibir tokens cada semana sin tener que ver anuncios.
+              Si necesitas más análisis, puedes suscribirte a un plan mensual para recibir tokens cada semana.
             </p>
           </div>
           <div>
@@ -2367,15 +2323,13 @@ type PremiumPageProps = {
   onOpenDrawer: () => void;
   onOpenWallet: () => void;
   tokenBalance: number;
-  adLoading: boolean;
-  onWatchAd: () => void;
   userEmail: string | null;
   priceMap: PriceMap;
   onRequireLogin: () => void;
   onOpenSync: () => void;
 };
 
-function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWatchAd, userEmail, priceMap, onRequireLogin, onOpenSync }: PremiumPageProps) {
+function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, userEmail, priceMap, onRequireLogin, onOpenSync }: PremiumPageProps) {
   const [checkoutPlan, setCheckoutPlan] = useState<{ name: string; price: string; priceId: string; mode: "payment" | "subscription" } | null>(null);
 
   const handleSubscribe = (plan: SubscriptionPlan) => {
@@ -2468,26 +2422,6 @@ function PremiumPage({ onOpenDrawer, onOpenWallet, tokenBalance, adLoading, onWa
             )}
           </div>
         ))}
-      </div>
-
-      <div className="mt-4 rounded-2xl border-2 border-dashed border-amber-300 bg-amber-50 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Play className="h-5 w-5 text-amber-600" />
-            <div>
-              <p className="text-sm font-bold text-black">Ver Anuncio</p>
-              <p className="text-xs font-medium text-amber-600">Gana +0,25 créditos gratis viendo un anuncio</p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onWatchAd}
-            disabled={adLoading}
-            className="flex h-10 items-center justify-center rounded-xl bg-amber-500 px-5 text-xs font-bold uppercase text-white transition-all hover:bg-amber-600 active:scale-95 disabled:opacity-50"
-          >
-            {adLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Ver"}
-          </button>
-        </div>
       </div>
 
       {checkoutPlan && (
@@ -2701,7 +2635,6 @@ function App() {
   const [aboutInput, setAboutInput] = useState("");
   const [aboutLoading, setAboutLoading] = useState(false);
   const [tokenBalance, setTokenBalance] = useState<number>(() => loadTokenBalance());
-  const [adLoading, setAdLoading] = useState(false);
   const [showOutOfTokens, setShowOutOfTokens] = useState(false);
   const [showOverloaded, setShowOverloaded] = useState(false);
   const [overloadedRetry, setOverloadedRetry] = useState<() => void>(() => () => {});
@@ -2960,19 +2893,6 @@ function App() {
   const openWallet = useCallback(() => setDrawerPanel("wallet"), []);
   const outOfTokens = useCallback(() => setShowOutOfTokens(true), []);
 
-  const watchAd = useCallback(async () => {
-    setAdLoading(true);
-    const rewarded = await showRewardedAd((loading) => setAdLoading(loading));
-    if (rewarded) {
-      setTokenBalance((prev) => {
-        const next = +(prev + 0.25).toFixed(2);
-        saveTokenBalance(next, loggedInEmail || null);
-        return next;
-      });
-    }
-    setAdLoading(false);
-  }, [loggedInEmail]);
-
   const handleTabChange = useCallback((tab: Tab) => {
     setActiveTab(tab);
     if (tab === "escanear") setView("scan");
@@ -2996,7 +2916,7 @@ function App() {
               setAboutMessages([
                 {
                   role: "model",
-                  text: "¡Hola! Soy snapcleAIn, tu Inteligencia Artificial experta en limpieza. Mi funcion es simple: haces una foto a cualquier mancha y yo te doy el manual exacto, paso a paso, para eliminarla.\n\nFunciono con tokens: cada analisis cuesta 1 token entero. Las preguntas de seguimiento sobre tu mancha son gratis. Empiezas con 3 tokens de regalo. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual con tokens automaticos.\n\nPuedes preguntarme cualquier cosa sobre limpieza, manchas o productos. Estoy aqui para ayudarte.",
+                  text: "¡Hola! Soy snapcleAIn, tu Inteligencia Artificial experta en limpieza. Mi funcion es simple: haces una foto a cualquier mancha y yo te doy el manual exacto, paso a paso, para eliminarla.\n\nFunciono con tokens: cada analisis cuesta 1 token entero. Las preguntas de seguimiento sobre tu mancha son gratis. Empiezas con 3 tokens de regalo. Cuando te quedes sin tokens, puedes suscribirte a un plan mensual con tokens automaticos.\n\nPuedes preguntarme cualquier cosa sobre limpieza, manchas o productos. Estoy aqui para ayudarte.",
                 },
               ]);
             }
@@ -3023,7 +2943,7 @@ function App() {
                   setAboutMessages([
                     {
                       role: "model",
-                      text: "¡Hola! Soy snapcleAIn, tu Inteligencia Artificial experta en limpieza. Mi funcion es simple: haces una foto a cualquier mancha y yo te doy el manual exacto, paso a paso, para eliminarla.\n\nFunciono con tokens: cada analisis cuesta 1 token entero. Las preguntas de seguimiento sobre tu mancha son gratis. Empiezas con 3 tokens de regalo. Cuando te quedes sin tokens, puedes ver un anuncio para ganar 0,25 tokens o suscribirte a un plan mensual con tokens automaticos.\n\nPuedes preguntarme cualquier cosa sobre limpieza, manchas o productos. Estoy aqui para ayudarte.",
+                      text: "¡Hola! Soy snapcleAIn, tu Inteligencia Artificial experta en limpieza. Mi funcion es simple: haces una foto a cualquier mancha y yo te doy el manual exacto, paso a paso, para eliminarla.\n\nFunciono con tokens: cada analisis cuesta 1 token entero. Las preguntas de seguimiento sobre tu mancha son gratis. Empiezas con 3 tokens de regalo. Cuando te quedes sin tokens, puedes suscribirte a un plan mensual con tokens automaticos.\n\nPuedes preguntarme cualquier cosa sobre limpieza, manchas o productos. Estoy aqui para ayudarte.",
                     },
                   ]);
                 }
@@ -3111,8 +3031,6 @@ function App() {
               onOpenDrawer={openDrawer}
               onOpenWallet={openWallet}
               tokenBalance={tokenBalance}
-              adLoading={adLoading}
-              onWatchAd={watchAd}
               userEmail={isLoggedIn ? loggedInEmail : null}
               priceMap={priceMap}
               onRequireLogin={() => setDrawerPanel("login")}
@@ -3172,12 +3090,7 @@ function App() {
 
         {showOutOfTokens && (
           <OutOfTokensAlert
-            adLoading={adLoading}
             onClose={() => setShowOutOfTokens(false)}
-            onWatchAd={() => {
-              watchAd();
-              setShowOutOfTokens(false);
-            }}
             onOpenPlans={() => {
               setShowOutOfTokens(false);
               setActiveTab("premium");
@@ -3225,11 +3138,9 @@ function App() {
         {drawerPanel === "wallet" && (
           <WalletShopCard
             balance={tokenBalance}
-            adLoading={adLoading}
             userEmail={isLoggedIn ? loggedInEmail : null}
             priceMap={priceMap}
             onClose={closeDrawer}
-            onWatchAd={watchAd}
             onRequireLogin={() => { closeDrawer(); setDrawerPanel("login"); }}
             onOpenSync={() => { closeDrawer(); setShowStripeSync(true); }}
           />
