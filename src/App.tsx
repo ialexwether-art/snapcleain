@@ -2686,7 +2686,6 @@ function App() {
 
   useEffect(() => {
     const checkSundayRefill = () => {
-      if (new Date().getDay() !== 0) return;
       const lastRefill = getLastRefill(loggedInEmail || null);
       const thisSunday = getStartOfCurrentSunday();
       const thisSundayIso = thisSunday.toISOString();
